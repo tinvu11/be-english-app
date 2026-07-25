@@ -14,9 +14,6 @@ type (
 		HTTP    http
 		Log     log
 		PG      pg
-		GRPC    grpc
-		RMQ     rmq
-		NATS    nats
 		JWT     jwt
 		Metrics metrics
 		Swagger swagger
@@ -46,23 +43,6 @@ type (
 		URL     string `env:"PG_URL,required"`
 	}
 
-	// GRPC -.
-	grpc struct {
-		Port string `env:"GRPC_PORT,required"`
-	}
-
-	// RMQ -.
-	rmq struct {
-		ServerExchange string `env:"RMQ_RPC_SERVER,required"`
-		ClientExchange string `env:"RMQ_RPC_CLIENT,required"`
-		URL            string `env:"RMQ_URL,required"`
-	}
-
-	// NATS -.
-	nats struct {
-		ServerExchange string `env:"NATS_RPC_SERVER,required"`
-		URL            string `env:"NATS_URL,required"`
-	}
 
 	// JWT -.
 	jwt struct {

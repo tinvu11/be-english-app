@@ -12,13 +12,7 @@ import (
 	"testing"
 	"time"
 
-	protov1 "github.com/evrone/go-clean-template/docs/proto/v1"
-	natsClient "github.com/evrone/go-clean-template/pkg/nats/nats_rpc/client"
-	rmqClient "github.com/evrone/go-clean-template/pkg/rabbitmq/rmq_rpc/client"
 	"github.com/goccy/go-json"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/metadata"
 )
 
 const (
@@ -34,23 +28,8 @@ const (
 	// HTTP REST.
 	basePathV1 = httpURL + "/v1"
 
-	// gRPC.
-	grpcURL = host + ":8081"
-
-	// RPC configs.
-	rpcServerExchange = "rpc_server"
-	rpcClientExchange = "rpc_client"
-	requests          = 10
-
 	// Test password used across helpers.
 	testPassword = "testpass123"
-)
-
-// rmqURL and natsURL are constructed from parts to avoid gosec G101 credential detection.
-const (
-	rpcCredentials = "guest:guest"
-	rmqURL         = "amqp://" + rpcCredentials + "@rabbitmq:5672/"
-	natsURL        = "nats://" + rpcCredentials + "@nats:4222/"
 )
 
 var errHealthCheck = fmt.Errorf("url %s is not available", healthPath)
@@ -158,159 +137,7 @@ func registerAndLogin(t *testing.T) string {
 	return loginUser(t, email, password)
 }
 
-// registerAndLoginGRPC creates a unique user via gRPC and returns the JWT token.
-func registerAndLoginGRPC(t *testing.T) string {
-	t.Helper()
 
-	name := sanitizeTestName(t)
-	email := name + "@test.com"
-	password := testPassword
-
-	grpcConn, err := grpc.NewClient(grpcURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		t.Fatalf("registerAndLoginGRPC: grpc.NewClient: %v", err)
-	}
-
-	defer func() {
-		if cerr := grpcConn.Close(); cerr != nil {
-			t.Fatalf("registerAndLoginGRPC: grpcConn.Close: %v", cerr)
-		}
-	}()
-
-	authClient := protov1.NewAuthServiceClient(grpcConn)
-
-	_, err = authClient.Register(t.Context(), &protov1.RegisterRequest{
-		Username: name,
-		Email:    email,
-		Password: password,
-	})
-	if err != nil {
-		t.Fatalf("registerAndLoginGRPC: Register: %v", err)
-	}
-
-	loginResp, err := authClient.Login(t.Context(), &protov1.LoginRequest{
-		Email:    email,
-		Password: password,
-	})
-	if err != nil {
-		t.Fatalf("registerAndLoginGRPC: Login: %v", err)
-	}
-
-	return loginResp.Token
-}
-
-// registerAndLoginRMQ creates a unique user via RabbitMQ RPC and returns the JWT token.
-func registerAndLoginRMQ(t *testing.T) string {
-	t.Helper()
-
-	name := sanitizeTestName(t)
-	email := name + "@test.com"
-	password := testPassword
-
-	client, err := rmqClient.New(rmqURL, rpcServerExchange, rpcClientExchange)
-	if err != nil {
-		t.Fatalf("registerAndLoginRMQ: rmqClient.New: %v", err)
-	}
-
-	defer func() {
-		if serr := client.Shutdown(); serr != nil {
-			t.Fatalf("registerAndLoginRMQ: client.Shutdown: %v", serr)
-		}
-	}()
-
-	registerPayload := map[string]string{
-		"username": name,
-		"email":    email,
-		"password": password,
-	}
-
-	var registerResp any
-
-	err = client.RemoteCall("v1.auth.register", registerPayload, &registerResp)
-	if err != nil {
-		t.Fatalf("registerAndLoginRMQ: register: %v", err)
-	}
-
-	loginPayload := map[string]string{
-		"email":    email,
-		"password": password,
-	}
-
-	var loginResp struct {
-		Token string `json:"token"`
-	}
-
-	err = client.RemoteCall("v1.auth.login", loginPayload, &loginResp)
-	if err != nil {
-		t.Fatalf("registerAndLoginRMQ: login: %v", err)
-	}
-
-	return loginResp.Token
-}
-
-// registerAndLoginNATS creates a unique user via NATS RPC and returns the JWT token.
-func registerAndLoginNATS(t *testing.T) string {
-	t.Helper()
-
-	name := sanitizeTestName(t)
-	email := name + "@test.com"
-	password := testPassword
-
-	client, err := natsClient.New(natsURL, rpcServerExchange)
-	if err != nil {
-		t.Fatalf("registerAndLoginNATS: natsClient.New: %v", err)
-	}
-
-	defer func() {
-		if serr := client.Shutdown(); serr != nil {
-			t.Fatalf("registerAndLoginNATS: client.Shutdown: %v", serr)
-		}
-	}()
-
-	registerPayload := map[string]string{
-		"username": name,
-		"email":    email,
-		"password": password,
-	}
-
-	var registerResp any
-
-	err = client.RemoteCall("v1.auth.register", registerPayload, &registerResp)
-	if err != nil {
-		t.Fatalf("registerAndLoginNATS: register: %v", err)
-	}
-
-	loginPayload := map[string]string{
-		"email":    email,
-		"password": password,
-	}
-
-	var loginResp struct {
-		Token string `json:"token"`
-	}
-
-	err = client.RemoteCall("v1.auth.login", loginPayload, &loginResp)
-	if err != nil {
-		t.Fatalf("registerAndLoginNATS: login: %v", err)
-	}
-
-	return loginResp.Token
-}
-
-// authenticatedPayload wraps data with a token for RMQ/NATS authenticated RPC calls.
-func authenticatedPayload(token string, data any) map[string]any {
-	return map[string]any{
-		"token": token,
-		"data":  data,
-	}
-}
-
-// grpcAuthCtx returns a context with gRPC authorization metadata.
-func grpcAuthCtx(t *testing.T, token string) context.Context {
-	t.Helper()
-
-	return metadata.AppendToOutgoingContext(t.Context(), "authorization", token)
-}
 
 // parseJSON is a generic JSON parser for HTTP responses.
 func parseJSON[T any](t *testing.T, resp *http.Response) T {

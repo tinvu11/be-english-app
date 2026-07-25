@@ -6,9 +6,6 @@ x-db-environment: &x-db-environment
   POSTGRES_PASSWORD: "myAwEsOm3pa55@w0rd"
   POSTGRES_USER: "user"
 
-x-rabbitmq-variables: &x-rabbitmq-variables
-  RABBITMQ_DEFAULT_USER: "guest"
-  RABBITMQ_DEFAULT_PASS: "guest"
 
 x-backend-app-environment: &x-backend-app-environment
   GOMAXPROCS: "1"
@@ -23,15 +20,7 @@ x-backend-app-environment: &x-backend-app-environment
   # PG
   PG_POOL_MAX: "2"
   PG_URL: "postgres://user:myAwEsOm3pa55@w0rd@db:5432/db"
-  # gRPC
-  GRPC_PORT: "8081"
-  # RMQ
-  RMQ_RPC_SERVER: "rpc_server"
-  RMQ_RPC_CLIENT: "rpc_client"
-  RMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
-  # NATS
-  NATS_RPC_SERVER: "rpc_server"
-  NATS_URL: "nats://guest:guest@nats:4222/"
+
   # Metrics
   METRICS_ENABLED: "true"
   # Swagger
@@ -55,40 +44,12 @@ services:
     volumes:
       - db_data:/var/lib/postgresql
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       app_network:
         aliases:
           - db.lvh.me
 
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:4.3.2-management
-    environment:
-      <<: *x-rabbitmq-variables
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      app_network:
-        aliases:
-          - rabbitmq.lvh.me
-
-  nats:
-    container_name: nats
-    image: nats:2.14-alpine
-    command: [ "-m", "8222", "-sd", "/nats-data", "-user", "guest", "-pass", "guest" ]
-    ports:
-      - "4222:4222"
-      - "8222:8222"
-    volumes:
-      - nats_data:/nats-data
-    networks:
-      app_network:
-        aliases:
-          - nats.lvh.me
 
   jaeger:
     container_name: jaeger
@@ -113,10 +74,8 @@ services:
       <<: *x-backend-app-environment
     ports:
       - "8080:8080"
-      - "8081:8081"
     depends_on:
       - db
-      - rabbitmq
       - jaeger
     deploy:
       resources:
@@ -139,7 +98,6 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - rabbitmq
       - app
     networks:
       app_network:
@@ -154,5 +112,3 @@ networks:
 
 volumes:
   db_data:
-  rabbitmq_data:
-  nats_data:
