@@ -19,7 +19,7 @@ x-backend-app-environment: &x-backend-app-environment
   LOG_LEVEL: "debug"
   # PG
   PG_POOL_MAX: "2"
-  PG_URL: "postgres://user:myAwEsOm3pa55@w0rd@db:5432/db"
+  PG_URL: "postgres://user:myAwEsOm3pa55%40w0rd@db:5432/db"
 
   # Metrics
   METRICS_ENABLED: "true"
@@ -30,9 +30,9 @@ x-backend-app-environment: &x-backend-app-environment
   TRACING_OTLP_ENDPOINT: "jaeger:4317"
   TRACING_OTLP_INSECURE: "true"
   TRACING_SAMPLE_RATE: "1.0"  # DON'T set to 1.0 in production, use a lower value like 0.1 or 0.01
-  # JWT
-  JWT_SECRET: "your-secret-key-change-in-production"
-  JWT_TOKEN_EXPIRY: "24h"
+  # Firebase Authentication
+  FIREBASE_PROJECT_ID: "${FIREBASE_PROJECT_ID}"
+  GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/firebase-service-account.json"
 
 
 services:
@@ -72,6 +72,8 @@ services:
       context: .
     environment:
       <<: *x-backend-app-environment
+    volumes:
+      - ./firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
     ports:
       - "8080:8080"
     depends_on:

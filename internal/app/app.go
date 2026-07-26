@@ -18,8 +18,8 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/task"
 	"github.com/evrone/go-clean-template/internal/usecase/translation"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
+	"github.com/evrone/go-clean-template/pkg/firebaseauth"
 	"github.com/evrone/go-clean-template/pkg/httpserver"
-	"github.com/evrone/go-clean-template/pkg/jwt"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/evrone/go-clean-template/pkg/postgres"
 	"github.com/evrone/go-clean-template/pkg/tracing"
@@ -35,22 +35,22 @@ type servers struct {
 	http *httpserver.Server
 }
 
-func initUseCases(pg *postgres.Postgres, jwtManager *jwt.Manager) useCases {
+func initUseCases(pg *postgres.Postgres) useCases {
 	translationRepo := persistTranslationRepo.New(pg)
 	taskRepo := persistTaskRepo.New(pg)
 	userRepo := persistUserRepo.New(pg)
 
 	return useCases{
-		user:        user.New(userRepo, jwtManager),
+		user:        user.New(userRepo),
 		task:        task.New(taskRepo),
 		translation: translation.New(translationRepo, webapi.New()),
 	}
 }
 
-func initServers(cfg *config.Config, uc useCases, jwtManager *jwt.Manager, l logger.Interface) servers {
+func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.translation, uc.user, uc.task, jwtManager, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.translation, uc.user, uc.task, verifier, l)
 
 	return servers{
 		http: httpServer,
@@ -114,11 +114,14 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
-	// JWT
-	jwtManager := jwt.New(cfg.JWT.Secret, cfg.JWT.TokenExpiry)
+	// Firebase Authentication
+	firebaseVerifier, err := firebaseauth.New(ctx, cfg.Firebase.ProjectID, cfg.Firebase.CredentialsFile)
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - firebaseauth.New: %w", err))
+	}
 
-	uc := initUseCases(pg, jwtManager)
-	s := initServers(cfg, uc, jwtManager, l)
+	uc := initUseCases(pg)
+	s := initServers(cfg, uc, firebaseVerifier, l)
 	s.startServers()
 	s.waitForShutdown(l)
 }

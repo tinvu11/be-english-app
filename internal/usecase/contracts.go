@@ -18,6 +18,7 @@ type (
 
 	// User -.
 	User interface {
+		Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error)
 		Register(ctx context.Context, username, email, password string) (entity.User, error)
 		Login(ctx context.Context, email, password string) (string, error)
 		GetUser(ctx context.Context, userID string) (entity.User, error)

@@ -9,7 +9,6 @@ import (
 	"github.com/evrone/go-clean-template/internal/controller/restapi/middleware"
 	v1 "github.com/evrone/go-clean-template/internal/controller/restapi/v1"
 	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/jwt"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
@@ -27,7 +26,7 @@ import (
 //	@securityDefinitions.apikey BearerAuth
 //	@in header
 //	@name Authorization
-func NewRouter(app *fiber.App, cfg *config.Config, t usecase.Translation, u usecase.User, tk usecase.Task, jwtManager *jwt.Manager, l logger.Interface) {
+func NewRouter(app *fiber.App, cfg *config.Config, t usecase.Translation, u usecase.User, tk usecase.Task, verifier middleware.TokenVerifier, l logger.Interface) {
 	// Options
 	app.Use(middleware.Logger(l))
 	app.Use(middleware.Recovery(l))
@@ -54,6 +53,6 @@ func NewRouter(app *fiber.App, cfg *config.Config, t usecase.Translation, u usec
 			apiV1Group.Use(otelfiber.Middleware())
 		}
 
-		v1.NewRoutes(apiV1Group, t, u, tk, jwtManager, l)
+		v1.NewRoutes(apiV1Group, t, u, tk, verifier, l)
 	}
 }

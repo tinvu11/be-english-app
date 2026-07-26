@@ -10,6 +10,10 @@ nginx
 .gitignore
 
 coverage.txt
+.gocache
+.tmp
+*firebase-service-account.json
+firebase-*.json
 
 docker-compose.yml
 

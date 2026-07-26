@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/caarlos0/env/v11"
 )
@@ -10,14 +9,14 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App     app
-		HTTP    http
-		Log     log
-		PG      pg
-		JWT     jwt
-		Metrics metrics
-		Swagger swagger
-		Tracing tracing
+		App      app
+		HTTP     http
+		Log      log
+		PG       pg
+		Firebase firebase
+		Metrics  metrics
+		Swagger  swagger
+		Tracing  tracing
 	}
 
 	// App -.
@@ -43,11 +42,10 @@ type (
 		URL     string `env:"PG_URL,required"`
 	}
 
-
-	// JWT -.
-	jwt struct {
-		Secret      string        `env:"JWT_SECRET,required"`
-		TokenExpiry time.Duration `env:"JWT_TOKEN_EXPIRY" envDefault:"24h"`
+	// Firebase -.
+	firebase struct {
+		ProjectID       string `env:"FIREBASE_PROJECT_ID,required"`
+		CredentialsFile string `env:"GOOGLE_APPLICATION_CREDENTIALS,required"`
 	}
 
 	// Metrics -.

@@ -1,26 +1,47 @@
 package middleware_test
 
 import (
+	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/evrone/go-clean-template/internal/controller/restapi/middleware"
-	"github.com/evrone/go-clean-template/pkg/jwt"
+	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func newTestApp(t *testing.T) (*fiber.App, *jwt.Manager) {
-	t.Helper()
+var errAuthTest = errors.New("auth error")
 
-	jwtManager := jwt.New("test-secret", time.Hour)
+type fakeVerifier struct{}
 
+func (fakeVerifier) Verify(_ context.Context, token string) (entity.AuthIdentity, error) {
+	if token != "valid-firebase-token" {
+		return entity.AuthIdentity{}, errAuthTest
+	}
+
+	return entity.AuthIdentity{UID: "firebase-uid-123", Email: "test@example.com"}, nil
+}
+
+type fakeUsers struct {
+	err error
+}
+
+func (f fakeUsers) Authenticate(_ context.Context, identity entity.AuthIdentity) (entity.User, error) {
+	if f.err != nil {
+		return entity.User{}, f.err
+	}
+
+	return entity.User{ID: "local-user-id", FirebaseUID: identity.UID}, nil
+}
+
+func newTestApp(users fakeUsers) *fiber.App {
 	app := fiber.New()
-	app.Use(middleware.Auth(jwtManager))
+	app.Use(middleware.Auth(fakeVerifier{}, users))
 	app.Get("/test", func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(string)
 		if !ok {
@@ -30,68 +51,58 @@ func newTestApp(t *testing.T) (*fiber.App, *jwt.Manager) {
 		return c.SendString(userID)
 	})
 
-	return app, jwtManager
+	return app
 }
 
 func TestAuthMiddleware(t *testing.T) {
 	t.Parallel()
 
-	app, jwtManager := newTestApp(t)
-
-	validToken, err := jwtManager.GenerateToken("user-id-123")
-	require.NoError(t, err)
-
 	tests := []struct {
 		name           string
 		authHeader     string
+		users          fakeUsers
 		expectedStatus int
 		expectedBody   string
 	}{
+		{name: "missing header", expectedStatus: http.StatusUnauthorized},
+		{name: "invalid format", authHeader: "Basic xxx", expectedStatus: http.StatusUnauthorized},
+		{name: "invalid token", authHeader: "Bearer invalid", expectedStatus: http.StatusUnauthorized},
 		{
-			name:           "missing header",
-			authHeader:     "",
-			expectedStatus: http.StatusUnauthorized,
-		},
-		{
-			name:           "invalid format",
-			authHeader:     "Basic xxx",
-			expectedStatus: http.StatusUnauthorized,
-		},
-		{
-			name:           "invalid token",
-			authHeader:     "Bearer invalid",
-			expectedStatus: http.StatusUnauthorized,
+			name:           "provision failure",
+			authHeader:     "Bearer valid-firebase-token",
+			users:          fakeUsers{err: errAuthTest},
+			expectedStatus: http.StatusInternalServerError,
 		},
 		{
 			name:           "valid token",
-			authHeader:     "Bearer " + validToken,
+			authHeader:     "Bearer valid-firebase-token",
 			expectedStatus: http.StatusOK,
-			expectedBody:   "user-id-123",
+			expectedBody:   "local-user-id",
 		},
 	}
 
 	for _, tc := range tests {
-		localTc := tc
+		tc := tc
 
-		t.Run(localTc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
+			app := newTestApp(tc.users)
 			req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", http.NoBody)
-			if localTc.authHeader != "" {
-				req.Header.Set("Authorization", localTc.authHeader)
+			if tc.authHeader != "" {
+				req.Header.Set("Authorization", tc.authHeader)
 			}
 
 			resp, err := app.Test(req)
 			require.NoError(t, err)
-
 			defer resp.Body.Close()
 
-			assert.Equal(t, localTc.expectedStatus, resp.StatusCode)
+			assert.Equal(t, tc.expectedStatus, resp.StatusCode)
 
-			if localTc.expectedBody != "" {
+			if tc.expectedBody != "" {
 				body, readErr := io.ReadAll(resp.Body)
 				require.NoError(t, readErr)
-				assert.Equal(t, localTc.expectedBody, string(body))
+				assert.Equal(t, tc.expectedBody, string(body))
 			}
 		})
 	}

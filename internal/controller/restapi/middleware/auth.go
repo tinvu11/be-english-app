@@ -1,10 +1,11 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
-	"github.com/evrone/go-clean-template/pkg/jwt"
+	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,8 +15,18 @@ type errorResponse struct {
 	Error string `json:"error"`
 }
 
-// Auth returns a JWT authentication middleware for Fiber.
-func Auth(jwtManager *jwt.Manager) func(*fiber.Ctx) error {
+// TokenVerifier verifies a Firebase ID token.
+type TokenVerifier interface {
+	Verify(ctx context.Context, idToken string) (entity.AuthIdentity, error)
+}
+
+// UserAuthenticator maps a verified Firebase identity to a local user.
+type UserAuthenticator interface {
+	Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error)
+}
+
+// Auth verifies Firebase ID tokens and places the local user ID in Fiber locals.
+func Auth(verifier TokenVerifier, users UserAuthenticator) func(*fiber.Ctx) error {
 	return func(ctx *fiber.Ctx) error {
 		header := ctx.Get("Authorization")
 		if header == "" {
@@ -27,12 +38,18 @@ func Auth(jwtManager *jwt.Manager) func(*fiber.Ctx) error {
 			return ctx.Status(http.StatusUnauthorized).JSON(errorResponse{Error: "invalid authorization header format"})
 		}
 
-		userID, err := jwtManager.ParseToken(parts[1])
+		identity, err := verifier.Verify(ctx.UserContext(), parts[1])
 		if err != nil {
-			return ctx.Status(http.StatusUnauthorized).JSON(errorResponse{Error: "invalid or expired token"})
+			return ctx.Status(http.StatusUnauthorized).JSON(errorResponse{Error: "invalid or expired Firebase ID token"})
 		}
 
-		ctx.Locals("userID", userID)
+		localUser, err := users.Authenticate(ctx.UserContext(), identity)
+		if err != nil {
+			return ctx.Status(http.StatusInternalServerError).JSON(errorResponse{Error: "failed to provision user"})
+		}
+
+		ctx.Locals("userID", localUser.ID)
+		ctx.Locals("firebaseUID", identity.UID)
 
 		return ctx.Next()
 	}

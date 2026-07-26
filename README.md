@@ -47,7 +47,7 @@ This template implements four types of servers:
 
 The template includes three domains to demonstrate multi-service architecture:
 
-- **User Authentication** — registration, login, JWT-based authorization
+- **User Authentication** — Firebase Authentication with email/password, Google, Apple, and ID-token authorization
 - **Task Management** — CRUD operations with status transitions (todo, in_progress, done)
 - **Translation** — text translation with history tracking
 
@@ -68,17 +68,16 @@ The template includes three fully implemented domains, each available across all
 
 ### User Authentication
 
-Registration, login, and JWT-based authorization.
+Authentication is handled by Firebase Authentication on the client. The REST API verifies the Firebase ID token and
+creates a local PostgreSQL user on the first authenticated request.
 
-| Operation   | REST                     | gRPC                     |
-|-------------|--------------------------|--------------------------|
-| Register    | `POST /v1/auth/register` | `AuthService/Register`   |
-| Login       | `POST /v1/auth/login`    | `AuthService/Login`      |
-| Get profile | `GET /v1/user/profile`   | `AuthService/GetProfile` |
+| Operation   | REST                   |
+|-------------|------------------------|
+| Get profile | `GET /v1/user/profile` |
 
-- Passwords hashed with bcrypt
-- JWT tokens with configurable expiry
-- Auth middleware on all transports
+- Email/password, Google, and Apple sign-in are performed with a Firebase client SDK
+- Send the Firebase ID token as `Authorization: Bearer <id-token>`
+- The backend keeps its own user UUID and maps it to the Firebase UID
 
 ### Task Management
 

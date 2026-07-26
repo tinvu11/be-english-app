@@ -23,3 +23,9 @@ bin/
 vendor/
 
 coverage.txt
+.gocache/
+.tmp/
+
+# Firebase credentials
+*firebase-service-account.json
+firebase-*.json

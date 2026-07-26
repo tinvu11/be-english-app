@@ -61,3 +61,12 @@ func (r *tracedRepo) GetByEmail(ctx context.Context, email string) (entity.User,
 
 	return result, err
 }
+
+func (r *tracedRepo) GetByFirebaseUID(ctx context.Context, firebaseUID string) (entity.User, error) {
+	ctx, span := startSpan(ctx, "UserRepo.GetByFirebaseUID", attribute.String("user.firebase_uid", firebaseUID))
+
+	result, err := r.next.GetByFirebaseUID(ctx, firebaseUID)
+	endSpan(span, err)
+
+	return result, err
+}

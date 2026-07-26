@@ -2,156 +2,106 @@ package usecase_test
 
 import (
 	"context"
+	"errors"
 	"testing"
-	"time"
 
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
-	"github.com/evrone/go-clean-template/pkg/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"golang.org/x/crypto/bcrypt"
 )
+
+var errUserRepo = errors.New("repository error")
 
 func newUserUseCase(t *testing.T) (usecase.User, *MockUserRepo) {
 	t.Helper()
 
 	ctrl := gomock.NewController(t)
-
 	repo := NewMockUserRepo(ctrl)
-	jwtManager := jwt.New("test-secret", time.Hour)
-	useCase := user.New(repo, jwtManager)
 
-	return useCase, repo
+	return user.New(repo), repo
 }
 
-func TestRegister(t *testing.T) {
+func TestAuthenticateExistingFirebaseUser(t *testing.T) {
 	t.Parallel()
 
-	t.Run("register success", func(t *testing.T) {
-		t.Parallel()
+	uc, repo := newUserUseCase(t)
+	identity := entity.AuthIdentity{UID: "firebase-123", Email: "test@example.com"}
+	expected := entity.User{ID: "local-123", FirebaseUID: identity.UID, Email: identity.Email}
 
-		uc, repo := newUserUseCase(t)
-		repo.EXPECT().Store(gomock.Any(), gomock.Any()).Return(nil)
+	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(expected, nil)
 
-		u, err := uc.Register(context.Background(), "testuser", "test@example.com", "password123")
+	result, err := uc.Authenticate(context.Background(), identity)
 
-		require.NoError(t, err)
-		assert.NotEmpty(t, u.ID)
-		assert.Equal(t, "testuser", u.Username)
-		assert.Equal(t, "test@example.com", u.Email)
-	})
-
-	t.Run("register duplicate", func(t *testing.T) {
-		t.Parallel()
-
-		uc, repo := newUserUseCase(t)
-		repo.EXPECT().Store(gomock.Any(), gomock.Any()).Return(entity.ErrUserAlreadyExists)
-
-		_, err := uc.Register(context.Background(), "testuser", "test@example.com", "password123")
-
-		require.ErrorIs(t, err, entity.ErrUserAlreadyExists)
-	})
+	require.NoError(t, err)
+	assert.Equal(t, expected, result)
 }
 
-func TestLogin(t *testing.T) {
+func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 	t.Parallel()
 
-	t.Run("login success", func(t *testing.T) {
-		t.Parallel()
+	uc, repo := newUserUseCase(t)
+	identity := entity.AuthIdentity{UID: "firebase-123456789", Email: "john@example.com", Name: "John Doe"}
 
-		uc, repo := newUserUseCase(t)
-		hash, err := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-		require.NoError(t, err)
-
-		storedUser := entity.User{
-			ID: "user-id-123", Username: "testuser",
-			Email: "test@example.com", PasswordHash: string(hash),
-		}
-		repo.EXPECT().GetByEmail(gomock.Any(), "test@example.com").Return(storedUser, nil)
-
-		token, err := uc.Login(context.Background(), "test@example.com", "password123")
-
-		require.NoError(t, err)
-		assert.NotEmpty(t, token)
+	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(entity.User{}, entity.ErrUserNotFound)
+	repo.EXPECT().Store(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, stored *entity.User) error {
+		assert.NotEmpty(t, stored.ID)
+		assert.Equal(t, identity.UID, stored.FirebaseUID)
+		assert.Equal(t, identity.Email, stored.Email)
+		assert.Equal(t, "john-doe-firebase", stored.Username)
+		return nil
 	})
 
-	t.Run("login wrong password", func(t *testing.T) {
-		t.Parallel()
+	result, err := uc.Authenticate(context.Background(), identity)
 
-		uc, repo := newUserUseCase(t)
-		hash, err := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-		require.NoError(t, err)
+	require.NoError(t, err)
+	assert.Equal(t, identity.UID, result.FirebaseUID)
+}
 
-		storedUser := entity.User{
-			ID: "user-id-123", Username: "testuser",
-			Email: "test@example.com", PasswordHash: string(hash),
-		}
-		repo.EXPECT().GetByEmail(gomock.Any(), "test@example.com").Return(storedUser, nil)
+func TestAuthenticateRejectsEmptyUID(t *testing.T) {
+	t.Parallel()
 
-		token, err := uc.Login(context.Background(), "test@example.com", "wrongpassword")
+	uc, _ := newUserUseCase(t)
 
-		require.ErrorIs(t, err, entity.ErrInvalidCredentials)
-		assert.Empty(t, token)
-	})
+	_, err := uc.Authenticate(context.Background(), entity.AuthIdentity{})
 
-	t.Run("login user not found", func(t *testing.T) {
-		t.Parallel()
+	require.Error(t, err)
+}
 
-		uc, repo := newUserUseCase(t)
-		repo.EXPECT().GetByEmail(gomock.Any(), "notfound@example.com").Return(entity.User{}, entity.ErrUserNotFound)
+func TestAuthenticateRepositoryError(t *testing.T) {
+	t.Parallel()
 
-		token, err := uc.Login(context.Background(), "notfound@example.com", "password123")
+	uc, repo := newUserUseCase(t)
+	repo.EXPECT().GetByFirebaseUID(gomock.Any(), "firebase-123").Return(entity.User{}, errUserRepo)
 
-		require.ErrorIs(t, err, entity.ErrInvalidCredentials)
-		assert.Empty(t, token)
-	})
+	_, err := uc.Authenticate(context.Background(), entity.AuthIdentity{UID: "firebase-123"})
+
+	require.ErrorIs(t, err, errUserRepo)
 }
 
 func TestGetUser(t *testing.T) {
 	t.Parallel()
 
-	expectedUser := entity.User{
-		ID:       "user-id-123",
-		Username: "testuser",
-		Email:    "test@example.com",
-	}
+	uc, repo := newUserUseCase(t)
+	expected := entity.User{ID: "local-123", FirebaseUID: "firebase-123"}
+	repo.EXPECT().GetByID(gomock.Any(), expected.ID).Return(expected, nil)
 
-	t.Run("get user success", func(t *testing.T) {
-		t.Parallel()
+	result, err := uc.GetUser(context.Background(), expected.ID)
 
-		uc, repo := newUserUseCase(t)
-		repo.EXPECT().GetByID(gomock.Any(), "user-id-123").Return(expectedUser, nil)
-
-		u, err := uc.GetUser(context.Background(), "user-id-123")
-
-		require.NoError(t, err)
-		assert.Equal(t, expectedUser, u)
-	})
-
-	t.Run("get user not found", func(t *testing.T) {
-		t.Parallel()
-
-		uc, repo := newUserUseCase(t)
-		repo.EXPECT().GetByID(gomock.Any(), "missing-id").Return(entity.User{}, entity.ErrUserNotFound)
-
-		_, err := uc.GetUser(context.Background(), "missing-id")
-
-		require.ErrorIs(t, err, entity.ErrUserNotFound)
-	})
+	require.NoError(t, err)
+	assert.Equal(t, expected, result)
 }
 
-func TestGetUser_GenericError(t *testing.T) {
+func TestLocalAuthenticationDisabled(t *testing.T) {
 	t.Parallel()
 
-	uc, repo := newUserUseCase(t)
+	uc, _ := newUserUseCase(t)
 
-	repo.EXPECT().GetByID(gomock.Any(), "user-id-123").Return(entity.User{}, errInternalServErr)
+	_, registerErr := uc.Register(context.Background(), "name", "email@example.com", "password")
+	_, loginErr := uc.Login(context.Background(), "email@example.com", "password")
 
-	_, err := uc.GetUser(context.Background(), "user-id-123")
-
-	require.Error(t, err)
-	require.ErrorIs(t, err, errInternalServErr)
+	require.ErrorIs(t, registerErr, entity.ErrLocalAuthDisabled)
+	require.ErrorIs(t, loginErr, entity.ErrLocalAuthDisabled)
 }

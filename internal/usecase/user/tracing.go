@@ -37,6 +37,15 @@ func endSpan(span trace.Span, err error) {
 	span.End()
 }
 
+func (u *tracedUseCase) Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error) {
+	ctx, span := startSpan(ctx, "UserUseCase.Authenticate", attribute.String("user.firebase_uid", identity.UID))
+
+	result, err := u.next.Authenticate(ctx, identity)
+	endSpan(span, err)
+
+	return result, err
+}
+
 func (u *tracedUseCase) Register(ctx context.Context, username, email, password string) (entity.User, error) {
 	ctx, span := startSpan(ctx, "UserUseCase.Register", attribute.String("user.email", email))
 
