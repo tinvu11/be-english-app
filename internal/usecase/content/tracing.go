@@ -55,7 +55,8 @@ func (t *tracedUseCase) GetTopic(ctx context.Context, id int64) (entity.Topic, e
 
 // ListTopics implements usecase.Content.
 func (t *tracedUseCase) ListTopics(ctx context.Context, limit, offset int) ([]entity.Topic, int, error) {
-	ctx, span := startSpan(ctx, "ContentUseCase.ListTopics",
+	ctx, span := startSpan(
+		ctx, "ContentUseCase.ListTopics",
 		attribute.Int("content.limit", limit),
 		attribute.Int("content.offset", offset),
 	)
@@ -101,7 +102,8 @@ func (t *tracedUseCase) GetLevel(ctx context.Context, id int64) (entity.Level, e
 
 // ListLevels implements usecase.Content.
 func (t *tracedUseCase) ListLevels(ctx context.Context, limit, offset int) ([]entity.Level, int, error) {
-	ctx, span := startSpan(ctx, "ContentUseCase.ListLevels",
+	ctx, span := startSpan(
+		ctx, "ContentUseCase.ListLevels",
 		attribute.Int("content.limit", limit),
 		attribute.Int("content.offset", offset),
 	)
@@ -147,7 +149,8 @@ func (t *tracedUseCase) GetChannel(ctx context.Context, id int64) (entity.Channe
 
 // ListChannels implements usecase.Content.
 func (t *tracedUseCase) ListChannels(ctx context.Context, limit, offset int) ([]entity.Channel, int, error) {
-	ctx, span := startSpan(ctx, "ContentUseCase.ListChannels",
+	ctx, span := startSpan(
+		ctx, "ContentUseCase.ListChannels",
 		attribute.Int("content.limit", limit),
 		attribute.Int("content.offset", offset),
 	)
@@ -193,7 +196,8 @@ func (t *tracedUseCase) GetVideo(ctx context.Context, id int64) (entity.Video, e
 
 // ListVideos implements usecase.Content.
 func (t *tracedUseCase) ListVideos(ctx context.Context, limit, offset int) ([]entity.Video, int, error) {
-	ctx, span := startSpan(ctx, "ContentUseCase.ListVideos",
+	ctx, span := startSpan(
+		ctx, "ContentUseCase.ListVideos",
 		attribute.Int("content.limit", limit),
 		attribute.Int("content.offset", offset),
 	)

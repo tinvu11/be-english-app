@@ -7,9 +7,8 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
-	"google.golang.org/api/option"
-
 	"github.com/evrone/go-clean-template/internal/entity"
+	"google.golang.org/api/option"
 )
 
 // Verifier verifies Firebase ID tokens.

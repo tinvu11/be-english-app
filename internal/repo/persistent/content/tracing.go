@@ -64,7 +64,8 @@ func (r *tracedRepo) GetTopic(ctx context.Context, id int64) (entity.Topic, erro
 
 // ListTopics implements repo.ContentRepo.
 func (r *tracedRepo) ListTopics(ctx context.Context, f repo.ContentFilter) ([]entity.Topic, int, error) {
-	ctx, span := startSpan(ctx, "ContentRepo.ListTopics",
+	ctx, span := startSpan(
+		ctx, "ContentRepo.ListTopics",
 		attribute.Int64("content.limit", safeUint64ToInt64(f.Limit)),
 		attribute.Int64("content.offset", safeUint64ToInt64(f.Offset)),
 	)
@@ -110,7 +111,8 @@ func (r *tracedRepo) GetLevel(ctx context.Context, id int64) (entity.Level, erro
 
 // ListLevels implements repo.ContentRepo.
 func (r *tracedRepo) ListLevels(ctx context.Context, f repo.ContentFilter) ([]entity.Level, int, error) {
-	ctx, span := startSpan(ctx, "ContentRepo.ListLevels",
+	ctx, span := startSpan(
+		ctx, "ContentRepo.ListLevels",
 		attribute.Int64("content.limit", safeUint64ToInt64(f.Limit)),
 		attribute.Int64("content.offset", safeUint64ToInt64(f.Offset)),
 	)
@@ -156,7 +158,8 @@ func (r *tracedRepo) GetChannel(ctx context.Context, id int64) (entity.Channel, 
 
 // ListChannels implements repo.ContentRepo.
 func (r *tracedRepo) ListChannels(ctx context.Context, f repo.ContentFilter) ([]entity.Channel, int, error) {
-	ctx, span := startSpan(ctx, "ContentRepo.ListChannels",
+	ctx, span := startSpan(
+		ctx, "ContentRepo.ListChannels",
 		attribute.Int64("content.limit", safeUint64ToInt64(f.Limit)),
 		attribute.Int64("content.offset", safeUint64ToInt64(f.Offset)),
 	)
@@ -202,7 +205,8 @@ func (r *tracedRepo) GetVideo(ctx context.Context, id int64) (entity.Video, erro
 
 // ListVideos implements repo.ContentRepo.
 func (r *tracedRepo) ListVideos(ctx context.Context, f repo.ContentFilter) ([]entity.Video, int, error) {
-	ctx, span := startSpan(ctx, "ContentRepo.ListVideos",
+	ctx, span := startSpan(
+		ctx, "ContentRepo.ListVideos",
 		attribute.Int64("content.limit", safeUint64ToInt64(f.Limit)),
 		attribute.Int64("content.offset", safeUint64ToInt64(f.Offset)),
 	)

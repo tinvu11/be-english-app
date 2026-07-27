@@ -4,69 +4,21 @@ You are a Senior Go Backend Engineer working directly in the current repository.
 [REPLACE TASK CONTENT HERE] -->
 
 Task:
-Implement a complete set of CRUD RESTful APIs for the "Topic, Channels, levels, videos" entity based on the following database schema:
+Implement Role-Based Access Control (RBAC) authorization (Database Role Management with PostgreSQL) for the authentication system.
 
--- 1. BẢNG TOPICS (Danh mục chủ đề)
-CREATE TABLE topics (
-    id          BIGSERIAL PRIMARY KEY,
-    name        VARCHAR(255) NOT NULL,
-    slug        VARCHAR(255) NOT NULL UNIQUE,
-    icon        TEXT,                         -- Lưu class icon, emoji hoặc mã SVG
-    description TEXT,
-    sort_order  INT DEFAULT 0,
-    is_active   BOOLEAN DEFAULT TRUE,
-    created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+Context & Requirements:
+1. Database & Domain Layer:
+   - Add a `role` field (string/enum type, default: 'user') to the User entity and update the PostgreSQL `users` table schema/migration accordingly.
+   - Roles should include at least: 'user' and 'admin'.
 
--- 2. BẢNG LEVELS (Trình độ)
-CREATE TABLE levels (
-    id          SERIAL PRIMARY KEY,
-    code        VARCHAR(50) NOT NULL UNIQUE, -- VD: 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'
-    name        VARCHAR(255) NOT NULL,        -- VD: 'Sơ cấp (A1)', 'Trung cấp (B1)'
-    sort_order  INT DEFAULT 0,
-    created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+2. Middleware Layer:
+   - Enhance/Create an `AuthMiddleware` to extract and verify the Firebase ID Token, fetch the corresponding user from PostgreSQL, and attach the user entity (including `role` and `firebase_uid`) to the request context.
+   - Create an `AdminOnlyMiddleware` (or a generic `RequireRole` middleware) that checks if the authenticated user has the 'admin' role. If not, return HTTP 403 Forbidden with a clear JSON error response.
 
--- 3. BẢNG CHANNELS (Kênh YouTube / Nguồn video)
-CREATE TABLE channels (
-    id            BIGSERIAL PRIMARY KEY,
-    channel_id    VARCHAR(255) NOT NULL UNIQUE, -- ID gốc của channel (VD: YouTube Channel ID)
-    channel_name  VARCHAR(255) NOT NULL,
-    thumbnail_url TEXT,
-    created_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+3. Route Protection:
+   - Apply `AuthMiddleware` to general endpoints (e.g., mobile app endpoints like `/tasks`).
+   - Protect all admin-specific routes (e.g., `/admin/*`) with both `AuthMiddleware` and `AdminOnlyMiddleware`.
 
--- 4. BẢNG VIDEOS (Danh sách Video)
-CREATE TABLE videos (
-    id            BIGSERIAL PRIMARY KEY,
-    video_id      VARCHAR(255) NOT NULL UNIQUE, -- ID gốc của video (VD: YouTube Video ID)
-    channel_id    BIGINT NOT NULL REFERENCES channels(id) ON DELETE RESTRICT, -- Khóa ngoại trỏ về Channels
-    title         VARCHAR(255) NOT NULL,
-    description   TEXT,
-    thumbnail_url TEXT,
-    view_count    BIGINT DEFAULT 0,
-    duration      INT DEFAULT 0,                 -- Thời lượng tính bằng Giây (seconds)
-    sort_order    INT DEFAULT 0,
-    is_active     BOOLEAN DEFAULT TRUE,
-    published_at  TIMESTAMPTZ,                  -- Ngày video được xuất bản trên nền tảng
-    created_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
-
--- 5. BẢNG TRUNG GIAN: VIDEO_TOPICS (Nhiều - Nhiều)
-CREATE TABLE video_topics (
-    video_id BIGINT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
-    topic_id BIGINT NOT NULL REFERENCES topics(id) ON DELETE RESTRICT,
-    PRIMARY KEY (video_id, topic_id)
-);
-
--- 6. BẢNG TRUNG GIAN: VIDEO_LEVELS (Nhiều - Nhiều)
-CREATE TABLE video_levels (
-    video_id BIGINT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
-    level_id INT NOT NULL REFERENCES levels(id) ON DELETE RESTRICT,
-    PRIMARY KEY (video_id, level_id)
-);
 
 Your goal is to fully implement the request following the Go and Clean Architecture standards currently used in this repository.
 

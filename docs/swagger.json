@@ -9,6 +9,50 @@
     "host": "localhost:8080",
     "basePath": "/v1",
     "paths": {
+        "/admin/dashboard": {
+            "get": {
+                "description": "Get admin dashboard message",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Admin Dashboard",
+                "operationId": "admin-dashboard",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller_restapi_v1.adminDashboardResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/channels": {
             "get": {
                 "produces": [
@@ -1264,6 +1308,10 @@
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
+                "role": {
+                    "type": "string",
+                    "example": "user"
+                },
                 "updated_at": {
                     "type": "string",
                     "example": "2026-01-01T00:00:00Z"
@@ -1383,6 +1431,15 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "internal_controller_restapi_v1.adminDashboardResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Welcome to the admin dashboard!"
                 }
             }
         },

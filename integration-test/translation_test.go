@@ -5,7 +5,6 @@ import (
 	"context"
 	"net/http"
 	"testing"
-
 )
 
 // HTTP POST: /v1/translation/do-translate.
@@ -124,4 +123,3 @@ func TestHTTPHistoryV1(t *testing.T) {
 		t.Error("Expected non-empty history")
 	}
 }
-

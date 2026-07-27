@@ -28,8 +28,8 @@ func New(pg *postgres.Postgres) repo.UserRepo {
 func (r *Repo) Store(ctx context.Context, user *entity.User) error {
 	sql, args, err := r.Builder.
 		Insert("users").
-		Columns("id, firebase_uid, username, email, created_at, updated_at").
-		Values(user.ID, user.FirebaseUID, user.Username, user.Email, user.CreatedAt, user.UpdatedAt).
+		Columns("id, firebase_uid, username, email, role, created_at, updated_at").
+		Values(user.ID, user.FirebaseUID, user.Username, user.Email, user.Role, user.CreatedAt, user.UpdatedAt).
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("UserRepo - Store - r.Builder: %w", err)
@@ -65,7 +65,7 @@ func (r *Repo) GetByFirebaseUID(ctx context.Context, firebaseUID string) (entity
 
 func (r *Repo) getUser(ctx context.Context, column, value string) (entity.User, error) {
 	sql, args, err := r.Builder.
-		Select("id, COALESCE(firebase_uid, ''), username, email, created_at, updated_at").
+		Select("id, COALESCE(firebase_uid, ''), username, email, role, created_at, updated_at").
 		From("users").
 		Where(sq.Eq{column: value}).
 		ToSql()
@@ -76,7 +76,7 @@ func (r *Repo) getUser(ctx context.Context, column, value string) (entity.User, 
 	var user entity.User
 
 	err = r.Pool.QueryRow(ctx, sql, args...).
-		Scan(&user.ID, &user.FirebaseUID, &user.Username, &user.Email, &user.CreatedAt, &user.UpdatedAt)
+		Scan(&user.ID, &user.FirebaseUID, &user.Username, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.User{}, entity.ErrUserNotFound

@@ -49,6 +49,7 @@ func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentit
 		FirebaseUID: identity.UID,
 		Username:    firebaseUsername(identity),
 		Email:       email,
+		Role:        entity.RoleUser,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}

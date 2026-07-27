@@ -27,4 +27,10 @@ func NewRoutes(apiV1Group fiber.Router, t usecase.Translation, u usecase.User, c
 		translationGroup.Get("/history", r.history)
 		translationGroup.Post("/do-translate", r.doTranslate)
 	}
+
+	// Admin-specific routes
+	adminGroup := apiV1Group.Group("/admin", middleware.Auth(verifier, u), middleware.AdminOnly())
+	{
+		adminGroup.Get("/dashboard", r.adminDashboard)
+	}
 }

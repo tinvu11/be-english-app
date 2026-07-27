@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-
 )
 
 // HTTP POST: /v1/auth/register.
@@ -188,4 +187,3 @@ func TestHTTPProfileV1(t *testing.T) {
 		}
 	})
 }
-

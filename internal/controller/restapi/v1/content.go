@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/evrone/go-clean-template/internal/controller/restapi/middleware"
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/request"
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/response"
 	"github.com/evrone/go-clean-template/internal/entity"
@@ -13,32 +14,40 @@ import (
 
 func registerContentRoutes(router fiber.Router, r *V1) {
 	topics := router.Group("/topics")
-	topics.Post("/", r.createTopic)
 	topics.Get("/", r.listTopics)
 	topics.Get("/:id", r.getTopic)
-	topics.Put("/:id", r.updateTopic)
-	topics.Delete("/:id", r.deleteTopic)
+
+	adminTopics := topics.Group("", middleware.AdminOnly())
+	adminTopics.Post("/", r.createTopic)
+	adminTopics.Put("/:id", r.updateTopic)
+	adminTopics.Delete("/:id", r.deleteTopic)
 
 	levels := router.Group("/levels")
-	levels.Post("/", r.createLevel)
 	levels.Get("/", r.listLevels)
 	levels.Get("/:id", r.getLevel)
-	levels.Put("/:id", r.updateLevel)
-	levels.Delete("/:id", r.deleteLevel)
+
+	adminLevels := levels.Group("", middleware.AdminOnly())
+	adminLevels.Post("/", r.createLevel)
+	adminLevels.Put("/:id", r.updateLevel)
+	adminLevels.Delete("/:id", r.deleteLevel)
 
 	channels := router.Group("/channels")
-	channels.Post("/", r.createChannel)
 	channels.Get("/", r.listChannels)
 	channels.Get("/:id", r.getChannel)
-	channels.Put("/:id", r.updateChannel)
-	channels.Delete("/:id", r.deleteChannel)
+
+	adminChannels := channels.Group("", middleware.AdminOnly())
+	adminChannels.Post("/", r.createChannel)
+	adminChannels.Put("/:id", r.updateChannel)
+	adminChannels.Delete("/:id", r.deleteChannel)
 
 	videos := router.Group("/videos")
-	videos.Post("/", r.createVideo)
 	videos.Get("/", r.listVideos)
 	videos.Get("/:id", r.getVideo)
-	videos.Put("/:id", r.updateVideo)
-	videos.Delete("/:id", r.deleteVideo)
+
+	adminVideos := videos.Group("", middleware.AdminOnly())
+	adminVideos.Post("/", r.createVideo)
+	adminVideos.Put("/:id", r.updateVideo)
+	adminVideos.Delete("/:id", r.deleteVideo)
 }
 
 func active(value *bool) bool {

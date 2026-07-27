@@ -137,8 +137,6 @@ func registerAndLogin(t *testing.T) string {
 	return loginUser(t, email, password)
 }
 
-
-
 // parseJSON is a generic JSON parser for HTTP responses.
 func parseJSON[T any](t *testing.T, resp *http.Response) T {
 	t.Helper()

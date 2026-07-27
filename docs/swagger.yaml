@@ -80,6 +80,9 @@ definitions:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+      role:
+        example: user
+        type: string
       updated_at:
         example: "2026-01-01T00:00:00Z"
         type: string
@@ -159,6 +162,12 @@ definitions:
         type: array
       total:
         type: integer
+    type: object
+  internal_controller_restapi_v1.adminDashboardResponse:
+    properties:
+      message:
+        example: Welcome to the admin dashboard!
+        type: string
     type: object
   v1.ChannelRequest:
     properties:
@@ -278,6 +287,34 @@ info:
   title: Go Clean Template API
   version: "1.0"
 paths:
+  /admin/dashboard:
+    get:
+      description: Get admin dashboard message
+      operationId: admin-dashboard
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_controller_restapi_v1.adminDashboardResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Admin Dashboard
+      tags:
+      - admin
   /channels:
     get:
       produces:

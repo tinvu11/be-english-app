@@ -20,7 +20,7 @@ var errAuthTest = errors.New("auth error")
 type fakeVerifier struct{}
 
 func (fakeVerifier) Verify(_ context.Context, token string) (entity.AuthIdentity, error) {
-	if token != "valid-firebase-token" {
+	if token != "valid-id" { // nosec G101
 		return entity.AuthIdentity{}, errAuthTest
 	}
 
@@ -28,7 +28,8 @@ func (fakeVerifier) Verify(_ context.Context, token string) (entity.AuthIdentity
 }
 
 type fakeUsers struct {
-	err error
+	err  error
+	role string
 }
 
 func (f fakeUsers) Authenticate(_ context.Context, identity entity.AuthIdentity) (entity.User, error) {
@@ -36,12 +37,18 @@ func (f fakeUsers) Authenticate(_ context.Context, identity entity.AuthIdentity)
 		return entity.User{}, f.err
 	}
 
-	return entity.User{ID: "local-user-id", FirebaseUID: identity.UID}, nil
+	role := f.role
+	if role == "" {
+		role = entity.RoleUser
+	}
+
+	return entity.User{ID: "local-user-id", FirebaseUID: identity.UID, Role: role}, nil
 }
 
 func newTestApp(users fakeUsers) *fiber.App {
 	app := fiber.New()
 	app.Use(middleware.Auth(fakeVerifier{}, users))
+
 	app.Get("/test", func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(string)
 		if !ok {
@@ -51,7 +58,35 @@ func newTestApp(users fakeUsers) *fiber.App {
 		return c.SendString(userID)
 	})
 
+	app.Get("/admin", middleware.AdminOnly(), func(c *fiber.Ctx) error {
+		return c.SendString("admin-ok")
+	})
+
 	return app
+}
+
+func runTestRequest(t *testing.T, app *fiber.App, path, authHeader string, expectedStatus int, expectedBody string) {
+	t.Helper()
+
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, http.NoBody)
+
+	if authHeader != "" {
+		req.Header.Set("Authorization", authHeader)
+	}
+
+	resp, err := app.Test(req)
+	require.NoError(t, err)
+
+	defer resp.Body.Close()
+
+	assert.Equal(t, expectedStatus, resp.StatusCode)
+
+	if expectedBody != "" {
+		body, readErr := io.ReadAll(resp.Body)
+		require.NoError(t, readErr)
+
+		assert.Equal(t, expectedBody, string(body))
+	}
 }
 
 func TestAuthMiddleware(t *testing.T) {
@@ -69,41 +104,66 @@ func TestAuthMiddleware(t *testing.T) {
 		{name: "invalid token", authHeader: "Bearer invalid", expectedStatus: http.StatusUnauthorized},
 		{
 			name:           "provision failure",
-			authHeader:     "Bearer valid-firebase-token",
+			authHeader:     "Bearer valid-id",
 			users:          fakeUsers{err: errAuthTest},
 			expectedStatus: http.StatusInternalServerError,
 		},
 		{
 			name:           "valid token",
-			authHeader:     "Bearer valid-firebase-token",
+			authHeader:     "Bearer valid-id",
 			expectedStatus: http.StatusOK,
 			expectedBody:   "local-user-id",
 		},
 	}
 
 	for _, tc := range tests {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
 			app := newTestApp(tc.users)
-			req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", http.NoBody)
-			if tc.authHeader != "" {
-				req.Header.Set("Authorization", tc.authHeader)
-			}
 
-			resp, err := app.Test(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
+			runTestRequest(t, app, "/test", tc.authHeader, tc.expectedStatus, tc.expectedBody)
+		})
+	}
+}
 
-			assert.Equal(t, tc.expectedStatus, resp.StatusCode)
+func TestAdminOnlyMiddleware(t *testing.T) {
+	t.Parallel()
 
-			if tc.expectedBody != "" {
-				body, readErr := io.ReadAll(resp.Body)
-				require.NoError(t, readErr)
-				assert.Equal(t, tc.expectedBody, string(body))
-			}
+	tests := []struct {
+		name           string
+		authHeader     string
+		users          fakeUsers
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name:           "admin user - access granted",
+			authHeader:     "Bearer valid-id",
+			users:          fakeUsers{role: entity.RoleAdmin},
+			expectedStatus: http.StatusOK,
+			expectedBody:   "admin-ok",
+		},
+		{
+			name:           "normal user - access forbidden",
+			authHeader:     "Bearer valid-id",
+			users:          fakeUsers{role: entity.RoleUser},
+			expectedStatus: http.StatusForbidden,
+			expectedBody:   `{"error":"forbidden: access denied"}`,
+		},
+		{
+			name:           "unauthorized - missing token",
+			expectedStatus: http.StatusUnauthorized,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			app := newTestApp(tc.users)
+
+			runTestRequest(t, app, "/admin", tc.authHeader, tc.expectedStatus, tc.expectedBody)
 		})
 	}
 }

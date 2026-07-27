@@ -51,6 +51,7 @@ func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 		assert.Equal(t, identity.UID, stored.FirebaseUID)
 		assert.Equal(t, identity.Email, stored.Email)
 		assert.Equal(t, "john-doe-firebase", stored.Username)
+		assert.Equal(t, entity.RoleUser, stored.Role)
 		return nil
 	})
 
@@ -58,6 +59,7 @@ func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, identity.UID, result.FirebaseUID)
+	assert.Equal(t, entity.RoleUser, result.Role)
 }
 
 func TestAuthenticateRejectsEmptyUID(t *testing.T) {

@@ -25,6 +25,18 @@ type UserAuthenticator interface {
 	Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error)
 }
 
+type contextKey string
+
+const UserKey contextKey = "user"
+
+// GetUser extracts the user entity from context.
+func GetUser(ctx context.Context) (entity.User, bool) {
+	val := ctx.Value(UserKey)
+	user, ok := val.(entity.User)
+
+	return user, ok
+}
+
 // Auth verifies Firebase ID tokens and places the local user ID in Fiber locals.
 func Auth(verifier TokenVerifier, users UserAuthenticator) func(*fiber.Ctx) error {
 	return func(ctx *fiber.Ctx) error {
@@ -48,9 +60,44 @@ func Auth(verifier TokenVerifier, users UserAuthenticator) func(*fiber.Ctx) erro
 			return ctx.Status(http.StatusInternalServerError).JSON(errorResponse{Error: "failed to provision user"})
 		}
 
+		ctx.Locals("user", localUser)
 		ctx.Locals("userID", localUser.ID)
 		ctx.Locals("firebaseUID", identity.UID)
 
+		userCtx := context.WithValue(ctx.UserContext(), UserKey, localUser)
+		ctx.SetUserContext(userCtx)
+
 		return ctx.Next()
 	}
+}
+
+// RequireRole checks if the authenticated user has the specified role.
+func RequireRole(role string) func(*fiber.Ctx) error {
+	return func(ctx *fiber.Ctx) error {
+		userVal := ctx.Locals("user")
+
+		var (
+			localUser entity.User
+			ok        bool
+		)
+
+		if userVal != nil {
+			localUser, ok = userVal.(entity.User)
+		} else {
+			localUser, ok = GetUser(ctx.UserContext())
+		}
+
+		if !ok || localUser.Role != role {
+			errResp := errorResponse{Error: "forbidden: access denied"}
+
+			return ctx.Status(http.StatusForbidden).JSON(errResp)
+		}
+
+		return ctx.Next()
+	}
+}
+
+// AdminOnly checks if the authenticated user has the 'admin' role.
+func AdminOnly() func(*fiber.Ctx) error {
+	return RequireRole("admin")
 }
