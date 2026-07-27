@@ -1,5 +1,33 @@
 basePath: /v1
 definitions:
+  entity.Channel:
+    properties:
+      channel_id:
+        type: string
+      channel_name:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      thumbnail_url:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entity.Level:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      sort_order:
+        type: integer
+    type: object
   entity.Task:
     properties:
       created_at:
@@ -35,6 +63,25 @@ definitions:
     - TaskStatusTodo
     - TaskStatusInProgress
     - TaskStatusDone
+  entity.Topic:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      slug:
+        type: string
+      sort_order:
+        type: integer
+    type: object
   entity.Translation:
     properties:
       destination:
@@ -75,6 +122,93 @@ definitions:
         example: johndoe
         type: string
     type: object
+  entity.Video:
+    properties:
+      channel_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      duration:
+        type: integer
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      level_ids:
+        items:
+          type: integer
+        type: array
+      published_at:
+        type: string
+      sort_order:
+        type: integer
+      thumbnail_url:
+        type: string
+      title:
+        type: string
+      topic_ids:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+      video_id:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Channel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.Channel'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Level:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.Level'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Topic:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.Topic'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Video:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.Video'
+        type: array
+      total:
+        type: integer
+    type: object
+  v1.ChannelRequest:
+    properties:
+      channel_id:
+        maxLength: 255
+        type: string
+      channel_name:
+        maxLength: 255
+        type: string
+      thumbnail_url:
+        type: string
+    required:
+    - channel_id
+    - channel_name
+    type: object
   v1.CreateTask:
     properties:
       description:
@@ -94,6 +228,20 @@ definitions:
         example: message
         type: string
     type: object
+  v1.LevelRequest:
+    properties:
+      code:
+        maxLength: 50
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      sort_order:
+        type: integer
+    required:
+    - code
+    - name
+    type: object
   v1.TaskList:
     properties:
       tasks:
@@ -103,6 +251,26 @@ definitions:
       total:
         example: 42
         type: integer
+    type: object
+  v1.TopicRequest:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        maxLength: 255
+        type: string
+      slug:
+        maxLength: 255
+        type: string
+      sort_order:
+        type: integer
+    required:
+    - name
+    - slug
     type: object
   v1.TransitionTask:
     properties:
@@ -146,6 +314,47 @@ definitions:
     required:
     - title
     type: object
+  v1.VideoRequest:
+    properties:
+      channel_id:
+        type: integer
+      description:
+        type: string
+      duration:
+        minimum: 0
+        type: integer
+      is_active:
+        type: boolean
+      level_ids:
+        items:
+          type: integer
+        type: array
+        uniqueItems: true
+      published_at:
+        type: string
+      sort_order:
+        type: integer
+      thumbnail_url:
+        type: string
+      title:
+        maxLength: 255
+        type: string
+      topic_ids:
+        items:
+          type: integer
+        type: array
+        uniqueItems: true
+      video_id:
+        maxLength: 255
+        type: string
+      view_count:
+        minimum: 0
+        type: integer
+    required:
+    - channel_id
+    - title
+    - video_id
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -154,6 +363,314 @@ info:
   title: Go Clean Template API
   version: "1.0"
 paths:
+  /channels:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Channel'
+      security:
+      - BearerAuth: []
+      summary: List channels
+      tags:
+      - channels
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Channel
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ChannelRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Channel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create channel
+      tags:
+      - channels
+  /channels/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete channel
+      tags:
+      - channels
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Channel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get channel
+      tags:
+      - channels
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Channel
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ChannelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Channel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update channel
+      tags:
+      - channels
+  /levels:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Level'
+      security:
+      - BearerAuth: []
+      summary: List levels
+      tags:
+      - levels
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Level
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.LevelRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Level'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create level
+      tags:
+      - levels
+  /levels/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete level
+      tags:
+      - levels
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Level'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get level
+      tags:
+      - levels
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Level
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.LevelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Level'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update level
+      tags:
+      - levels
   /tasks:
     get:
       description: List tasks for the current user with optional filtering
@@ -400,6 +917,173 @@ paths:
       summary: Transition task status
       tags:
       - tasks
+  /topics:
+    get:
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Topic'
+      security:
+      - BearerAuth: []
+      summary: List topics
+      tags:
+      - topics
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Topic
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.TopicRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Topic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create topic
+      tags:
+      - topics
+  /topics/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete topic
+      tags:
+      - topics
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Topic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get topic
+      tags:
+      - topics
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Topic
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.TopicRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Topic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update topic
+      tags:
+      - topics
   /translation/do-translate:
     post:
       consumes:
@@ -489,6 +1173,156 @@ paths:
       summary: Get profile
       tags:
       - user
+  /videos:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.ContentList-entity_Video'
+      security:
+      - BearerAuth: []
+      summary: List videos
+      tags:
+      - videos
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Video
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.VideoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create video
+      tags:
+      - videos
+  /videos/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete video
+      tags:
+      - videos
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get video
+      tags:
+      - videos
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.VideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update video
+      tags:
+      - videos
 securityDefinitions:
   BearerAuth:
     in: header

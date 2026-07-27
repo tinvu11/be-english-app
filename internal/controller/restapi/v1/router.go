@@ -9,8 +9,8 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, t usecase.Translation, u usecase.User, tk usecase.Task, verifier middleware.TokenVerifier, l logger.Interface) {
-	r := &V1{t: t, u: u, tk: tk, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
+func NewRoutes(apiV1Group fiber.Router, t usecase.Translation, u usecase.User, tk usecase.Task, c usecase.Content, verifier middleware.TokenVerifier, l logger.Interface) {
+	r := &V1{t: t, u: u, tk: tk, c: c, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
 
 	// Protected routes
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
@@ -29,6 +29,8 @@ func NewRoutes(apiV1Group fiber.Router, t usecase.Translation, u usecase.User, t
 		taskGroup.Patch("/:id/status", r.transitionTask)
 		taskGroup.Delete("/:id", r.deleteTask)
 	}
+
+	registerContentRoutes(protected, r)
 
 	translationGroup := protected.Group("/translation")
 	{

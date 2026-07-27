@@ -44,4 +44,34 @@ type (
 		Limit  uint64
 		Offset uint64
 	}
+
+	// ContentFilter -.
+	ContentFilter struct {
+		Limit  uint64
+		Offset uint64
+	}
+
+	// ContentRepo -.
+	ContentRepo interface {
+		CreateTopic(context.Context, *entity.Topic) error
+		GetTopic(context.Context, int64) (entity.Topic, error)
+		ListTopics(context.Context, ContentFilter) ([]entity.Topic, int, error)
+		UpdateTopic(context.Context, *entity.Topic) error
+		DeleteTopic(context.Context, int64) error
+		CreateLevel(context.Context, *entity.Level) error
+		GetLevel(context.Context, int64) (entity.Level, error)
+		ListLevels(context.Context, ContentFilter) ([]entity.Level, int, error)
+		UpdateLevel(context.Context, *entity.Level) error
+		DeleteLevel(context.Context, int64) error
+		CreateChannel(context.Context, *entity.Channel) error
+		GetChannel(context.Context, int64) (entity.Channel, error)
+		ListChannels(context.Context, ContentFilter) ([]entity.Channel, int, error)
+		UpdateChannel(context.Context, *entity.Channel) error
+		DeleteChannel(context.Context, int64) error
+		CreateVideo(context.Context, *entity.Video) error
+		GetVideo(context.Context, int64) (entity.Video, error)
+		ListVideos(context.Context, ContentFilter) ([]entity.Video, int, error)
+		UpdateVideo(context.Context, *entity.Video) error
+		DeleteVideo(context.Context, int64) error
+	}
 )
