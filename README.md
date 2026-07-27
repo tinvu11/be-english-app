@@ -48,10 +48,10 @@ This template implements four types of servers:
 The template includes three domains to demonstrate multi-service architecture:
 
 - **User Authentication** — Firebase Authentication with email/password, Google, Apple, and ID-token authorization
-- **Task Management** — CRUD operations with status transitions (todo, in_progress, done)
+- **Content Catalog** — CRUD operations for topics, levels, channels, and videos
 - **Translation** — text translation with history tracking
 
-All domains are available across all four transports (REST, gRPC, AMQP RPC, NATS RPC).
+The application exposes these domains through the REST API.
 
 ## Content
 
@@ -64,7 +64,7 @@ All domains are available across all four transports (REST, gRPC, AMQP RPC, NATS
 
 ## Domains
 
-The template includes three fully implemented domains, each available across all four transports (REST, gRPC, AMQP RPC, NATS RPC).
+The application includes user authentication, content catalog management, and translation.
 
 ### User Authentication
 
@@ -79,31 +79,28 @@ creates a local PostgreSQL user on the first authenticated request.
 - Send the Firebase ID token as `Authorization: Bearer <id-token>`
 - The backend keeps its own user UUID and maps it to the Firebase UID
 
-### Task Management
+### Content Catalog
 
-CRUD operations with a status state machine.
+CRUD APIs are available for the application's learning content.
 
-| Operation  | REST                         | gRPC                         |
-|------------|------------------------------|------------------------------|
-| Create     | `POST /v1/tasks`             | `TaskService/CreateTask`     |
-| List       | `GET /v1/tasks`              | `TaskService/ListTasks`      |
-| Get        | `GET /v1/tasks/:id`          | `TaskService/GetTask`        |
-| Update     | `PUT /v1/tasks/:id`          | `TaskService/UpdateTask`     |
-| Transition | `PATCH /v1/tasks/:id/status` | `TaskService/TransitionTask` |
-| Delete     | `DELETE /v1/tasks/:id`       | `TaskService/DeleteTask`     |
+| Resource | REST base path |
+|----------|----------------|
+| Topics   | `/v1/topics`   |
+| Levels   | `/v1/levels`   |
+| Channels | `/v1/channels` |
+| Videos   | `/v1/videos`   |
 
-- Status transitions: `todo` → `in_progress` → `done` (and `in_progress` → `todo`)
-- Pagination with `limit`/`offset` and optional status filter
-- Tasks scoped to the authenticated user
+Each resource supports create, list, get, update, and delete operations. Video requests can also assign topic and level
+relationships.
 
 ### Translation
 
 Text translation via external API with history tracking.
 
-| Operation | REST                                | gRPC                                    |
-|-----------|-------------------------------------|-----------------------------------------|
-| Translate | `POST /v1/translation/do-translate` | `TranslationHistoryService/DoTranslate` |
-| History   | `GET /v1/translation/history`       | `TranslationHistoryService/ShowHistory` |
+| Operation | REST                                |
+|-----------|-------------------------------------|
+| Translate | `POST /v1/translation/do-translate` |
+| History   | `GET /v1/translation/history`       |
 
 ## Quick start
 
@@ -145,7 +142,6 @@ Check services:
 - gRPC:
   - URL: `tcp://grpc.lvh.me:8081` | `tcp://127.0.0.1:8081`
   - [v1/auth.proto](docs/proto/v1/auth.proto)
-  - [v1/task.proto](docs/proto/v1/task.proto)
   - [v1/translation.history.proto](docs/proto/v1/translation.history.proto)
 - PostgreSQL:
   - `postgres://user:myAwEsOm3pa55@w0rd@127.0.0.1:5432/db`

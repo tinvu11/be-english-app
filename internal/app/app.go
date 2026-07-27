@@ -11,13 +11,11 @@ import (
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
 	persistContentRepo "github.com/evrone/go-clean-template/internal/repo/persistent/content"
-	persistTaskRepo "github.com/evrone/go-clean-template/internal/repo/persistent/task"
 	persistTranslationRepo "github.com/evrone/go-clean-template/internal/repo/persistent/translation"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
 	"github.com/evrone/go-clean-template/internal/repo/webapi"
 	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/internal/usecase/content"
-	"github.com/evrone/go-clean-template/internal/usecase/task"
 	"github.com/evrone/go-clean-template/internal/usecase/translation"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/evrone/go-clean-template/pkg/firebaseauth"
@@ -30,7 +28,6 @@ import (
 type useCases struct {
 	translation usecase.Translation
 	user        usecase.User
-	task        usecase.Task
 	content     usecase.Content
 }
 
@@ -40,14 +37,12 @@ type servers struct {
 
 func initUseCases(pg *postgres.Postgres) useCases {
 	translationRepo := persistTranslationRepo.New(pg)
-	taskRepo := persistTaskRepo.New(pg)
 	userRepo := persistUserRepo.New(pg)
 	contentRepo := persistContentRepo.New(pg)
 
 	return useCases{
-		user:        user.New(userRepo),
-		task:        task.New(taskRepo),
 		translation: translation.New(translationRepo, webapi.New()),
+		user:        user.New(userRepo),
 		content:     content.New(contentRepo),
 	}
 }
@@ -55,7 +50,7 @@ func initUseCases(pg *postgres.Postgres) useCases {
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.translation, uc.user, uc.task, uc.content, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.translation, uc.user, uc.content, verifier, l)
 
 	return servers{
 		http: httpServer,
