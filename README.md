@@ -45,13 +45,7 @@ This template implements four types of servers:
 - gRPC ([gRPC](https://grpc.io/) framework based on protobuf)
 - REST API ([Fiber](https://github.com/gofiber/fiber) framework)
 
-The template includes three domains to demonstrate multi-service architecture:
-
-- **User Authentication** — Firebase Authentication with email/password, Google, Apple, and ID-token authorization
-- **Content Catalog** — CRUD operations for topics, levels, channels, and videos
-- **Translation** — text translation with history tracking
-
-The application exposes these domains through the REST API.
+The application provides Firebase Authentication and role-based access control through the REST API.
 
 ## Content
 
@@ -64,7 +58,7 @@ The application exposes these domains through the REST API.
 
 ## Domains
 
-The application includes user authentication, content catalog management, and translation.
+The application includes user authentication and role-based access control.
 
 ### User Authentication
 
@@ -78,29 +72,6 @@ creates a local PostgreSQL user on the first authenticated request.
 - Email/password, Google, and Apple sign-in are performed with a Firebase client SDK
 - Send the Firebase ID token as `Authorization: Bearer <id-token>`
 - The backend keeps its own user UUID and maps it to the Firebase UID
-
-### Content Catalog
-
-CRUD APIs are available for the application's learning content.
-
-| Resource | REST base path |
-|----------|----------------|
-| Topics   | `/v1/topics`   |
-| Levels   | `/v1/levels`   |
-| Channels | `/v1/channels` |
-| Videos   | `/v1/videos`   |
-
-Each resource supports create, list, get, update, and delete operations. Video requests can also assign topic and level
-relationships.
-
-### Translation
-
-Text translation via external API with history tracking.
-
-| Operation | REST                                |
-|-----------|-------------------------------------|
-| Translate | `POST /v1/translation/do-translate` |
-| History   | `GET /v1/translation/history`       |
 
 ## Quick start
 

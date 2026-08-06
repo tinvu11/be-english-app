@@ -9,8 +9,8 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, t usecase.Translation, u usecase.User, c usecase.Content, verifier middleware.TokenVerifier, l logger.Interface) {
-	r := &V1{t: t, u: u, c: c, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, verifier middleware.TokenVerifier, l logger.Interface) {
+	r := &V1{u: u, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
 
 	// Protected routes
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
@@ -18,14 +18,6 @@ func NewRoutes(apiV1Group fiber.Router, t usecase.Translation, u usecase.User, c
 	userGroup := protected.Group("/user")
 	{
 		userGroup.Get("/profile", r.profile)
-	}
-
-	registerContentRoutes(protected, r)
-
-	translationGroup := protected.Group("/translation")
-	{
-		translationGroup.Get("/history", r.history)
-		translationGroup.Post("/do-translate", r.doTranslate)
 	}
 
 	// Admin-specific routes

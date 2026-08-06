@@ -16,7 +16,6 @@ tool (
 
 require (
 	firebase.google.com/go/v4 v4.21.0
-	github.com/Conight/go-googletrans v0.3.0
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/ansrivas/fiberprometheus/v2 v2.17.0
 	github.com/caarlos0/env/v11 v11.4.1

@@ -10,13 +10,8 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
-	persistContentRepo "github.com/evrone/go-clean-template/internal/repo/persistent/content"
-	persistTranslationRepo "github.com/evrone/go-clean-template/internal/repo/persistent/translation"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
-	"github.com/evrone/go-clean-template/internal/repo/webapi"
 	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/internal/usecase/content"
-	"github.com/evrone/go-clean-template/internal/usecase/translation"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/evrone/go-clean-template/pkg/firebaseauth"
 	"github.com/evrone/go-clean-template/pkg/httpserver"
@@ -26,9 +21,7 @@ import (
 )
 
 type useCases struct {
-	translation usecase.Translation
-	user        usecase.User
-	content     usecase.Content
+	user usecase.User
 }
 
 type servers struct {
@@ -36,21 +29,17 @@ type servers struct {
 }
 
 func initUseCases(pg *postgres.Postgres) useCases {
-	translationRepo := persistTranslationRepo.New(pg)
 	userRepo := persistUserRepo.New(pg)
-	contentRepo := persistContentRepo.New(pg)
 
 	return useCases{
-		translation: translation.New(translationRepo, webapi.New()),
-		user:        user.New(userRepo),
-		content:     content.New(contentRepo),
+		user: user.New(userRepo),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.translation, uc.user, uc.content, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, verifier, l)
 
 	return servers{
 		http: httpServer,
