@@ -21,7 +21,23 @@ definitions:
         example: johndoe
         type: string
     type: object
-  internal_controller_restapi_v1.adminDashboardResponse:
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login:
+    properties:
+      idToken:
+        example: firebase-id-token
+        type: string
+    required:
+    - idToken
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login:
+    properties:
+      authenticated:
+        example: true
+        type: boolean
+      user:
+        $ref: '#/definitions/entity.User'
+    type: object
+  internal_controller_restapi_v1_admin.dashboardResponse:
     properties:
       message:
         example: Welcome to the admin dashboard!
@@ -40,17 +56,31 @@ info:
   title: Go Clean Template API
   version: "1.0"
 paths:
-  /admin/dashboard:
-    get:
-      description: Get admin dashboard message
-      operationId: admin-dashboard
+  /admin/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Verify a Firebase ID token and require the local user to have the
+        admin role
+      operationId: admin-login
+      parameters:
+      - description: Firebase credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1.adminDashboardResponse'
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
         "401":
           description: Unauthorized
           schema:
@@ -63,9 +93,63 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.Error'
+      summary: Admin login
+      tags:
+      - admin
+  /admin/dashboard:
+    get:
+      description: Get the administrator dashboard message
+      operationId: admin-dashboard
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.dashboardResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
       security:
       - BearerAuth: []
-      summary: Admin Dashboard
+      summary: Admin dashboard
+      tags:
+      - admin
+  /admin/me:
+    get:
+      description: Return the authenticated administrator profile
+      operationId: admin-me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get current admin
       tags:
       - admin
   /user/profile:

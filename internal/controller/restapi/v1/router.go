@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/evrone/go-clean-template/internal/controller/restapi/middleware"
+	admincontroller "github.com/evrone/go-clean-template/internal/controller/restapi/v1/admin"
 	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/go-playground/validator/v10"
@@ -20,9 +21,5 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, verifier middleware.Toke
 		userGroup.Get("/profile", r.profile)
 	}
 
-	// Admin-specific routes
-	adminGroup := apiV1Group.Group("/admin", middleware.Auth(verifier, u), middleware.AdminOnly())
-	{
-		adminGroup.Get("/dashboard", r.adminDashboard)
-	}
+	admincontroller.NewRoutes(apiV1Group, u, verifier, l)
 }

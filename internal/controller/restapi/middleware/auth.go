@@ -99,5 +99,5 @@ func RequireRole(role string) func(*fiber.Ctx) error {
 
 // AdminOnly checks if the authenticated user has the 'admin' role.
 func AdminOnly() func(*fiber.Ctx) error {
-	return RequireRole("admin")
+	return RequireRole(entity.RoleAdmin)
 }
