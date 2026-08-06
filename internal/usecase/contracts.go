@@ -24,4 +24,12 @@ type (
 		CreateLanguage(ctx context.Context, code, name string) (entity.Language, error)
 		UpdateLanguage(ctx context.Context, id int, name string, isActive bool) (entity.Language, error)
 	}
+
+	// Level manages language-specific proficiency levels and translations.
+	Level interface {
+		ListLevels(ctx context.Context, languageID *int) ([]entity.Level, error)
+		CreateLevel(ctx context.Context, level entity.Level) (entity.Level, error)
+		UpdateLevel(ctx context.Context, id int, level entity.Level) (entity.Level, error)
+		DeleteLevel(ctx context.Context, id int) error
+	}
 )

@@ -166,3 +166,84 @@ func (mr *MockLanguageRepoMockRecorder) UpdateLanguage(ctx, language any) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLanguage", reflect.TypeOf((*MockLanguageRepo)(nil).UpdateLanguage), ctx, language)
 }
+
+// MockLevelRepo is a mock of LevelRepo interface.
+type MockLevelRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockLevelRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockLevelRepoMockRecorder is the mock recorder for MockLevelRepo.
+type MockLevelRepoMockRecorder struct {
+	mock *MockLevelRepo
+}
+
+// NewMockLevelRepo creates a new mock instance.
+func NewMockLevelRepo(ctrl *gomock.Controller) *MockLevelRepo {
+	mock := &MockLevelRepo{ctrl: ctrl}
+	mock.recorder = &MockLevelRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLevelRepo) EXPECT() *MockLevelRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateLevel mocks base method.
+func (m *MockLevelRepo) CreateLevel(ctx context.Context, level *entity.Level) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLevel", ctx, level)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateLevel indicates an expected call of CreateLevel.
+func (mr *MockLevelRepoMockRecorder) CreateLevel(ctx, level any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLevel", reflect.TypeOf((*MockLevelRepo)(nil).CreateLevel), ctx, level)
+}
+
+// DeleteLevel mocks base method.
+func (m *MockLevelRepo) DeleteLevel(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLevel", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLevel indicates an expected call of DeleteLevel.
+func (mr *MockLevelRepoMockRecorder) DeleteLevel(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLevel", reflect.TypeOf((*MockLevelRepo)(nil).DeleteLevel), ctx, id)
+}
+
+// ListLevels mocks base method.
+func (m *MockLevelRepo) ListLevels(ctx context.Context, languageID *int) ([]entity.Level, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLevels", ctx, languageID)
+	ret0, _ := ret[0].([]entity.Level)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListLevels indicates an expected call of ListLevels.
+func (mr *MockLevelRepoMockRecorder) ListLevels(ctx, languageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLevels", reflect.TypeOf((*MockLevelRepo)(nil).ListLevels), ctx, languageID)
+}
+
+// UpdateLevel mocks base method.
+func (m *MockLevelRepo) UpdateLevel(ctx context.Context, level *entity.Level) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLevel", ctx, level)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateLevel indicates an expected call of UpdateLevel.
+func (mr *MockLevelRepoMockRecorder) UpdateLevel(ctx, level any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLevel", reflect.TypeOf((*MockLevelRepo)(nil).UpdateLevel), ctx, level)
+}

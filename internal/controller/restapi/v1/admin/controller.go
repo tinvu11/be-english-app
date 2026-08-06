@@ -11,15 +11,17 @@ import (
 type controller struct {
 	users     usecase.User
 	languages usecase.Language
+	levels    usecase.Level
 	verifier  middleware.TokenVerifier
 	log       logger.Interface
 	validate  *validator.Validate
 }
 
-func newController(users usecase.User, languages usecase.Language, verifier middleware.TokenVerifier, log logger.Interface) *controller {
+func newController(users usecase.User, languages usecase.Language, levels usecase.Level, verifier middleware.TokenVerifier, log logger.Interface) *controller {
 	return &controller{
 		users:     users,
 		languages: languages,
+		levels:    levels,
 		verifier:  verifier,
 		log:       log,
 		validate:  validator.New(validator.WithRequiredStructEnabled()),

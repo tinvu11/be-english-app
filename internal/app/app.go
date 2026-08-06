@@ -11,9 +11,11 @@ import (
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
+	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
 	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
+	"github.com/evrone/go-clean-template/internal/usecase/level"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/evrone/go-clean-template/pkg/firebaseauth"
 	"github.com/evrone/go-clean-template/pkg/httpserver"
@@ -25,6 +27,7 @@ import (
 type useCases struct {
 	user     usecase.User
 	language usecase.Language
+	level    usecase.Level
 }
 
 type servers struct {
@@ -34,17 +37,19 @@ type servers struct {
 func initUseCases(pg *postgres.Postgres) useCases {
 	userRepo := persistUserRepo.New(pg)
 	languageRepo := persistLanguageRepo.New(pg)
+	levelRepo := persistLevelRepo.New(pg)
 
 	return useCases{
 		user:     user.New(userRepo),
 		language: language.New(languageRepo),
+		level:    level.New(levelRepo),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, verifier, l)
 
 	return servers{
 		http: httpServer,

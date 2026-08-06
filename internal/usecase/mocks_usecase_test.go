@@ -169,3 +169,86 @@ func (mr *MockLanguageMockRecorder) UpdateLanguage(ctx, id, name, isActive any) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLanguage", reflect.TypeOf((*MockLanguage)(nil).UpdateLanguage), ctx, id, name, isActive)
 }
+
+// MockLevel is a mock of Level interface.
+type MockLevel struct {
+	ctrl     *gomock.Controller
+	recorder *MockLevelMockRecorder
+	isgomock struct{}
+}
+
+// MockLevelMockRecorder is the mock recorder for MockLevel.
+type MockLevelMockRecorder struct {
+	mock *MockLevel
+}
+
+// NewMockLevel creates a new mock instance.
+func NewMockLevel(ctrl *gomock.Controller) *MockLevel {
+	mock := &MockLevel{ctrl: ctrl}
+	mock.recorder = &MockLevelMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLevel) EXPECT() *MockLevelMockRecorder {
+	return m.recorder
+}
+
+// CreateLevel mocks base method.
+func (m *MockLevel) CreateLevel(ctx context.Context, level entity.Level) (entity.Level, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLevel", ctx, level)
+	ret0, _ := ret[0].(entity.Level)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateLevel indicates an expected call of CreateLevel.
+func (mr *MockLevelMockRecorder) CreateLevel(ctx, level any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLevel", reflect.TypeOf((*MockLevel)(nil).CreateLevel), ctx, level)
+}
+
+// DeleteLevel mocks base method.
+func (m *MockLevel) DeleteLevel(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLevel", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLevel indicates an expected call of DeleteLevel.
+func (mr *MockLevelMockRecorder) DeleteLevel(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLevel", reflect.TypeOf((*MockLevel)(nil).DeleteLevel), ctx, id)
+}
+
+// ListLevels mocks base method.
+func (m *MockLevel) ListLevels(ctx context.Context, languageID *int) ([]entity.Level, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLevels", ctx, languageID)
+	ret0, _ := ret[0].([]entity.Level)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListLevels indicates an expected call of ListLevels.
+func (mr *MockLevelMockRecorder) ListLevels(ctx, languageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLevels", reflect.TypeOf((*MockLevel)(nil).ListLevels), ctx, languageID)
+}
+
+// UpdateLevel mocks base method.
+func (m *MockLevel) UpdateLevel(ctx context.Context, id int, level entity.Level) (entity.Level, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLevel", ctx, id, level)
+	ret0, _ := ret[0].(entity.Level)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLevel indicates an expected call of UpdateLevel.
+func (mr *MockLevelMockRecorder) UpdateLevel(ctx, id, level any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLevel", reflect.TypeOf((*MockLevel)(nil).UpdateLevel), ctx, id, level)
+}

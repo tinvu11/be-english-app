@@ -75,9 +75,29 @@ func (languagesStub) UpdateLanguage(_ context.Context, id int, name string, isAc
 	return entity.Language{ID: id, Code: "en", Name: name, IsActive: isActive}, nil
 }
 
+type levelsStub struct{}
+
+func (levelsStub) ListLevels(context.Context, *int) ([]entity.Level, error) {
+	return []entity.Level{{ID: 1, Code: "A1", LanguageID: 1}}, nil
+}
+
+func (levelsStub) CreateLevel(_ context.Context, level entity.Level) (entity.Level, error) {
+	level.ID = 1
+
+	return level, nil
+}
+
+func (levelsStub) UpdateLevel(_ context.Context, id int, level entity.Level) (entity.Level, error) {
+	level.ID = id
+
+	return level, nil
+}
+
+func (levelsStub) DeleteLevel(context.Context, int) error { return nil }
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }
@@ -163,6 +183,36 @@ func TestAdminLanguages(t *testing.T) {
 		{name: "create", method: http.MethodPost, path: "/v1/admin/languages", body: `{"code":"vi","name":"Vietnamese"}`, status: http.StatusCreated},
 		{name: "update", method: http.MethodPut, path: "/v1/admin/languages/1", body: `{"name":"English","isActive":false}`, status: http.StatusOK},
 		{name: "invalid id", method: http.MethodPut, path: "/v1/admin/languages/invalid", body: `{"name":"English","isActive":true}`, status: http.StatusBadRequest},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			resp := performAdminRequest(t, adminTestApp(entity.RoleAdmin), test.method, test.path, "valid-admin-token", []byte(test.body))
+			defer resp.Body.Close()
+
+			assert.Equal(t, test.status, resp.StatusCode)
+		})
+	}
+}
+
+func TestAdminLevels(t *testing.T) {
+	t.Parallel()
+
+	validBody := `{"code":"A1","languageId":1,"translations":[{"languageId":1,"name":"Beginner"}]}`
+	tests := []struct {
+		name   string
+		method string
+		path   string
+		body   string
+		status int
+	}{
+		{name: "list", method: http.MethodGet, path: "/v1/admin/levels?language_id=1", status: http.StatusOK},
+		{name: "invalid filter", method: http.MethodGet, path: "/v1/admin/levels?language_id=x", status: http.StatusBadRequest},
+		{name: "create", method: http.MethodPost, path: "/v1/admin/levels", body: validBody, status: http.StatusCreated},
+		{name: "update", method: http.MethodPut, path: "/v1/admin/levels/1", body: validBody, status: http.StatusOK},
+		{name: "delete", method: http.MethodDelete, path: "/v1/admin/levels/1", status: http.StatusNoContent},
 	}
 
 	for _, test := range tests {

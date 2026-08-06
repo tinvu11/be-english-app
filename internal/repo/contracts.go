@@ -24,4 +24,12 @@ type (
 		CreateLanguage(ctx context.Context, language *entity.Language) error
 		UpdateLanguage(ctx context.Context, language *entity.Language) error
 	}
+
+	// LevelRepo persists levels and their translations.
+	LevelRepo interface {
+		ListLevels(ctx context.Context, languageID *int) ([]entity.Level, error)
+		CreateLevel(ctx context.Context, level *entity.Level) error
+		UpdateLevel(ctx context.Context, level *entity.Level) error
+		DeleteLevel(ctx context.Context, id int) error
+	}
 )

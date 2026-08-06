@@ -18,6 +18,34 @@ definitions:
         example: English
         type: string
     type: object
+  entity.Level:
+    properties:
+      code:
+        example: A1
+        type: string
+      createdAt:
+        example: "2026-08-06T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      languageId:
+        example: 1
+        type: integer
+      translations:
+        items:
+          $ref: '#/definitions/entity.LevelTranslation'
+        type: array
+    type: object
+  entity.LevelTranslation:
+    properties:
+      languageId:
+        example: 1
+        type: integer
+      name:
+        example: Beginner
+        type: string
+    type: object
   entity.User:
     properties:
       created_at:
@@ -53,6 +81,19 @@ definitions:
     - code
     - name
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation:
+    properties:
+      languageId:
+        example: 1
+        type: integer
+      name:
+        example: Beginner
+        maxLength: 100
+        type: string
+    required:
+    - languageId
+    - name
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login:
     properties:
       idToken:
@@ -60,6 +101,25 @@ definitions:
         type: string
     required:
     - idToken
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel:
+    properties:
+      code:
+        example: A1
+        maxLength: 20
+        type: string
+      languageId:
+        example: 1
+        type: integer
+      translations:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation'
+        minItems: 1
+        type: array
+    required:
+    - code
+    - languageId
+    - translations
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage:
     properties:
@@ -289,6 +349,184 @@ paths:
       summary: Update language
       tags:
       - admin-languages
+  /admin/levels:
+    get:
+      description: Return levels, optionally filtered by their source language
+      operationId: admin-list-levels
+      parameters:
+      - description: Source language ID
+        in: query
+        name: language_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Level'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: List levels
+      tags:
+      - admin-levels
+    post:
+      consumes:
+      - application/json
+      description: Create a level with its multilingual translations
+      operationId: admin-create-level
+      parameters:
+      - description: Level and translations
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Level'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create level
+      tags:
+      - admin-levels
+  /admin/levels/{id}:
+    delete:
+      description: Delete a level only when no video references it
+      operationId: admin-delete-level
+      parameters:
+      - description: Level ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete level
+      tags:
+      - admin-levels
+    put:
+      consumes:
+      - application/json
+      description: Replace a level and its multilingual translations
+      operationId: admin-update-level
+      parameters:
+      - description: Level ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Level and translations
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Level'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update level
+      tags:
+      - admin-levels
   /admin/me:
     get:
       description: Return the authenticated administrator profile

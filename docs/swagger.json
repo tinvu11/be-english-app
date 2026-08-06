@@ -298,6 +298,281 @@
                 ]
             }
         },
+        "/admin/levels": {
+            "get": {
+                "description": "Return levels, optionally filtered by their source language",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-levels"
+                ],
+                "summary": "List levels",
+                "operationId": "admin-list-levels",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Source language ID",
+                        "name": "language_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Level"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Create a level with its multilingual translations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-levels"
+                ],
+                "summary": "Create level",
+                "operationId": "admin-create-level",
+                "parameters": [
+                    {
+                        "description": "Level and translations",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Level"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/levels/{id}": {
+            "put": {
+                "description": "Replace a level and its multilingual translations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-levels"
+                ],
+                "summary": "Update level",
+                "operationId": "admin-update-level",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Level ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Level and translations",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Level"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Delete a level only when no video references it",
+                "tags": [
+                    "admin-levels"
+                ],
+                "summary": "Delete level",
+                "operationId": "admin-delete-level",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Level ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/me": {
             "get": {
                 "description": "Return the authenticated administrator profile",
@@ -419,6 +694,46 @@
                 }
             }
         },
+        "entity.Level": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "A1"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2026-08-06T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "languageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "translations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.LevelTranslation"
+                    }
+                }
+            }
+        },
+        "entity.LevelTranslation": {
+            "type": "object",
+            "properties": {
+                "languageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Beginner"
+                }
+            }
+        },
         "entity.User": {
             "type": "object",
             "properties": {
@@ -467,6 +782,24 @@
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation": {
+            "type": "object",
+            "required": [
+                "languageId",
+                "name"
+            ],
+            "properties": {
+                "languageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "Beginner"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login": {
             "type": "object",
             "required": [
@@ -476,6 +809,32 @@
                 "idToken": {
                     "type": "string",
                     "example": "firebase-id-token"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel": {
+            "type": "object",
+            "required": [
+                "code",
+                "languageId",
+                "translations"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "A1"
+                },
+                "languageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "translations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation"
+                    }
                 }
             }
         },
