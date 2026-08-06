@@ -247,3 +247,99 @@ func (mr *MockLevelRepoMockRecorder) UpdateLevel(ctx, level any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLevel", reflect.TypeOf((*MockLevelRepo)(nil).UpdateLevel), ctx, level)
 }
+
+// MockTopicRepo is a mock of TopicRepo interface.
+type MockTopicRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockTopicRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockTopicRepoMockRecorder is the mock recorder for MockTopicRepo.
+type MockTopicRepoMockRecorder struct {
+	mock *MockTopicRepo
+}
+
+// NewMockTopicRepo creates a new mock instance.
+func NewMockTopicRepo(ctrl *gomock.Controller) *MockTopicRepo {
+	mock := &MockTopicRepo{ctrl: ctrl}
+	mock.recorder = &MockTopicRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTopicRepo) EXPECT() *MockTopicRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateTopic mocks base method.
+func (m *MockTopicRepo) CreateTopic(ctx context.Context, topic *entity.Topic) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTopic", ctx, topic)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateTopic indicates an expected call of CreateTopic.
+func (mr *MockTopicRepoMockRecorder) CreateTopic(ctx, topic any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTopic", reflect.TypeOf((*MockTopicRepo)(nil).CreateTopic), ctx, topic)
+}
+
+// DeleteTopic mocks base method.
+func (m *MockTopicRepo) DeleteTopic(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTopic", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTopic indicates an expected call of DeleteTopic.
+func (mr *MockTopicRepoMockRecorder) DeleteTopic(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTopic", reflect.TypeOf((*MockTopicRepo)(nil).DeleteTopic), ctx, id)
+}
+
+// ListTopics mocks base method.
+func (m *MockTopicRepo) ListTopics(ctx context.Context) ([]entity.Topic, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListTopics", ctx)
+	ret0, _ := ret[0].([]entity.Topic)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListTopics indicates an expected call of ListTopics.
+func (mr *MockTopicRepoMockRecorder) ListTopics(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTopics", reflect.TypeOf((*MockTopicRepo)(nil).ListTopics), ctx)
+}
+
+// SetTopicActive mocks base method.
+func (m *MockTopicRepo) SetTopicActive(ctx context.Context, id int, isActive bool) (entity.Topic, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetTopicActive", ctx, id, isActive)
+	ret0, _ := ret[0].(entity.Topic)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SetTopicActive indicates an expected call of SetTopicActive.
+func (mr *MockTopicRepoMockRecorder) SetTopicActive(ctx, id, isActive any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTopicActive", reflect.TypeOf((*MockTopicRepo)(nil).SetTopicActive), ctx, id, isActive)
+}
+
+// UpdateTopic mocks base method.
+func (m *MockTopicRepo) UpdateTopic(ctx context.Context, topic *entity.Topic) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTopic", ctx, topic)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTopic indicates an expected call of UpdateTopic.
+func (mr *MockTopicRepoMockRecorder) UpdateTopic(ctx, topic any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTopic", reflect.TypeOf((*MockTopicRepo)(nil).UpdateTopic), ctx, topic)
+}

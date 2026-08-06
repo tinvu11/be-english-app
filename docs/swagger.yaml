@@ -46,6 +46,37 @@ definitions:
         example: Beginner
         type: string
     type: object
+  entity.Topic:
+    properties:
+      createdAt:
+        example: "2026-08-06T00:00:00Z"
+        type: string
+      iconUrl:
+        example: https://example.com/travel.svg
+        type: string
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: true
+        type: boolean
+      slug:
+        example: travel
+        type: string
+      translations:
+        items:
+          $ref: '#/definitions/entity.TopicTranslation'
+        type: array
+    type: object
+  entity.TopicTranslation:
+    properties:
+      languageId:
+        example: 1
+        type: integer
+      name:
+        example: Travel
+        type: string
+    type: object
   entity.User:
     properties:
       created_at:
@@ -120,6 +151,49 @@ definitions:
     - code
     - languageId
     - translations
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic:
+    properties:
+      iconUrl:
+        example: https://example.com/travel.svg
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      slug:
+        example: travel
+        maxLength: 100
+        type: string
+      translations:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation'
+        minItems: 1
+        type: array
+    required:
+    - isActive
+    - slug
+    - translations
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus:
+    properties:
+      isActive:
+        example: true
+        type: boolean
+    required:
+    - isActive
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation:
+    properties:
+      languageId:
+        example: 1
+        type: integer
+      name:
+        example: Travel
+        maxLength: 100
+        type: string
+    required:
+    - languageId
+    - name
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage:
     properties:
@@ -559,6 +633,217 @@ paths:
       summary: Get current admin
       tags:
       - admin
+  /admin/topics:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Topic'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: List topics
+      tags:
+      - admin-topics
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Topic
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Topic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create topic with translations
+      tags:
+      - admin-topics
+  /admin/topics/{id}:
+    delete:
+      description: Delete a topic and its translations only when no video references
+        it
+      parameters:
+      - description: Topic ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete topic
+      tags:
+      - admin-topics
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Topic ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Topic
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Topic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update topic and translations
+      tags:
+      - admin-topics
+  /admin/topics/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Topic ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Visibility
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Topic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Enable or disable topic visibility
+      tags:
+      - admin-topics
   /user/profile:
     get:
       description: Get current user profile

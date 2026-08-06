@@ -15,4 +15,8 @@ var (
 	ErrLevelReferenced    = errors.New("level is referenced by videos")
 	ErrInvalidLevel       = errors.New("invalid level")
 	ErrInvalidReference   = errors.New("invalid reference")
+	ErrTopicNotFound      = errors.New("topic not found")
+	ErrTopicExists        = errors.New("topic slug already exists")
+	ErrTopicReferenced    = errors.New("topic is referenced by videos")
+	ErrInvalidTopic       = errors.New("invalid topic")
 )

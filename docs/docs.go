@@ -629,6 +629,335 @@ const docTemplate = `{
                 ]
             }
         },
+        "/admin/topics": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-topics"
+                ],
+                "summary": "List topics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Topic"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-topics"
+                ],
+                "summary": "Create topic with translations",
+                "parameters": [
+                    {
+                        "description": "Topic",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Topic"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/topics/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-topics"
+                ],
+                "summary": "Update topic and translations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Topic",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Topic"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Delete a topic and its translations only when no video references it",
+                "tags": [
+                    "admin-topics"
+                ],
+                "summary": "Delete topic",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/topics/{id}/status": {
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-topics"
+                ],
+                "summary": "Enable or disable topic visibility",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Visibility",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Topic"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/profile": {
             "get": {
                 "description": "Get current user profile",
@@ -740,6 +1069,50 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.Topic": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string",
+                    "example": "2026-08-06T00:00:00Z"
+                },
+                "iconUrl": {
+                    "type": "string",
+                    "example": "https://example.com/travel.svg"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slug": {
+                    "type": "string",
+                    "example": "travel"
+                },
+                "translations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.TopicTranslation"
+                    }
+                }
+            }
+        },
+        "entity.TopicTranslation": {
+            "type": "object",
+            "properties": {
+                "languageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Travel"
+                }
+            }
+        },
         "entity.User": {
             "type": "object",
             "properties": {
@@ -841,6 +1214,66 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation"
                     }
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic": {
+            "type": "object",
+            "required": [
+                "isActive",
+                "slug",
+                "translations"
+            ],
+            "properties": {
+                "iconUrl": {
+                    "type": "string",
+                    "example": "https://example.com/travel.svg"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "travel"
+                },
+                "translations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation"
+                    }
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus": {
+            "type": "object",
+            "required": [
+                "isActive"
+            ],
+            "properties": {
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation": {
+            "type": "object",
+            "required": [
+                "languageId",
+                "name"
+            ],
+            "properties": {
+                "languageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "Travel"
                 }
             }
         },

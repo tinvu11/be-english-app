@@ -32,4 +32,13 @@ type (
 		UpdateLevel(ctx context.Context, id int, level entity.Level) (entity.Level, error)
 		DeleteLevel(ctx context.Context, id int) error
 	}
+
+	// Topic manages topics and their localized names.
+	Topic interface {
+		ListTopics(ctx context.Context) ([]entity.Topic, error)
+		CreateTopic(ctx context.Context, topic entity.Topic) (entity.Topic, error)
+		UpdateTopic(ctx context.Context, id int, topic entity.Topic) (entity.Topic, error)
+		SetTopicActive(ctx context.Context, id int, isActive bool) (entity.Topic, error)
+		DeleteTopic(ctx context.Context, id int) error
+	}
 )

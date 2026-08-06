@@ -187,6 +187,11 @@ Các API hiện tại:
 | `POST` | `/v1/admin/levels` | Chỉ admin |
 | `PUT` | `/v1/admin/levels/:id` | Chỉ admin |
 | `DELETE` | `/v1/admin/levels/:id` | Chỉ admin |
+| `GET` | `/v1/admin/topics` | Chỉ admin |
+| `POST` | `/v1/admin/topics` | Chỉ admin |
+| `PUT` | `/v1/admin/topics/:id` | Chỉ admin |
+| `PATCH` | `/v1/admin/topics/:id/status` | Chỉ admin |
+| `DELETE` | `/v1/admin/topics/:id` | Chỉ admin |
 
 Route user sử dụng middleware `Auth`. Admin login tự xác minh Firebase ID token từ request body; `/admin/me` và dashboard sử dụng lần lượt `Auth` và `AdminOnly`.
 
@@ -199,6 +204,7 @@ Module controller dành riêng cho quản trị viên:
 - `dashboard.go`: dashboard endpoint.
 - `languages.go`: quản lý danh mục ngôn ngữ.
 - `levels.go`: quản lý cấp độ và các bản dịch đa ngôn ngữ.
+- `topics.go`: quản lý chủ đề, bản dịch và trạng thái hiển thị.
 - `controller.go`: dependencies của module.
 - `request/` và `response/`: DTO riêng của admin.
 
@@ -360,6 +366,7 @@ Kết nối được quản lý trong `pkg/postgres/` bằng pgx pool.
 | `20260725000001_add_firebase_auth` | Thêm `firebase_uid`, cho phép password null |
 | `20260727000002_add_role_to_users` | Thêm role `user/admin` |
 | `20260806000001_create_learning_schema` | Tạo schema ngôn ngữ, nội dung học, caption và tiến độ |
+| `20260806000002_restrict_topic_deletion` | Không cho xóa topic đang liên kết với video |
 
 Schema ứng dụng hiện có các bảng nghiệp vụ:
 

@@ -95,9 +95,25 @@ func (levelsStub) UpdateLevel(_ context.Context, id int, level entity.Level) (en
 
 func (levelsStub) DeleteLevel(context.Context, int) error { return nil }
 
+type topicsStub struct{}
+
+func (topicsStub) ListTopics(context.Context) ([]entity.Topic, error) { return []entity.Topic{}, nil }
+func (topicsStub) CreateTopic(_ context.Context, topic entity.Topic) (entity.Topic, error) {
+	topic.ID = 1
+	return topic, nil
+}
+func (topicsStub) UpdateTopic(_ context.Context, id int, topic entity.Topic) (entity.Topic, error) {
+	topic.ID = id
+	return topic, nil
+}
+func (topicsStub) SetTopicActive(_ context.Context, id int, active bool) (entity.Topic, error) {
+	return entity.Topic{ID: id, IsActive: active}, nil
+}
+func (topicsStub) DeleteTopic(context.Context, int) error { return nil }
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }
@@ -222,6 +238,29 @@ func TestAdminLevels(t *testing.T) {
 			resp := performAdminRequest(t, adminTestApp(entity.RoleAdmin), test.method, test.path, "valid-admin-token", []byte(test.body))
 			defer resp.Body.Close()
 
+			assert.Equal(t, test.status, resp.StatusCode)
+		})
+	}
+}
+
+func TestAdminTopics(t *testing.T) {
+	t.Parallel()
+	valid := `{"slug":"travel","iconUrl":"https://example.com/icon.svg","isActive":true,"translations":[{"languageId":1,"name":"Travel"}]}`
+	tests := []struct {
+		name, method, path, body string
+		status                   int
+	}{
+		{name: "list", method: http.MethodGet, path: "/v1/admin/topics", status: http.StatusOK},
+		{name: "create", method: http.MethodPost, path: "/v1/admin/topics", body: valid, status: http.StatusCreated},
+		{name: "update", method: http.MethodPut, path: "/v1/admin/topics/1", body: valid, status: http.StatusOK},
+		{name: "disable", method: http.MethodPatch, path: "/v1/admin/topics/1/status", body: `{"isActive":false}`, status: http.StatusOK},
+		{name: "delete", method: http.MethodDelete, path: "/v1/admin/topics/1", status: http.StatusNoContent},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			resp := performAdminRequest(t, adminTestApp(entity.RoleAdmin), test.method, test.path, "valid-admin-token", []byte(test.body))
+			defer resp.Body.Close()
 			assert.Equal(t, test.status, resp.StatusCode)
 		})
 	}

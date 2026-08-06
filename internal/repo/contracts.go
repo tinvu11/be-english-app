@@ -32,4 +32,13 @@ type (
 		UpdateLevel(ctx context.Context, level *entity.Level) error
 		DeleteLevel(ctx context.Context, id int) error
 	}
+
+	// TopicRepo persists topics and their translations.
+	TopicRepo interface {
+		ListTopics(ctx context.Context) ([]entity.Topic, error)
+		CreateTopic(ctx context.Context, topic *entity.Topic) error
+		UpdateTopic(ctx context.Context, topic *entity.Topic) error
+		SetTopicActive(ctx context.Context, id int, isActive bool) (entity.Topic, error)
+		DeleteTopic(ctx context.Context, id int) error
+	}
 )
