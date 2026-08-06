@@ -28,8 +28,9 @@ func (fakeVerifier) Verify(_ context.Context, token string) (entity.AuthIdentity
 }
 
 type fakeUsers struct {
-	err  error
-	role string
+	err    error
+	role   string
+	locked bool
 }
 
 func (f fakeUsers) Authenticate(_ context.Context, identity entity.AuthIdentity) (entity.User, error) {
@@ -42,7 +43,7 @@ func (f fakeUsers) Authenticate(_ context.Context, identity entity.AuthIdentity)
 		role = entity.RoleUser
 	}
 
-	return entity.User{ID: "local-user-id", FirebaseUID: identity.UID, Role: role}, nil
+	return entity.User{ID: "local-user-id", FirebaseUID: identity.UID, Role: role, IsActive: !f.locked}, nil
 }
 
 func newTestApp(users fakeUsers) *fiber.App {
@@ -113,6 +114,13 @@ func TestAuthMiddleware(t *testing.T) {
 			authHeader:     "Bearer valid-id",
 			expectedStatus: http.StatusOK,
 			expectedBody:   "local-user-id",
+		},
+		{
+			name:           "locked account",
+			authHeader:     "Bearer valid-id",
+			users:          fakeUsers{locked: true},
+			expectedStatus: http.StatusForbidden,
+			expectedBody:   `{"error":"account is locked"}`,
 		},
 	}
 

@@ -433,3 +433,72 @@ func (mr *MockChannelMockRecorder) UpdateChannel(ctx, id, channel any) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChannel", reflect.TypeOf((*MockChannel)(nil).UpdateChannel), ctx, id, channel)
 }
+
+// MockAdminUser is a mock of AdminUser interface.
+type MockAdminUser struct {
+	ctrl     *gomock.Controller
+	recorder *MockAdminUserMockRecorder
+	isgomock struct{}
+}
+
+// MockAdminUserMockRecorder is the mock recorder for MockAdminUser.
+type MockAdminUserMockRecorder struct {
+	mock *MockAdminUser
+}
+
+// NewMockAdminUser creates a new mock instance.
+func NewMockAdminUser(ctrl *gomock.Controller) *MockAdminUser {
+	mock := &MockAdminUser{ctrl: ctrl}
+	mock.recorder = &MockAdminUserMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAdminUser) EXPECT() *MockAdminUserMockRecorder {
+	return m.recorder
+}
+
+// ListUsers mocks base method.
+func (m *MockAdminUser) ListUsers(ctx context.Context, filter entity.UserFilter) (entity.UserList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListUsers", ctx, filter)
+	ret0, _ := ret[0].(entity.UserList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListUsers indicates an expected call of ListUsers.
+func (mr *MockAdminUserMockRecorder) ListUsers(ctx, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsers", reflect.TypeOf((*MockAdminUser)(nil).ListUsers), ctx, filter)
+}
+
+// SetUserActive mocks base method.
+func (m *MockAdminUser) SetUserActive(ctx context.Context, actorID, userID string, isActive bool) (entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetUserActive", ctx, actorID, userID, isActive)
+	ret0, _ := ret[0].(entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SetUserActive indicates an expected call of SetUserActive.
+func (mr *MockAdminUserMockRecorder) SetUserActive(ctx, actorID, userID, isActive any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserActive", reflect.TypeOf((*MockAdminUser)(nil).SetUserActive), ctx, actorID, userID, isActive)
+}
+
+// SetUserRole mocks base method.
+func (m *MockAdminUser) SetUserRole(ctx context.Context, actorID, userID, role string) (entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetUserRole", ctx, actorID, userID, role)
+	ret0, _ := ret[0].(entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SetUserRole indicates an expected call of SetUserRole.
+func (mr *MockAdminUserMockRecorder) SetUserRole(ctx, actorID, userID, role any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserRole", reflect.TypeOf((*MockAdminUser)(nil).SetUserRole), ctx, actorID, userID, role)
+}

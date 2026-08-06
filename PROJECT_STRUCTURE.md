@@ -196,6 +196,9 @@ Các API hiện tại:
 | `POST` | `/v1/admin/channels` | Chỉ admin |
 | `PUT` | `/v1/admin/channels/:id` | Chỉ admin |
 | `DELETE` | `/v1/admin/channels/:id` | Chỉ admin |
+| `GET` | `/v1/admin/users` | Chỉ admin |
+| `PATCH` | `/v1/admin/users/:id/status` | Chỉ admin |
+| `PATCH` | `/v1/admin/users/:id/role` | Chỉ admin |
 
 Route user sử dụng middleware `Auth`. Admin login tự xác minh Firebase ID token từ request body; `/admin/me` và dashboard sử dụng lần lượt `Auth` và `AdminOnly`.
 
@@ -210,6 +213,7 @@ Module controller dành riêng cho quản trị viên:
 - `levels.go`: quản lý cấp độ và các bản dịch đa ngôn ngữ.
 - `topics.go`: quản lý chủ đề, bản dịch và trạng thái hiển thị.
 - `channels.go`: quản lý danh mục kênh YouTube.
+- `users.go`: tìm kiếm, lọc, phân trang, khóa/mở khóa và phân quyền user.
 - `controller.go`: dependencies của module.
 - `request/` và `response/`: DTO riêng của admin.
 

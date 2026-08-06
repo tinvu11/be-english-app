@@ -38,6 +38,7 @@ func (stub usersStub) Authenticate(_ context.Context, identity entity.AuthIdenti
 		Email:       identity.Email,
 		Username:    "admin",
 		Role:        stub.role,
+		IsActive:    true,
 	}, nil
 }
 
@@ -126,9 +127,26 @@ func (channelsStub) UpdateChannel(_ context.Context, id int, channel entity.Chan
 }
 func (channelsStub) DeleteChannel(context.Context, int) error { return nil }
 
+type adminUsersStub struct{}
+
+func (adminUsersStub) ListUsers(_ context.Context, filter entity.UserFilter) (entity.UserList, error) {
+	if filter.Role != "" && filter.Role != entity.RoleUser && filter.Role != entity.RoleAdmin {
+		return entity.UserList{}, entity.ErrInvalidUserFilter
+	}
+	return entity.UserList{Items: []entity.User{}, Total: 0}, nil
+}
+
+func (adminUsersStub) SetUserActive(_ context.Context, _, userID string, active bool) (entity.User, error) {
+	return entity.User{ID: userID, IsActive: active, Role: entity.RoleUser}, nil
+}
+
+func (adminUsersStub) SetUserRole(_ context.Context, _, userID, role string) (entity.User, error) {
+	return entity.User{ID: userID, IsActive: true, Role: role}, nil
+}
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }
@@ -292,6 +310,28 @@ func TestAdminChannels(t *testing.T) {
 		{name: "create", method: http.MethodPost, path: "/v1/admin/channels", body: valid, status: http.StatusCreated},
 		{name: "update", method: http.MethodPut, path: "/v1/admin/channels/1", body: valid, status: http.StatusOK},
 		{name: "delete", method: http.MethodDelete, path: "/v1/admin/channels/1", status: http.StatusNoContent},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			resp := performAdminRequest(t, adminTestApp(entity.RoleAdmin), test.method, test.path, "valid-admin-token", []byte(test.body))
+			defer resp.Body.Close()
+			assert.Equal(t, test.status, resp.StatusCode)
+		})
+	}
+}
+
+func TestAdminUsers(t *testing.T) {
+	t.Parallel()
+	targetID := "5f5cb6d2-0043-4b85-a085-8b94efc14ac3"
+	tests := []struct {
+		name, method, path, body string
+		status                   int
+	}{
+		{name: "list", method: http.MethodGet, path: "/v1/admin/users?search=test&role=user&is_active=true&limit=20&offset=0", status: http.StatusOK},
+		{name: "invalid filter", method: http.MethodGet, path: "/v1/admin/users?role=owner", status: http.StatusBadRequest},
+		{name: "lock", method: http.MethodPatch, path: "/v1/admin/users/" + targetID + "/status", body: `{"isActive":false}`, status: http.StatusOK},
+		{name: "promote", method: http.MethodPatch, path: "/v1/admin/users/" + targetID + "/role", body: `{"role":"admin"}`, status: http.StatusOK},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

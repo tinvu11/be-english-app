@@ -49,4 +49,11 @@ type (
 		UpdateChannel(ctx context.Context, channel *entity.Channel) error
 		DeleteChannel(ctx context.Context, id int) error
 	}
+
+	// AdminUserRepo manages users from the administrator console.
+	AdminUserRepo interface {
+		ListUsers(ctx context.Context, filter entity.UserFilter) (entity.UserList, error)
+		SetUserActive(ctx context.Context, id string, isActive bool) (entity.User, error)
+		SetUserRole(ctx context.Context, id, role string) (entity.User, error)
+	}
 )

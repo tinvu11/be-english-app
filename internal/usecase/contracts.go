@@ -49,4 +49,11 @@ type (
 		UpdateChannel(ctx context.Context, id int, channel entity.Channel) (entity.Channel, error)
 		DeleteChannel(ctx context.Context, id int) error
 	}
+
+	// AdminUser manages application users from the administrator console.
+	AdminUser interface {
+		ListUsers(ctx context.Context, filter entity.UserFilter) (entity.UserList, error)
+		SetUserActive(ctx context.Context, actorID, userID string, isActive bool) (entity.User, error)
+		SetUserRole(ctx context.Context, actorID, userID, role string) (entity.User, error)
+	}
 )

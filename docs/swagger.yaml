@@ -100,6 +100,8 @@ definitions:
     type: object
   entity.User:
     properties:
+      avatarUrl:
+        type: string
       created_at:
         example: "2026-01-01T00:00:00Z"
         type: string
@@ -109,15 +111,32 @@ definitions:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+      isActive:
+        example: true
+        type: boolean
+      nativeLanguageId:
+        type: integer
       role:
         example: user
         type: string
+      targetLanguageId:
+        type: integer
       updated_at:
         example: "2026-01-01T00:00:00Z"
         type: string
       username:
         example: johndoe
         type: string
+    type: object
+  entity.UserList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.User'
+        type: array
+      total:
+        example: 100
+        type: integer
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage:
     properties:
@@ -249,6 +268,25 @@ definitions:
     required:
     - isActive
     - name
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserRole:
+    properties:
+      role:
+        enum:
+        - user
+        - admin
+        example: admin
+        type: string
+    required:
+    - role
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserStatus:
+    properties:
+      isActive:
+        example: false
+        type: boolean
+    required:
+    - isActive
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login:
     properties:
@@ -1048,6 +1086,159 @@ paths:
       summary: Enable or disable topic visibility
       tags:
       - admin-topics
+  /admin/users:
+    get:
+      parameters:
+      - description: Email or username
+        in: query
+        name: search
+        type: string
+      - description: Role
+        enum:
+        - user
+        - admin
+        in: query
+        name: role
+        type: string
+      - description: Active status
+        in: query
+        name: is_active
+        type: boolean
+      - default: 20
+        description: Page size
+        in: query
+        maximum: 100
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: List application users
+      tags:
+      - admin-users
+  /admin/users/{id}/role:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User role
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Promote or demote user
+      tags:
+      - admin-users
+  /admin/users/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Account status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Lock or unlock user
+      tags:
+      - admin-users
   /user/profile:
     get:
       description: Get current user profile

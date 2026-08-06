@@ -50,6 +50,7 @@ func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentit
 		Username:    firebaseUsername(identity),
 		Email:       email,
 		Role:        entity.RoleUser,
+		IsActive:    true,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}

@@ -23,4 +23,7 @@ var (
 	ErrChannelExists      = errors.New("YouTube channel already exists")
 	ErrChannelReferenced  = errors.New("channel is referenced by videos")
 	ErrInvalidChannel     = errors.New("invalid channel")
+	ErrInvalidUserFilter  = errors.New("invalid user filter")
+	ErrInvalidUserRole    = errors.New("invalid user role")
+	ErrAdminSelfMutation  = errors.New("admin cannot change own status or role")
 )

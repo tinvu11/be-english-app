@@ -59,6 +59,9 @@ func Auth(verifier TokenVerifier, users UserAuthenticator) func(*fiber.Ctx) erro
 		if err != nil {
 			return ctx.Status(http.StatusInternalServerError).JSON(errorResponse{Error: "failed to provision user"})
 		}
+		if !localUser.IsActive {
+			return ctx.Status(http.StatusForbidden).JSON(errorResponse{Error: "account is locked"})
+		}
 
 		ctx.Locals("user", localUser)
 		ctx.Locals("userID", localUser.ID)

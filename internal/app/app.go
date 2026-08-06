@@ -10,12 +10,14 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
 	persistTopicRepo "github.com/evrone/go-clean-template/internal/repo/persistent/topic"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
 	"github.com/evrone/go-clean-template/internal/usecase"
+	"github.com/evrone/go-clean-template/internal/usecase/adminuser"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/level"
@@ -29,11 +31,12 @@ import (
 )
 
 type useCases struct {
-	user     usecase.User
-	language usecase.Language
-	level    usecase.Level
-	topic    usecase.Topic
-	channel  usecase.Channel
+	user      usecase.User
+	language  usecase.Language
+	level     usecase.Level
+	topic     usecase.Topic
+	channel   usecase.Channel
+	adminUser usecase.AdminUser
 }
 
 type servers struct {
@@ -46,20 +49,22 @@ func initUseCases(pg *postgres.Postgres) useCases {
 	levelRepo := persistLevelRepo.New(pg)
 	topicRepo := persistTopicRepo.New(pg)
 	channelRepo := persistChannelRepo.New(pg)
+	adminUserRepo := persistAdminUserRepo.New(pg)
 
 	return useCases{
-		user:     user.New(userRepo),
-		language: language.New(languageRepo),
-		level:    level.New(levelRepo),
-		topic:    topic.New(topicRepo),
-		channel:  channel.New(channelRepo),
+		user:      user.New(userRepo),
+		language:  language.New(languageRepo),
+		level:     level.New(levelRepo),
+		topic:     topic.New(topicRepo),
+		channel:   channel.New(channelRepo),
+		adminUser: adminuser.New(adminUserRepo),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, verifier, l)
 
 	return servers{
 		http: httpServer,
