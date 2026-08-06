@@ -41,4 +41,12 @@ type (
 		SetTopicActive(ctx context.Context, id int, isActive bool) (entity.Topic, error)
 		DeleteTopic(ctx context.Context, id int) error
 	}
+
+	// Channel manages the YouTube channel catalog.
+	Channel interface {
+		ListChannels(ctx context.Context) ([]entity.Channel, error)
+		CreateChannel(ctx context.Context, channel entity.Channel) (entity.Channel, error)
+		UpdateChannel(ctx context.Context, id int, channel entity.Channel) (entity.Channel, error)
+		DeleteChannel(ctx context.Context, id int) error
+	}
 )

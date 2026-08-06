@@ -111,9 +111,24 @@ func (topicsStub) SetTopicActive(_ context.Context, id int, active bool) (entity
 }
 func (topicsStub) DeleteTopic(context.Context, int) error { return nil }
 
+type channelsStub struct{}
+
+func (channelsStub) ListChannels(context.Context) ([]entity.Channel, error) {
+	return []entity.Channel{}, nil
+}
+func (channelsStub) CreateChannel(_ context.Context, channel entity.Channel) (entity.Channel, error) {
+	channel.ID = 1
+	return channel, nil
+}
+func (channelsStub) UpdateChannel(_ context.Context, id int, channel entity.Channel) (entity.Channel, error) {
+	channel.ID = id
+	return channel, nil
+}
+func (channelsStub) DeleteChannel(context.Context, int) error { return nil }
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }
@@ -255,6 +270,28 @@ func TestAdminTopics(t *testing.T) {
 		{name: "update", method: http.MethodPut, path: "/v1/admin/topics/1", body: valid, status: http.StatusOK},
 		{name: "disable", method: http.MethodPatch, path: "/v1/admin/topics/1/status", body: `{"isActive":false}`, status: http.StatusOK},
 		{name: "delete", method: http.MethodDelete, path: "/v1/admin/topics/1", status: http.StatusNoContent},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			resp := performAdminRequest(t, adminTestApp(entity.RoleAdmin), test.method, test.path, "valid-admin-token", []byte(test.body))
+			defer resp.Body.Close()
+			assert.Equal(t, test.status, resp.StatusCode)
+		})
+	}
+}
+
+func TestAdminChannels(t *testing.T) {
+	t.Parallel()
+	valid := `{"channelYoutubeId":"UC123","channelName":"Channel","avatarUrl":"https://example.com/avatar.jpg","isActive":true}`
+	tests := []struct {
+		name, method, path, body string
+		status                   int
+	}{
+		{name: "list", method: http.MethodGet, path: "/v1/admin/channels", status: http.StatusOK},
+		{name: "create", method: http.MethodPost, path: "/v1/admin/channels", body: valid, status: http.StatusCreated},
+		{name: "update", method: http.MethodPut, path: "/v1/admin/channels/1", body: valid, status: http.StatusOK},
+		{name: "delete", method: http.MethodDelete, path: "/v1/admin/channels/1", status: http.StatusNoContent},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

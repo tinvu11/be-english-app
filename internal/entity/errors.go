@@ -19,4 +19,8 @@ var (
 	ErrTopicExists        = errors.New("topic slug already exists")
 	ErrTopicReferenced    = errors.New("topic is referenced by videos")
 	ErrInvalidTopic       = errors.New("invalid topic")
+	ErrChannelNotFound    = errors.New("channel not found")
+	ErrChannelExists      = errors.New("YouTube channel already exists")
+	ErrChannelReferenced  = errors.New("channel is referenced by videos")
+	ErrInvalidChannel     = errors.New("invalid channel")
 )

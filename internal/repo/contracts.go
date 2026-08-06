@@ -41,4 +41,12 @@ type (
 		SetTopicActive(ctx context.Context, id int, isActive bool) (entity.Topic, error)
 		DeleteTopic(ctx context.Context, id int) error
 	}
+
+	// ChannelRepo persists YouTube channels.
+	ChannelRepo interface {
+		ListChannels(ctx context.Context) ([]entity.Channel, error)
+		CreateChannel(ctx context.Context, channel *entity.Channel) error
+		UpdateChannel(ctx context.Context, channel *entity.Channel) error
+		DeleteChannel(ctx context.Context, id int) error
+	}
 )

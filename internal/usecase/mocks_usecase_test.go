@@ -350,3 +350,86 @@ func (mr *MockTopicMockRecorder) UpdateTopic(ctx, id, topic any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTopic", reflect.TypeOf((*MockTopic)(nil).UpdateTopic), ctx, id, topic)
 }
+
+// MockChannel is a mock of Channel interface.
+type MockChannel struct {
+	ctrl     *gomock.Controller
+	recorder *MockChannelMockRecorder
+	isgomock struct{}
+}
+
+// MockChannelMockRecorder is the mock recorder for MockChannel.
+type MockChannelMockRecorder struct {
+	mock *MockChannel
+}
+
+// NewMockChannel creates a new mock instance.
+func NewMockChannel(ctrl *gomock.Controller) *MockChannel {
+	mock := &MockChannel{ctrl: ctrl}
+	mock.recorder = &MockChannelMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockChannel) EXPECT() *MockChannelMockRecorder {
+	return m.recorder
+}
+
+// CreateChannel mocks base method.
+func (m *MockChannel) CreateChannel(ctx context.Context, channel entity.Channel) (entity.Channel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateChannel", ctx, channel)
+	ret0, _ := ret[0].(entity.Channel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateChannel indicates an expected call of CreateChannel.
+func (mr *MockChannelMockRecorder) CreateChannel(ctx, channel any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChannel", reflect.TypeOf((*MockChannel)(nil).CreateChannel), ctx, channel)
+}
+
+// DeleteChannel mocks base method.
+func (m *MockChannel) DeleteChannel(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChannel", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteChannel indicates an expected call of DeleteChannel.
+func (mr *MockChannelMockRecorder) DeleteChannel(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChannel", reflect.TypeOf((*MockChannel)(nil).DeleteChannel), ctx, id)
+}
+
+// ListChannels mocks base method.
+func (m *MockChannel) ListChannels(ctx context.Context) ([]entity.Channel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListChannels", ctx)
+	ret0, _ := ret[0].([]entity.Channel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListChannels indicates an expected call of ListChannels.
+func (mr *MockChannelMockRecorder) ListChannels(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListChannels", reflect.TypeOf((*MockChannel)(nil).ListChannels), ctx)
+}
+
+// UpdateChannel mocks base method.
+func (m *MockChannel) UpdateChannel(ctx context.Context, id int, channel entity.Channel) (entity.Channel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateChannel", ctx, id, channel)
+	ret0, _ := ret[0].(entity.Channel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateChannel indicates an expected call of UpdateChannel.
+func (mr *MockChannelMockRecorder) UpdateChannel(ctx, id, channel any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChannel", reflect.TypeOf((*MockChannel)(nil).UpdateChannel), ctx, id, channel)
+}

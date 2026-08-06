@@ -8,8 +8,8 @@ import (
 )
 
 // NewRoutes registers public and protected administrator endpoints.
-func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, verifier middleware.TokenVerifier, log logger.Interface) {
-	ctrl := newController(users, languages, levels, topics, verifier, log)
+func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, verifier middleware.TokenVerifier, log logger.Interface) {
+	ctrl := newController(users, languages, levels, topics, channels, verifier, log)
 	admin := apiV1.Group("/admin")
 
 	admin.Post("/auth/login", ctrl.login)
@@ -35,4 +35,10 @@ func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Languag
 	topicRoutes.Put("/:id", ctrl.updateTopic)
 	topicRoutes.Patch("/:id/status", ctrl.setTopicActive)
 	topicRoutes.Delete("/:id", ctrl.deleteTopic)
+
+	channelRoutes := protected.Group("/channels")
+	channelRoutes.Get("/", ctrl.listChannels)
+	channelRoutes.Post("/", ctrl.createChannel)
+	channelRoutes.Put("/:id", ctrl.updateChannel)
+	channelRoutes.Delete("/:id", ctrl.deleteChannel)
 }
