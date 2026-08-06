@@ -17,4 +17,11 @@ type (
 		GetByEmail(ctx context.Context, email string) (entity.User, error)
 		GetByFirebaseUID(ctx context.Context, firebaseUID string) (entity.User, error)
 	}
+
+	// LanguageRepo persists languages.
+	LanguageRepo interface {
+		ListLanguages(ctx context.Context) ([]entity.Language, error)
+		CreateLanguage(ctx context.Context, language *entity.Language) error
+		UpdateLanguage(ctx context.Context, language *entity.Language) error
+	}
 )

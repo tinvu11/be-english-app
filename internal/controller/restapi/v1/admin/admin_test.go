@@ -61,9 +61,23 @@ func (loggerStub) Warn(string, ...any) {}
 func (loggerStub) Error(any, ...any)   {}
 func (loggerStub) Fatal(any, ...any)   {}
 
+type languagesStub struct{}
+
+func (languagesStub) ListLanguages(context.Context) ([]entity.Language, error) {
+	return []entity.Language{{ID: 1, Code: "en", Name: "English", IsActive: true}}, nil
+}
+
+func (languagesStub) CreateLanguage(_ context.Context, code, name string) (entity.Language, error) {
+	return entity.Language{ID: 1, Code: code, Name: name, IsActive: true}, nil
+}
+
+func (languagesStub) UpdateLanguage(_ context.Context, id int, name string, isActive bool) (entity.Language, error) {
+	return entity.Language{ID: id, Code: "en", Name: name, IsActive: isActive}, nil
+}
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }
@@ -133,4 +147,32 @@ func TestAdminMe(t *testing.T) {
 
 		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})
+}
+
+func TestAdminLanguages(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		method string
+		path   string
+		body   string
+		status int
+	}{
+		{name: "list", method: http.MethodGet, path: "/v1/admin/languages", status: http.StatusOK},
+		{name: "create", method: http.MethodPost, path: "/v1/admin/languages", body: `{"code":"vi","name":"Vietnamese"}`, status: http.StatusCreated},
+		{name: "update", method: http.MethodPut, path: "/v1/admin/languages/1", body: `{"name":"English","isActive":false}`, status: http.StatusOK},
+		{name: "invalid id", method: http.MethodPut, path: "/v1/admin/languages/invalid", body: `{"name":"English","isActive":true}`, status: http.StatusBadRequest},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			resp := performAdminRequest(t, adminTestApp(entity.RoleAdmin), test.method, test.path, "valid-admin-token", []byte(test.body))
+			defer resp.Body.Close()
+
+			assert.Equal(t, test.status, resp.StatusCode)
+		})
+	}
 }

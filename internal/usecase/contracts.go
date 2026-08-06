@@ -17,4 +17,11 @@ type (
 		Login(ctx context.Context, email, password string) (string, error)
 		GetUser(ctx context.Context, userID string) (entity.User, error)
 	}
+
+	// Language manages the platform language catalog.
+	Language interface {
+		ListLanguages(ctx context.Context) ([]entity.Language, error)
+		CreateLanguage(ctx context.Context, code, name string) (entity.Language, error)
+		UpdateLanguage(ctx context.Context, id int, name string, isActive bool) (entity.Language, error)
+	}
 )

@@ -112,6 +112,198 @@ const docTemplate = `{
                 ]
             }
         },
+        "/admin/languages": {
+            "get": {
+                "description": "Return all platform languages ordered by code",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-languages"
+                ],
+                "summary": "List languages",
+                "operationId": "admin-list-languages",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Language"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "description": "Add a new platform language; its code is immutable after creation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-languages"
+                ],
+                "summary": "Create language",
+                "operationId": "admin-create-language",
+                "parameters": [
+                    {
+                        "description": "Language",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Language"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/languages/{id}": {
+            "put": {
+                "description": "Update a language name and active status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-languages"
+                ],
+                "summary": "Update language",
+                "operationId": "admin-update-language",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Language ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Language changes",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Language"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/me": {
             "get": {
                 "description": "Return the authenticated administrator profile",
@@ -208,6 +400,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entity.Language": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2026-08-06T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "English"
+                }
+            }
+        },
         "entity.User": {
             "type": "object",
             "properties": {
@@ -237,6 +454,25 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage": {
+            "type": "object",
+            "required": [
+                "code",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "example": "en"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "example": "English"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login": {
             "type": "object",
             "required": [
@@ -246,6 +482,24 @@ const docTemplate = `{
                 "idToken": {
                     "type": "string",
                     "example": "firebase-id-token"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage": {
+            "type": "object",
+            "required": [
+                "isActive",
+                "name"
+            ],
+            "properties": {
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "example": "English"
                 }
             }
         },

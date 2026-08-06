@@ -180,6 +180,9 @@ Các API hiện tại:
 | `POST` | `/v1/admin/auth/login` | Firebase token của admin |
 | `GET` | `/v1/admin/me` | Chỉ admin |
 | `GET` | `/v1/admin/dashboard` | Chỉ admin |
+| `GET` | `/v1/admin/languages` | Chỉ admin |
+| `POST` | `/v1/admin/languages` | Chỉ admin |
+| `PUT` | `/v1/admin/languages/:id` | Chỉ admin |
 
 Route user sử dụng middleware `Auth`. Admin login tự xác minh Firebase ID token từ request body; `/admin/me` và dashboard sử dụng lần lượt `Auth` và `AdminOnly`.
 
@@ -190,6 +193,7 @@ Module controller dành riêng cho quản trị viên:
 - `router.go`: đăng ký public/protected admin routes.
 - `auth.go`: đăng nhập bằng Firebase ID token và lấy admin hiện tại.
 - `dashboard.go`: dashboard endpoint.
+- `languages.go`: quản lý danh mục ngôn ngữ.
 - `controller.go`: dependencies của module.
 - `request/` và `response/`: DTO riêng của admin.
 

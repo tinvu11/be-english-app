@@ -1,5 +1,23 @@
 basePath: /v1
 definitions:
+  entity.Language:
+    properties:
+      code:
+        example: en
+        type: string
+      createdAt:
+        example: "2026-08-06T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: English
+        type: string
+    type: object
   entity.User:
     properties:
       created_at:
@@ -21,6 +39,20 @@ definitions:
         example: johndoe
         type: string
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage:
+    properties:
+      code:
+        example: en
+        maxLength: 10
+        type: string
+      name:
+        example: English
+        maxLength: 50
+        type: string
+    required:
+    - code
+    - name
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login:
     properties:
       idToken:
@@ -28,6 +60,19 @@ definitions:
         type: string
     required:
     - idToken
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage:
+    properties:
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: English
+        maxLength: 50
+        type: string
+    required:
+    - isActive
+    - name
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login:
     properties:
@@ -120,6 +165,130 @@ paths:
       summary: Admin dashboard
       tags:
       - admin
+  /admin/languages:
+    get:
+      description: Return all platform languages ordered by code
+      operationId: admin-list-languages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Language'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: List languages
+      tags:
+      - admin-languages
+    post:
+      consumes:
+      - application/json
+      description: Add a new platform language; its code is immutable after creation
+      operationId: admin-create-language
+      parameters:
+      - description: Language
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Language'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create language
+      tags:
+      - admin-languages
+  /admin/languages/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update a language name and active status
+      operationId: admin-update-language
+      parameters:
+      - description: Language ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Language changes
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Language'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update language
+      tags:
+      - admin-languages
   /admin/me:
     get:
       description: Return the authenticated administrator profile

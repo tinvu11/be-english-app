@@ -99,3 +99,70 @@ func (mr *MockUserRepoMockRecorder) Store(ctx, user any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockUserRepo)(nil).Store), ctx, user)
 }
+
+// MockLanguageRepo is a mock of LanguageRepo interface.
+type MockLanguageRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockLanguageRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockLanguageRepoMockRecorder is the mock recorder for MockLanguageRepo.
+type MockLanguageRepoMockRecorder struct {
+	mock *MockLanguageRepo
+}
+
+// NewMockLanguageRepo creates a new mock instance.
+func NewMockLanguageRepo(ctrl *gomock.Controller) *MockLanguageRepo {
+	mock := &MockLanguageRepo{ctrl: ctrl}
+	mock.recorder = &MockLanguageRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLanguageRepo) EXPECT() *MockLanguageRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateLanguage mocks base method.
+func (m *MockLanguageRepo) CreateLanguage(ctx context.Context, language *entity.Language) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLanguage", ctx, language)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateLanguage indicates an expected call of CreateLanguage.
+func (mr *MockLanguageRepoMockRecorder) CreateLanguage(ctx, language any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLanguage", reflect.TypeOf((*MockLanguageRepo)(nil).CreateLanguage), ctx, language)
+}
+
+// ListLanguages mocks base method.
+func (m *MockLanguageRepo) ListLanguages(ctx context.Context) ([]entity.Language, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLanguages", ctx)
+	ret0, _ := ret[0].([]entity.Language)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListLanguages indicates an expected call of ListLanguages.
+func (mr *MockLanguageRepoMockRecorder) ListLanguages(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLanguages", reflect.TypeOf((*MockLanguageRepo)(nil).ListLanguages), ctx)
+}
+
+// UpdateLanguage mocks base method.
+func (m *MockLanguageRepo) UpdateLanguage(ctx context.Context, language *entity.Language) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLanguage", ctx, language)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateLanguage indicates an expected call of UpdateLanguage.
+func (mr *MockLanguageRepoMockRecorder) UpdateLanguage(ctx, language any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLanguage", reflect.TypeOf((*MockLanguageRepo)(nil).UpdateLanguage), ctx, language)
+}
