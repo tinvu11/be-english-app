@@ -100,6 +100,20 @@ func (mr *MockUserRepoMockRecorder) Store(ctx, user any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockUserRepo)(nil).Store), ctx, user)
 }
 
+// UpdateFirebaseProfile mocks base method.
+func (m *MockUserRepo) UpdateFirebaseProfile(ctx context.Context, id, username, avatarURL string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateFirebaseProfile", ctx, id, username, avatarURL)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateFirebaseProfile indicates an expected call of UpdateFirebaseProfile.
+func (mr *MockUserRepoMockRecorder) UpdateFirebaseProfile(ctx, id, username, avatarURL any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateFirebaseProfile", reflect.TypeOf((*MockUserRepo)(nil).UpdateFirebaseProfile), ctx, id, username, avatarURL)
+}
+
 // MockLanguageRepo is a mock of LanguageRepo interface.
 type MockLanguageRepo struct {
 	ctrl     *gomock.Controller

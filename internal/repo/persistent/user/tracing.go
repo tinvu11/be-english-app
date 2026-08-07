@@ -70,3 +70,12 @@ func (r *tracedRepo) GetByFirebaseUID(ctx context.Context, firebaseUID string) (
 
 	return result, err
 }
+
+func (r *tracedRepo) UpdateFirebaseProfile(ctx context.Context, id, username, avatarURL string) error {
+	ctx, span := startSpan(ctx, "UserRepo.UpdateFirebaseProfile", attribute.String("user.id", id))
+
+	err := r.next.UpdateFirebaseProfile(ctx, id, username, avatarURL)
+	endSpan(span, err)
+
+	return err
+}

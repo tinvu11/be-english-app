@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/repo"
@@ -32,6 +31,13 @@ func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentit
 
 	existing, err := uc.repo.GetByFirebaseUID(ctx, identity.UID)
 	if err == nil {
+		username := firebaseUsername(identity)
+		if err = uc.repo.UpdateFirebaseProfile(ctx, existing.ID, username, identity.Picture); err != nil {
+			return entity.User{}, fmt.Errorf("UserUseCase - Authenticate - uc.repo.UpdateFirebaseProfile: %w", err)
+		}
+		existing.Username = username
+		existing.AvatarURL = identity.Picture
+
 		return existing, nil
 	}
 	if !errors.Is(err, entity.ErrUserNotFound) {
@@ -50,6 +56,7 @@ func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentit
 		Username:    firebaseUsername(identity),
 		Email:       email,
 		Role:        entity.RoleUser,
+		AvatarURL:   identity.Picture,
 		IsActive:    true,
 		CreatedAt:   now,
 		UpdatedAt:   now,
@@ -90,34 +97,16 @@ func (uc *UseCase) GetUser(ctx context.Context, userID string) (entity.User, err
 }
 
 func firebaseUsername(identity entity.AuthIdentity) string {
-	base := identity.Name
-	if base == "" {
-		base, _, _ = strings.Cut(identity.Email, "@")
+	username := strings.TrimSpace(identity.Name)
+	if username == "" {
+		username, _, _ = strings.Cut(identity.Email, "@")
+	}
+	if username == "" {
+		username = identity.UID
+	}
+	if len(username) > 255 {
+		username = username[:255]
 	}
 
-	base = strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsDigit(r) {
-			return unicode.ToLower(r)
-		}
-		return '-'
-	}, base)
-	base = strings.Trim(base, "-")
-	if base == "" {
-		base = "user"
-	}
-	if len(base) > 32 {
-		base = base[:32]
-	}
-
-	suffix := strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsDigit(r) {
-			return unicode.ToLower(r)
-		}
-		return -1
-	}, identity.UID)
-	if len(suffix) > 8 {
-		suffix = suffix[:8]
-	}
-
-	return base + "-" + suffix
+	return username
 }

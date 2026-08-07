@@ -28,10 +28,11 @@ func TestAuthenticateExistingFirebaseUser(t *testing.T) {
 	t.Parallel()
 
 	uc, repo := newUserUseCase(t)
-	identity := entity.AuthIdentity{UID: "firebase-123", Email: "test@example.com"}
-	expected := entity.User{ID: "local-123", FirebaseUID: identity.UID, Email: identity.Email}
+	identity := entity.AuthIdentity{UID: "firebase-123", Email: "test@example.com", Name: "Test User", Picture: "https://example.com/avatar.jpg"}
+	expected := entity.User{ID: "local-123", FirebaseUID: identity.UID, Email: identity.Email, Username: identity.Name, AvatarURL: identity.Picture}
 
 	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(expected, nil)
+	repo.EXPECT().UpdateFirebaseProfile(gomock.Any(), expected.ID, identity.Name, identity.Picture).Return(nil)
 
 	result, err := uc.Authenticate(context.Background(), identity)
 
@@ -43,14 +44,15 @@ func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 	t.Parallel()
 
 	uc, repo := newUserUseCase(t)
-	identity := entity.AuthIdentity{UID: "firebase-123456789", Email: "john@example.com", Name: "John Doe"}
+	identity := entity.AuthIdentity{UID: "firebase-123456789", Email: "john@example.com", Name: "John Doe", Picture: "https://example.com/john.jpg"}
 
 	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(entity.User{}, entity.ErrUserNotFound)
 	repo.EXPECT().Store(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, stored *entity.User) error {
 		assert.NotEmpty(t, stored.ID)
 		assert.Equal(t, identity.UID, stored.FirebaseUID)
 		assert.Equal(t, identity.Email, stored.Email)
-		assert.Equal(t, "john-doe-firebase", stored.Username)
+		assert.Equal(t, "John Doe", stored.Username)
+		assert.Equal(t, identity.Picture, stored.AvatarURL)
 		assert.Equal(t, entity.RoleUser, stored.Role)
 		return nil
 	})

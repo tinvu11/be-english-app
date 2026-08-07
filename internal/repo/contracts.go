@@ -16,6 +16,7 @@ type (
 		GetByID(ctx context.Context, id string) (entity.User, error)
 		GetByEmail(ctx context.Context, email string) (entity.User, error)
 		GetByFirebaseUID(ctx context.Context, firebaseUID string) (entity.User, error)
+		UpdateFirebaseProfile(ctx context.Context, id, username, avatarURL string) error
 	}
 
 	// LanguageRepo persists languages.

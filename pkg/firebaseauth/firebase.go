@@ -50,5 +50,9 @@ func (v *Verifier) Verify(ctx context.Context, idToken string) (entity.AuthIdent
 		identity.Name = name
 	}
 
+	if picture, ok := token.Claims["picture"].(string); ok {
+		identity.Picture = picture
+	}
+
 	return identity, nil
 }

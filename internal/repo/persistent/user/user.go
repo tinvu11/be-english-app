@@ -28,8 +28,8 @@ func New(pg *postgres.Postgres) repo.UserRepo {
 func (r *Repo) Store(ctx context.Context, user *entity.User) error {
 	sql, args, err := r.Builder.
 		Insert("users").
-		Columns("id, firebase_uid, username, email, role, created_at, updated_at").
-		Values(user.ID, user.FirebaseUID, user.Username, user.Email, user.Role, user.CreatedAt, user.UpdatedAt).
+		Columns("id, firebase_uid, username, email, role, avatar_url, created_at, updated_at").
+		Values(user.ID, user.FirebaseUID, user.Username, user.Email, user.Role, user.AvatarURL, user.CreatedAt, user.UpdatedAt).
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("UserRepo - Store - r.Builder: %w", err)
@@ -43,6 +43,20 @@ func (r *Repo) Store(ctx context.Context, user *entity.User) error {
 		}
 
 		return fmt.Errorf("UserRepo - Store - r.Pool.Exec: %w", err)
+	}
+
+	return nil
+}
+
+// UpdateFirebaseProfile synchronizes profile fields controlled by Firebase.
+func (r *Repo) UpdateFirebaseProfile(ctx context.Context, id, username, avatarURL string) error {
+	result, err := r.Pool.Exec(ctx, `UPDATE users SET username=$2,avatar_url=NULLIF($3,''),updated_at=CURRENT_TIMESTAMP WHERE id=$1`,
+		id, username, avatarURL)
+	if err != nil {
+		return fmt.Errorf("UserRepo - UpdateFirebaseProfile: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrUserNotFound
 	}
 
 	return nil

@@ -376,6 +376,7 @@ Kết nối được quản lý trong `pkg/postgres/` bằng pgx pool.
 | `20260727000002_add_role_to_users` | Thêm role `user/admin` |
 | `20260806000001_create_learning_schema` | Tạo schema ngôn ngữ, nội dung học, caption và tiến độ |
 | `20260806000002_restrict_topic_deletion` | Không cho xóa topic đang liên kết với video |
+| `20260806000003_sync_google_profile` | Cho phép trùng display name và hỗ trợ đồng bộ hồ sơ Google |
 
 Schema ứng dụng hiện có các bảng nghiệp vụ:
 

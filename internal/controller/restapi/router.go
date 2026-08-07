@@ -32,9 +32,9 @@ func NewRouter(app *fiber.App, cfg *config.Config, u usecase.User, languages use
 	app.Use(middleware.Logger(l))
 	app.Use(middleware.Recovery(l))
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000,http://localhost:5173",
+		AllowOrigins: "http://localhost:3000,http://localhost:5173,http://localhost:52641",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
-		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
+		AllowMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
 	}))
 
 	// Prometheus metrics
