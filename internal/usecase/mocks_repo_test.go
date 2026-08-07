@@ -507,3 +507,116 @@ func (mr *MockAdminUserRepoMockRecorder) SetUserRole(ctx, id, role any) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserRole", reflect.TypeOf((*MockAdminUserRepo)(nil).SetUserRole), ctx, id, role)
 }
+
+// MockVideoRepo is a mock of VideoRepo interface.
+type MockVideoRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockVideoRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockVideoRepoMockRecorder is the mock recorder for MockVideoRepo.
+type MockVideoRepoMockRecorder struct {
+	mock *MockVideoRepo
+}
+
+// NewMockVideoRepo creates a new mock instance.
+func NewMockVideoRepo(ctrl *gomock.Controller) *MockVideoRepo {
+	mock := &MockVideoRepo{ctrl: ctrl}
+	mock.recorder = &MockVideoRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockVideoRepo) EXPECT() *MockVideoRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateVideo mocks base method.
+func (m *MockVideoRepo) CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateVideo", ctx, input)
+	ret0, _ := ret[0].(entity.Video)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateVideo indicates an expected call of CreateVideo.
+func (mr *MockVideoRepoMockRecorder) CreateVideo(ctx, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateVideo", reflect.TypeOf((*MockVideoRepo)(nil).CreateVideo), ctx, input)
+}
+
+// DeleteVideo mocks base method.
+func (m *MockVideoRepo) DeleteVideo(ctx context.Context, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteVideo", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteVideo indicates an expected call of DeleteVideo.
+func (mr *MockVideoRepoMockRecorder) DeleteVideo(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteVideo", reflect.TypeOf((*MockVideoRepo)(nil).DeleteVideo), ctx, id)
+}
+
+// GetVideo mocks base method.
+func (m *MockVideoRepo) GetVideo(ctx context.Context, id int64) (entity.Video, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVideo", ctx, id)
+	ret0, _ := ret[0].(entity.Video)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVideo indicates an expected call of GetVideo.
+func (mr *MockVideoRepoMockRecorder) GetVideo(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVideo", reflect.TypeOf((*MockVideoRepo)(nil).GetVideo), ctx, id)
+}
+
+// ListVideos mocks base method.
+func (m *MockVideoRepo) ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListVideos", ctx, filter)
+	ret0, _ := ret[0].(entity.VideoList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListVideos indicates an expected call of ListVideos.
+func (mr *MockVideoRepoMockRecorder) ListVideos(ctx, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVideos", reflect.TypeOf((*MockVideoRepo)(nil).ListVideos), ctx, filter)
+}
+
+// SetVideoStatus mocks base method.
+func (m *MockVideoRepo) SetVideoStatus(ctx context.Context, id int64, expectedStatus, nextStatus string) (entity.Video, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetVideoStatus", ctx, id, expectedStatus, nextStatus)
+	ret0, _ := ret[0].(entity.Video)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SetVideoStatus indicates an expected call of SetVideoStatus.
+func (mr *MockVideoRepoMockRecorder) SetVideoStatus(ctx, id, expectedStatus, nextStatus any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetVideoStatus", reflect.TypeOf((*MockVideoRepo)(nil).SetVideoStatus), ctx, id, expectedStatus, nextStatus)
+}
+
+// UpdateVideo mocks base method.
+func (m *MockVideoRepo) UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateVideo", ctx, id, input)
+	ret0, _ := ret[0].(entity.Video)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateVideo indicates an expected call of UpdateVideo.
+func (mr *MockVideoRepoMockRecorder) UpdateVideo(ctx, id, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateVideo", reflect.TypeOf((*MockVideoRepo)(nil).UpdateVideo), ctx, id, input)
+}

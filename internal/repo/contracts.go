@@ -57,4 +57,14 @@ type (
 		SetUserActive(ctx context.Context, id string, isActive bool) (entity.User, error)
 		SetUserRole(ctx context.Context, id, role string) (entity.User, error)
 	}
+
+	// VideoRepo persists videos and returns hydrated relations.
+	VideoRepo interface {
+		ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error)
+		GetVideo(ctx context.Context, id int64) (entity.Video, error)
+		CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error)
+		UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error)
+		SetVideoStatus(ctx context.Context, id int64, expectedStatus, nextStatus string) (entity.Video, error)
+		DeleteVideo(ctx context.Context, id int64) error
+	}
 )

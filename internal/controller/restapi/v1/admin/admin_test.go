@@ -144,9 +144,28 @@ func (adminUsersStub) SetUserRole(_ context.Context, _, userID, role string) (en
 	return entity.User{ID: userID, IsActive: true, Role: role}, nil
 }
 
+type videosStub struct{}
+
+func (videosStub) ListVideos(context.Context, entity.VideoFilter) (entity.VideoList, error) {
+	return entity.VideoList{Items: []entity.Video{}, Total: 0}, nil
+}
+func (videosStub) GetVideo(_ context.Context, id int64) (entity.Video, error) {
+	return entity.Video{ID: id, Status: entity.VideoStatusDraft, Topics: []entity.VideoTopic{}}, nil
+}
+func (videosStub) CreateVideo(_ context.Context, input entity.VideoInput) (entity.Video, error) {
+	return entity.Video{ID: 1, Title: input.Title, YouTubeID: input.YouTubeID, Status: input.Status}, nil
+}
+func (videosStub) UpdateVideo(_ context.Context, id int64, input entity.VideoInput) (entity.Video, error) {
+	return entity.Video{ID: id, Title: input.Title, YouTubeID: input.YouTubeID, Status: input.Status}, nil
+}
+func (videosStub) TransitionVideoStatus(_ context.Context, id int64, status string) (entity.Video, error) {
+	return entity.Video{ID: id, Status: status}, nil
+}
+func (videosStub) DeleteVideo(context.Context, int64) error { return nil }
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, videosStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }

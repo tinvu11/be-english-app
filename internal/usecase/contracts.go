@@ -56,4 +56,14 @@ type (
 		SetUserActive(ctx context.Context, actorID, userID string, isActive bool) (entity.User, error)
 		SetUserRole(ctx context.Context, actorID, userID, role string) (entity.User, error)
 	}
+
+	// Video manages videos and their related catalog data.
+	Video interface {
+		ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error)
+		GetVideo(ctx context.Context, id int64) (entity.Video, error)
+		CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error)
+		UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error)
+		TransitionVideoStatus(ctx context.Context, id int64, status string) (entity.Video, error)
+		DeleteVideo(ctx context.Context, id int64) error
+	}
 )

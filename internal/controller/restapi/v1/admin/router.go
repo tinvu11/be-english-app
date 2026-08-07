@@ -8,8 +8,8 @@ import (
 )
 
 // NewRoutes registers public and protected administrator endpoints.
-func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, verifier middleware.TokenVerifier, log logger.Interface) {
-	ctrl := newController(users, languages, levels, topics, channels, adminUsers, verifier, log)
+func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, verifier middleware.TokenVerifier, log logger.Interface) {
+	ctrl := newController(users, languages, levels, topics, channels, adminUsers, videos, verifier, log)
 	admin := apiV1.Group("/admin")
 
 	admin.Post("/auth/login", ctrl.login)
@@ -46,4 +46,12 @@ func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Languag
 	userRoutes.Get("/", ctrl.listUsers)
 	userRoutes.Patch("/:id/status", ctrl.setUserActive)
 	userRoutes.Patch("/:id/role", ctrl.setUserRole)
+
+	videoRoutes := protected.Group("/videos")
+	videoRoutes.Get("/", ctrl.listVideos)
+	videoRoutes.Get("/:id", ctrl.getVideo)
+	videoRoutes.Post("/", ctrl.createVideo)
+	videoRoutes.Put("/:id", ctrl.updateVideo)
+	videoRoutes.Patch("/:id/status", ctrl.setVideoStatus)
+	videoRoutes.Delete("/:id", ctrl.deleteVideo)
 }

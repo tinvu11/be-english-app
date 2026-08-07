@@ -138,6 +138,104 @@ definitions:
         example: 100
         type: integer
     type: object
+  entity.Video:
+    properties:
+      channel:
+        $ref: '#/definitions/entity.VideoChannel'
+      createdAt:
+        type: string
+      durationSeconds:
+        example: 300
+        type: integer
+      id:
+        example: 1
+        type: integer
+      language:
+        $ref: '#/definitions/entity.VideoLanguage'
+      level:
+        $ref: '#/definitions/entity.VideoLevel'
+      status:
+        example: published
+        type: string
+      thumbnailUrl:
+        type: string
+      title:
+        example: Learn English with Music
+        type: string
+      topics:
+        items:
+          $ref: '#/definitions/entity.VideoTopic'
+        type: array
+      updatedAt:
+        type: string
+      videoUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        type: string
+      youtubeId:
+        example: dQw4w9WgXcQ
+        type: string
+    type: object
+  entity.VideoChannel:
+    properties:
+      avatarUrl:
+        type: string
+      channelYoutubeId:
+        type: string
+      id:
+        example: 3
+        type: integer
+      name:
+        example: Google Developers
+        type: string
+    type: object
+  entity.VideoLanguage:
+    properties:
+      code:
+        example: en
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: English
+        type: string
+    type: object
+  entity.VideoLevel:
+    properties:
+      code:
+        example: A2
+        type: string
+      id:
+        example: 2
+        type: integer
+      name:
+        example: Elementary
+        type: string
+    type: object
+  entity.VideoList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.Video'
+        type: array
+      total:
+        example: 100
+        type: integer
+    type: object
+  entity.VideoTopic:
+    properties:
+      iconUrl:
+        type: string
+      id:
+        example: 5
+        type: integer
+      name:
+        example: Music
+        type: string
+      slug:
+        example: music
+        type: string
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage:
     properties:
       code:
@@ -235,6 +333,54 @@ definitions:
     - slug
     - translations
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo:
+    properties:
+      channelId:
+        example: 3
+        type: integer
+      durationSeconds:
+        example: 300
+        minimum: 0
+        type: integer
+      languageId:
+        example: 1
+        type: integer
+      levelId:
+        example: 2
+        type: integer
+      status:
+        enum:
+        - draft
+        - published
+        - archived
+        example: draft
+        type: string
+      thumbnailUrl:
+        example: https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg
+        type: string
+      title:
+        example: Learn English with Music
+        maxLength: 255
+        type: string
+      topicIds:
+        example:
+        - 5
+        - 6
+        items:
+          type: integer
+        type: array
+      youtubeId:
+        example: dQw4w9WgXcQ
+        maxLength: 50
+        type: string
+    required:
+    - channelId
+    - languageId
+    - levelId
+    - status
+    - title
+    - youtubeId
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus:
     properties:
       isActive:
@@ -287,6 +433,17 @@ definitions:
         type: boolean
     required:
     - isActive
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.VideoStatus:
+    properties:
+      status:
+        enum:
+        - published
+        - archived
+        example: published
+        type: string
+    required:
+    - status
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login:
     properties:
@@ -1239,6 +1396,294 @@ paths:
       summary: Lock or unlock user
       tags:
       - admin-users
+  /admin/videos:
+    get:
+      description: Returns videos with language, level, channel, and translated topics
+      parameters:
+      - description: Language ID
+        in: query
+        name: language_id
+        type: integer
+      - description: Level ID
+        in: query
+        name: level_id
+        type: integer
+      - description: Channel ID
+        in: query
+        name: channel_id
+        type: integer
+      - description: Status
+        enum:
+        - draft
+        - published
+        - archived
+        in: query
+        name: status
+        type: string
+      - description: Search title
+        in: query
+        name: search
+        type: string
+      - default: 20
+        description: Page size (1-100)
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.VideoList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: List videos
+      tags:
+      - admin-videos
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Video
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Create video
+      tags:
+      - admin-videos
+  /admin/videos/{id}:
+    delete:
+      parameters:
+      - description: Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete video
+      tags:
+      - admin-videos
+    get:
+      parameters:
+      - description: Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get video details
+      tags:
+      - admin-videos
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update video
+      tags:
+      - admin-videos
+  /admin/videos/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Only draft to published and published to archived transitions are
+        allowed
+      parameters:
+      - description: Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Next status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.VideoStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Video'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Transition video status
+      tags:
+      - admin-videos
   /user/profile:
     get:
       description: Get current user profile

@@ -27,7 +27,7 @@ import (
 //	@securityDefinitions.apikey BearerAuth
 //	@in header
 //	@name Authorization
-func NewRouter(app *fiber.App, cfg *config.Config, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, verifier middleware.TokenVerifier, l logger.Interface) {
+func NewRouter(app *fiber.App, cfg *config.Config, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, verifier middleware.TokenVerifier, l logger.Interface) {
 	// Options
 	app.Use(middleware.Logger(l))
 	app.Use(middleware.Recovery(l))
@@ -59,6 +59,6 @@ func NewRouter(app *fiber.App, cfg *config.Config, u usecase.User, languages use
 			apiV1Group.Use(otelfiber.Middleware())
 		}
 
-		v1.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, verifier, l)
+		v1.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, verifier, l)
 	}
 }

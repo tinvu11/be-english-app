@@ -31,7 +31,7 @@ CREATE TABLE topics (
 );
 
 CREATE TABLE topic_translations (
-    topic_id INT NOT NULL REFERENCES topics(id) ON DELETE RESTRICT,
+    topic_id INT NOT NULL REFERENCES topics(id) ON DELETE CASCADE,
     language_id INT NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     PRIMARY KEY (topic_id, language_id)
@@ -82,7 +82,7 @@ CREATE INDEX idx_videos_channel ON videos(channel_id);
 
 CREATE TABLE video_topics (
     video_id BIGINT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
-    topic_id INT NOT NULL REFERENCES topics(id) ON DELETE CASCADE,
+    topic_id INT NOT NULL REFERENCES topics(id) ON DELETE RESTRICT,
     PRIMARY KEY (video_id, topic_id)
 );
 

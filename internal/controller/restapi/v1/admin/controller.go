@@ -15,12 +15,13 @@ type controller struct {
 	topics     usecase.Topic
 	channels   usecase.Channel
 	adminUsers usecase.AdminUser
+	videos     usecase.Video
 	verifier   middleware.TokenVerifier
 	log        logger.Interface
 	validate   *validator.Validate
 }
 
-func newController(users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, verifier middleware.TokenVerifier, log logger.Interface) *controller {
+func newController(users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, verifier middleware.TokenVerifier, log logger.Interface) *controller {
 	return &controller{
 		users:      users,
 		languages:  languages,
@@ -28,6 +29,7 @@ func newController(users usecase.User, languages usecase.Language, levels usecas
 		topics:     topics,
 		channels:   channels,
 		adminUsers: adminUsers,
+		videos:     videos,
 		verifier:   verifier,
 		log:        log,
 		validate:   validator.New(validator.WithRequiredStructEnabled()),
