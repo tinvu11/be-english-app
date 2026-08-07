@@ -10,7 +10,7 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, verifier middleware.TokenVerifier, l logger.Interface) {
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, verifier middleware.TokenVerifier, l logger.Interface) {
 	r := &V1{u: u, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
 
 	// Protected routes
@@ -21,5 +21,5 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		userGroup.Get("/profile", r.profile)
 	}
 
-	admincontroller.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, verifier, l)
+	admincontroller.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, captions, verifier, l)
 }

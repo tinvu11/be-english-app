@@ -236,6 +236,18 @@ definitions:
         example: music
         type: string
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CaptionTranslation:
+    properties:
+      languageId:
+        example: 2
+        type: integer
+      text:
+        example: Xin chào
+        type: string
+    required:
+    - languageId
+    - text
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage:
     properties:
       code:
@@ -270,6 +282,33 @@ definitions:
         type: string
     required:
     - idToken
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption:
+    properties:
+      content:
+        example: Hello
+        type: string
+      endTimeMs:
+        example: 3500
+        minimum: 0
+        type: integer
+      pinyinOrFurigana:
+        example: Nǐ hǎo
+        type: string
+      sentenceOrder:
+        example: 1
+        minimum: 0
+        type: integer
+      startTimeMs:
+        example: 1000
+        minimum: 0
+        type: integer
+      translations:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CaptionTranslation'
+        type: array
+    required:
+    - content
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel:
     properties:
@@ -452,6 +491,50 @@ definitions:
         type: boolean
       user:
         $ref: '#/definitions/entity.User'
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.Caption:
+    properties:
+      content:
+        example: Hello
+        type: string
+      createdAt:
+        type: string
+      endTimeMs:
+        example: 3500
+        type: integer
+      id:
+        example: 1
+        type: integer
+      pinyinOrFurigana:
+        type: string
+      sentenceOrder:
+        example: 1
+        type: integer
+      startTimeMs:
+        example: 1000
+        type: integer
+      translations:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslation'
+        type: array
+      videoId:
+        example: 10
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.CaptionTranslation:
+    properties:
+      languageCode:
+        example: vi
+        type: string
+      languageId:
+        example: 2
+        type: integer
+      languageName:
+        example: Vietnamese
+        type: string
+      text:
+        example: Xin chào
+        type: string
     type: object
   internal_controller_restapi_v1_admin.dashboardResponse:
     properties:
@@ -1684,6 +1767,267 @@ paths:
       summary: Transition video status
       tags:
       - admin-videos
+  /admin/videos/{videoId}/captions:
+    get:
+      description: Sorted by sentenceOrder ascending and includes all translations
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: List all captions of a video
+      tags:
+      - admin-captions
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Add one caption manually
+      tags:
+      - admin-captions
+  /admin/videos/{videoId}/captions/{captionId}:
+    delete:
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption ID
+        in: path
+        name: captionId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete one caption
+      tags:
+      - admin-captions
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption ID
+        in: path
+        name: captionId
+        required: true
+        type: integer
+      - description: Caption
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update a caption and all translations
+      tags:
+      - admin-captions
+  /admin/videos/{videoId}/captions/import:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Use original_file once; repeat translation_files and translation_language_ids
+        in matching order
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Original SRT
+        in: formData
+        name: original_file
+        required: true
+        type: file
+      - description: Translated SRT files
+        in: formData
+        name: translation_files
+        type: file
+      - collectionFormat: csv
+        description: Language IDs matching translation files
+        in: formData
+        items:
+          type: integer
+        name: translation_language_ids
+        type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "413":
+          description: Request Entity Too Large
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Import original and translated SRT files
+      tags:
+      - admin-captions
   /user/profile:
     get:
       description: Get current user profile

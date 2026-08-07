@@ -67,4 +67,13 @@ type (
 		SetVideoStatus(ctx context.Context, id int64, expectedStatus, nextStatus string) (entity.Video, error)
 		DeleteVideo(ctx context.Context, id int64) error
 	}
+
+	// CaptionRepo persists video captions and translations atomically.
+	CaptionRepo interface {
+		ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error)
+		CreateCaption(ctx context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error)
+		ImportCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error)
+		UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error)
+		DeleteCaption(ctx context.Context, videoID, captionID int64) error
+	}
 )

@@ -163,9 +163,25 @@ func (videosStub) TransitionVideoStatus(_ context.Context, id int64, status stri
 }
 func (videosStub) DeleteVideo(context.Context, int64) error { return nil }
 
+type captionsStub struct{}
+
+func (captionsStub) ListCaptions(context.Context, int64) ([]entity.Caption, error) {
+	return []entity.Caption{}, nil
+}
+func (captionsStub) CreateCaption(_ context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error) {
+	return entity.Caption{ID: 1, VideoID: videoID, SentenceOrder: input.SentenceOrder, Content: input.Content}, nil
+}
+func (captionsStub) ImportSRT(context.Context, int64, []byte, []entity.SRTTranslationFile) ([]entity.Caption, error) {
+	return []entity.Caption{}, nil
+}
+func (captionsStub) UpdateCaption(_ context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {
+	return entity.Caption{ID: captionID, VideoID: videoID, SentenceOrder: input.SentenceOrder, Content: input.Content}, nil
+}
+func (captionsStub) DeleteCaption(context.Context, int64, int64) error { return nil }
+
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, videosStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, videosStub{}, captionsStub{}, verifierStub{}, loggerStub{})
 
 	return app
 }

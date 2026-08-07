@@ -620,3 +620,101 @@ func (mr *MockVideoRepoMockRecorder) UpdateVideo(ctx, id, input any) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateVideo", reflect.TypeOf((*MockVideoRepo)(nil).UpdateVideo), ctx, id, input)
 }
+
+// MockCaptionRepo is a mock of CaptionRepo interface.
+type MockCaptionRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockCaptionRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockCaptionRepoMockRecorder is the mock recorder for MockCaptionRepo.
+type MockCaptionRepoMockRecorder struct {
+	mock *MockCaptionRepo
+}
+
+// NewMockCaptionRepo creates a new mock instance.
+func NewMockCaptionRepo(ctrl *gomock.Controller) *MockCaptionRepo {
+	mock := &MockCaptionRepo{ctrl: ctrl}
+	mock.recorder = &MockCaptionRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCaptionRepo) EXPECT() *MockCaptionRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateCaption mocks base method.
+func (m *MockCaptionRepo) CreateCaption(ctx context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateCaption", ctx, videoID, input)
+	ret0, _ := ret[0].(entity.Caption)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateCaption indicates an expected call of CreateCaption.
+func (mr *MockCaptionRepoMockRecorder) CreateCaption(ctx, videoID, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCaption", reflect.TypeOf((*MockCaptionRepo)(nil).CreateCaption), ctx, videoID, input)
+}
+
+// DeleteCaption mocks base method.
+func (m *MockCaptionRepo) DeleteCaption(ctx context.Context, videoID, captionID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCaption", ctx, videoID, captionID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteCaption indicates an expected call of DeleteCaption.
+func (mr *MockCaptionRepoMockRecorder) DeleteCaption(ctx, videoID, captionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCaption", reflect.TypeOf((*MockCaptionRepo)(nil).DeleteCaption), ctx, videoID, captionID)
+}
+
+// ImportCaptions mocks base method.
+func (m *MockCaptionRepo) ImportCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ImportCaptions", ctx, videoID, inputs)
+	ret0, _ := ret[0].([]entity.Caption)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ImportCaptions indicates an expected call of ImportCaptions.
+func (mr *MockCaptionRepoMockRecorder) ImportCaptions(ctx, videoID, inputs any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportCaptions", reflect.TypeOf((*MockCaptionRepo)(nil).ImportCaptions), ctx, videoID, inputs)
+}
+
+// ListCaptions mocks base method.
+func (m *MockCaptionRepo) ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCaptions", ctx, videoID)
+	ret0, _ := ret[0].([]entity.Caption)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCaptions indicates an expected call of ListCaptions.
+func (mr *MockCaptionRepoMockRecorder) ListCaptions(ctx, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCaptions", reflect.TypeOf((*MockCaptionRepo)(nil).ListCaptions), ctx, videoID)
+}
+
+// UpdateCaption mocks base method.
+func (m *MockCaptionRepo) UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCaption", ctx, videoID, captionID, input)
+	ret0, _ := ret[0].(entity.Caption)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateCaption indicates an expected call of UpdateCaption.
+func (mr *MockCaptionRepoMockRecorder) UpdateCaption(ctx, videoID, captionID, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCaption", reflect.TypeOf((*MockCaptionRepo)(nil).UpdateCaption), ctx, videoID, captionID, input)
+}

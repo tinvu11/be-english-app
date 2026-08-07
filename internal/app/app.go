@@ -11,6 +11,7 @@ import (
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
+	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
@@ -19,6 +20,7 @@ import (
 	persistVideoRepo "github.com/evrone/go-clean-template/internal/repo/persistent/video"
 	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/internal/usecase/adminuser"
+	"github.com/evrone/go-clean-template/internal/usecase/caption"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/level"
@@ -40,6 +42,7 @@ type useCases struct {
 	channel   usecase.Channel
 	adminUser usecase.AdminUser
 	video     usecase.Video
+	caption   usecase.Caption
 }
 
 type servers struct {
@@ -54,6 +57,7 @@ func initUseCases(pg *postgres.Postgres) useCases {
 	channelRepo := persistChannelRepo.New(pg)
 	adminUserRepo := persistAdminUserRepo.New(pg)
 	videoRepo := persistVideoRepo.New(pg)
+	captionRepo := persistCaptionRepo.New(pg)
 
 	return useCases{
 		user:      user.New(userRepo),
@@ -63,13 +67,14 @@ func initUseCases(pg *postgres.Postgres) useCases {
 		channel:   channel.New(channelRepo),
 		adminUser: adminuser.New(adminUserRepo),
 		video:     video.New(videoRepo),
+		caption:   caption.New(captionRepo),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, verifier, l)
 
 	return servers{
 		http: httpServer,
