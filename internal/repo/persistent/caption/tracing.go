@@ -34,6 +34,18 @@ func (r *tracedRepo) ImportCaptions(ctx context.Context, videoID int64, inputs [
 	finishSpan(span, err)
 	return items, err
 }
+func (r *tracedRepo) ImportCaptionsIfEmpty(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
+	ctx, span := otel.Tracer("repo.caption").Start(ctx, "CaptionRepo.ImportCaptionsIfEmpty")
+	items, err := r.next.ImportCaptionsIfEmpty(ctx, videoID, inputs)
+	finishSpan(span, err)
+	return items, err
+}
+func (r *tracedRepo) ReplaceCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
+	ctx, span := otel.Tracer("repo.caption").Start(ctx, "CaptionRepo.ReplaceCaptions")
+	items, err := r.next.ReplaceCaptions(ctx, videoID, inputs)
+	finishSpan(span, err)
+	return items, err
+}
 func (r *tracedRepo) UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {
 	ctx, span := otel.Tracer("repo.caption").Start(ctx, "CaptionRepo.UpdateCaption")
 	item, err := r.next.UpdateCaption(ctx, videoID, captionID, input)

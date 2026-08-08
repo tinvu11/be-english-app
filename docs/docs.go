@@ -2156,6 +2156,182 @@ const docTemplate = `{
                 ]
             }
         },
+        "/admin/videos/{videoId}/captions/import-youtube": {
+            "post": {
+                "description": "Downloads manual WebVTT subtitles only; mode is fail_if_exists or replace_all",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-captions"
+                ],
+                "summary": "Import creator-provided YouTube captions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "YouTube caption import",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/videos/{videoId}/captions/youtube-tracks": {
+            "get": {
+                "description": "Automatic and auto-translated captions are excluded",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-captions"
+                ],
+                "summary": "List creator-provided YouTube subtitle tracks",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTracks"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/videos/{videoId}/captions/{captionId}": {
             "put": {
                 "consumes": [
@@ -2724,6 +2900,28 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions": {
+            "type": "object",
+            "required": [
+                "languageCode",
+                "mode"
+            ],
+            "properties": {
+                "languageCode": {
+                    "type": "string",
+                    "maxLength": 35,
+                    "example": "en"
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "fail_if_exists",
+                        "replace_all"
+                    ],
+                    "example": "replace_all"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation": {
             "type": "object",
             "required": [
@@ -3116,6 +3314,57 @@ const docTemplate = `{
                 "text": {
                     "type": "string",
                     "example": "Xin chào"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult": {
+            "type": "object",
+            "properties": {
+                "importedCount": {
+                    "type": "integer",
+                    "example": 128
+                },
+                "languageCode": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "source": {
+                    "type": "string",
+                    "example": "youtube_manual"
+                },
+                "videoId": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack": {
+            "type": "object",
+            "properties": {
+                "formats": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "languageCode": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "English"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTracks": {
+            "type": "object",
+            "properties": {
+                "tracks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack"
+                    }
                 }
             }
         },

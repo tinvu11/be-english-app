@@ -49,3 +49,25 @@ type SRTTranslationFile struct {
 	LanguageID int
 	Data       []byte
 }
+
+const (
+	CaptionImportFailIfExists = "fail_if_exists"
+	CaptionImportReplaceAll   = "replace_all"
+)
+
+type YouTubeSubtitleTrack struct {
+	LanguageCode string   `json:"languageCode" example:"en"`
+	Name         string   `json:"name,omitempty" example:"English"`
+	Formats      []string `json:"formats"`
+}
+
+type YouTubeSubtitleTracks struct {
+	Tracks []YouTubeSubtitleTrack `json:"tracks"`
+}
+
+type YouTubeCaptionImportResult struct {
+	VideoID       int64  `json:"videoId" example:"10"`
+	LanguageCode  string `json:"languageCode" example:"en"`
+	Source        string `json:"source" example:"youtube_manual"`
+	ImportedCount int    `json:"importedCount" example:"128"`
+}

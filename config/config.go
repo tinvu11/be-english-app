@@ -17,6 +17,7 @@ type (
 		Metrics  metrics
 		Swagger  swagger
 		Tracing  tracing
+		YTDLP    ytdlp
 	}
 
 	// App -.
@@ -64,6 +65,12 @@ type (
 		OTLPEndpoint string  `env:"TRACING_OTLP_ENDPOINT" envDefault:"localhost:4317"`
 		OTLPInsecure bool    `env:"TRACING_OTLP_INSECURE" envDefault:"true"`
 		SampleRate   float64 `env:"TRACING_SAMPLE_RATE" envDefault:"0.1"`
+	}
+
+	ytdlp struct {
+		BinaryPath     string `env:"YTDLP_BINARY_PATH" envDefault:"yt-dlp"`
+		TimeoutSeconds int    `env:"YTDLP_TIMEOUT_SECONDS" envDefault:"45"`
+		MaxFileMB      int64  `env:"YTDLP_MAX_FILE_MB" envDefault:"10"`
 	}
 )
 

@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -16,6 +17,54 @@ import (
 )
 
 const maxSRTFileSize = 10 << 20
+
+// @Summary List creator-provided YouTube subtitle tracks
+// @Description Automatic and auto-translated captions are excluded
+// @Tags admin-captions
+// @Produce json
+// @Param videoId path int true "Video ID"
+// @Success 200 {object} entity.YouTubeSubtitleTracks
+// @Failure 400,401,403,404,502,504,500 {object} response.Error
+// @Security BearerAuth
+// @Router /admin/videos/{videoId}/captions/youtube-tracks [get]
+func (ctrl *controller) listYouTubeSubtitleTracks(ctx *fiber.Ctx) error {
+	videoID, err := positiveInt64(ctx.Params("videoId"))
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	tracks, err := ctrl.captions.ListYouTubeSubtitleTracks(ctx.UserContext(), videoID)
+	if err != nil {
+		return ctrl.captionError(ctx, err)
+	}
+	return ctx.JSON(tracks)
+}
+
+// @Summary Import creator-provided YouTube captions
+// @Description Downloads manual WebVTT subtitles only; mode is fail_if_exists or replace_all
+// @Tags admin-captions
+// @Accept json
+// @Produce json
+// @Param videoId path int true "Video ID"
+// @Param request body adminrequest.ImportYouTubeCaptions true "YouTube caption import"
+// @Success 201 {object} entity.YouTubeCaptionImportResult
+// @Failure 400,401,403,404,409,422,502,504,500 {object} response.Error
+// @Security BearerAuth
+// @Router /admin/videos/{videoId}/captions/import-youtube [post]
+func (ctrl *controller) importYouTubeCaptions(ctx *fiber.Ctx) error {
+	videoID, err := positiveInt64(ctx.Params("videoId"))
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	var body adminrequest.ImportYouTubeCaptions
+	if err = ctx.BodyParser(&body); err != nil || ctrl.validate.Struct(body) != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid YouTube caption import")
+	}
+	result, err := ctrl.captions.ImportFromYouTube(ctx.UserContext(), videoID, body.LanguageCode, body.Mode)
+	if err != nil {
+		return ctrl.captionError(ctx, err)
+	}
+	return ctx.Status(http.StatusCreated).JSON(result)
+}
 
 // @Summary List all captions of a video
 // @Description Sorted by sentenceOrder ascending and includes all translations
@@ -252,6 +301,15 @@ func (ctrl *controller) captionError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusNotFound, "caption not found")
 	case errors.Is(err, entity.ErrCaptionExists):
 		return errorResponse(ctx, http.StatusConflict, "caption sentence order already exists")
+	case errors.Is(err, entity.ErrManualSubtitleNotFound):
+		return errorResponse(ctx, http.StatusNotFound, "manual YouTube subtitle not found")
+	case errors.Is(err, entity.ErrInvalidWebVTT):
+		return errorResponse(ctx, http.StatusUnprocessableEntity, "invalid YouTube WebVTT subtitle")
+	case errors.Is(err, entity.ErrSubtitleDownloadFailed):
+		if errors.Is(err, context.DeadlineExceeded) {
+			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube subtitle request timed out")
+		}
+		return errorResponse(ctx, http.StatusBadGateway, "YouTube subtitle provider failed")
 	default:
 		ctrl.log.Error(err, "restapi - v1 - admin - caption")
 		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")

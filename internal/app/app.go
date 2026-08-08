@@ -7,9 +7,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	"github.com/evrone/go-clean-template/internal/gateway/ytdlp"
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
@@ -49,7 +51,7 @@ type servers struct {
 	http *httpserver.Server
 }
 
-func initUseCases(pg *postgres.Postgres) useCases {
+func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	userRepo := persistUserRepo.New(pg)
 	languageRepo := persistLanguageRepo.New(pg)
 	levelRepo := persistLevelRepo.New(pg)
@@ -58,6 +60,7 @@ func initUseCases(pg *postgres.Postgres) useCases {
 	adminUserRepo := persistAdminUserRepo.New(pg)
 	videoRepo := persistVideoRepo.New(pg)
 	captionRepo := persistCaptionRepo.New(pg)
+	subtitleProvider := ytdlp.New(cfg.YTDLP.BinaryPath, time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20)
 
 	return useCases{
 		user:      user.New(userRepo),
@@ -67,7 +70,7 @@ func initUseCases(pg *postgres.Postgres) useCases {
 		channel:   channel.New(channelRepo),
 		adminUser: adminuser.New(adminUserRepo),
 		video:     video.New(videoRepo),
-		caption:   caption.New(captionRepo),
+		caption:   caption.New(captionRepo, videoRepo, subtitleProvider),
 	}
 }
 
@@ -144,7 +147,7 @@ func Run(cfg *config.Config) {
 		l.Fatal(fmt.Errorf("app - Run - firebaseauth.New: %w", err))
 	}
 
-	uc := initUseCases(pg)
+	uc := initUseCases(cfg, pg)
 	s := initServers(cfg, uc, firebaseVerifier, l)
 	s.startServers()
 	s.waitForShutdown(l)

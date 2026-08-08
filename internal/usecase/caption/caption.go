@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/evrone/go-clean-template/internal/entity"
+	"github.com/evrone/go-clean-template/internal/gateway"
 	"github.com/evrone/go-clean-template/internal/repo"
 	"github.com/evrone/go-clean-template/internal/usecase"
 )
@@ -14,9 +15,15 @@ import (
 const maxImportCaptions = 10000
 const maxCaptionPageSize = 200
 
-type UseCase struct{ repo repo.CaptionRepo }
+type UseCase struct {
+	repo      repo.CaptionRepo
+	videos    repo.VideoRepo
+	subtitles gateway.YouTubeSubtitleProvider
+}
 
-func New(repository repo.CaptionRepo) usecase.Caption { return newTraced(&UseCase{repo: repository}) }
+func New(repository repo.CaptionRepo, videos repo.VideoRepo, subtitles gateway.YouTubeSubtitleProvider) usecase.Caption {
+	return newTraced(&UseCase{repo: repository, videos: videos, subtitles: subtitles})
+}
 
 func (uc *UseCase) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
 	if videoID <= 0 || filter.Limit <= 0 || filter.Limit > maxCaptionPageSize || filter.Offset < 0 {
@@ -66,6 +73,52 @@ func (uc *UseCase) ImportSRT(ctx context.Context, videoID int64, original []byte
 		}
 	}
 	return uc.repo.ImportCaptions(ctx, videoID, inputs)
+}
+
+func (uc *UseCase) ListYouTubeSubtitleTracks(ctx context.Context, videoID int64) (entity.YouTubeSubtitleTracks, error) {
+	if videoID <= 0 {
+		return entity.YouTubeSubtitleTracks{}, entity.ErrInvalidVideo
+	}
+	video, err := uc.videos.GetVideo(ctx, videoID)
+	if err != nil {
+		return entity.YouTubeSubtitleTracks{}, err
+	}
+	tracks, err := uc.subtitles.ListManualSubtitles(ctx, video.YouTubeID)
+	if err != nil {
+		return entity.YouTubeSubtitleTracks{}, err
+	}
+	return entity.YouTubeSubtitleTracks{Tracks: tracks}, nil
+}
+
+func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languageCode, mode string) (entity.YouTubeCaptionImportResult, error) {
+	languageCode = strings.TrimSpace(languageCode)
+	mode = strings.ToLower(strings.TrimSpace(mode))
+	if videoID <= 0 || languageCode == "" || len(languageCode) > 35 ||
+		(mode != entity.CaptionImportFailIfExists && mode != entity.CaptionImportReplaceAll) {
+		return entity.YouTubeCaptionImportResult{}, entity.ErrInvalidCaption
+	}
+	video, err := uc.videos.GetVideo(ctx, videoID)
+	if err != nil {
+		return entity.YouTubeCaptionImportResult{}, err
+	}
+	data, err := uc.subtitles.DownloadManualSubtitle(ctx, video.YouTubeID, languageCode)
+	if err != nil {
+		return entity.YouTubeCaptionImportResult{}, err
+	}
+	inputs, err := parseWebVTT(data)
+	if err != nil || len(inputs) == 0 || len(inputs) > maxImportCaptions {
+		return entity.YouTubeCaptionImportResult{}, fmt.Errorf("%w: %v", entity.ErrInvalidWebVTT, err)
+	}
+	if mode == entity.CaptionImportReplaceAll {
+		_, err = uc.repo.ReplaceCaptions(ctx, videoID, inputs)
+	} else {
+		_, err = uc.repo.ImportCaptionsIfEmpty(ctx, videoID, inputs)
+	}
+	if err != nil {
+		return entity.YouTubeCaptionImportResult{}, err
+	}
+	return entity.YouTubeCaptionImportResult{VideoID: videoID, LanguageCode: languageCode,
+		Source: "youtube_manual", ImportedCount: len(inputs)}, nil
 }
 
 func (uc *UseCase) UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {

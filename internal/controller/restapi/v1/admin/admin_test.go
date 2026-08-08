@@ -174,6 +174,12 @@ func (captionsStub) CreateCaption(_ context.Context, videoID int64, input entity
 func (captionsStub) ImportSRT(context.Context, int64, []byte, []entity.SRTTranslationFile) ([]entity.Caption, error) {
 	return []entity.Caption{}, nil
 }
+func (captionsStub) ListYouTubeSubtitleTracks(context.Context, int64) (entity.YouTubeSubtitleTracks, error) {
+	return entity.YouTubeSubtitleTracks{}, nil
+}
+func (captionsStub) ImportFromYouTube(context.Context, int64, string, string) (entity.YouTubeCaptionImportResult, error) {
+	return entity.YouTubeCaptionImportResult{}, nil
+}
 func (captionsStub) UpdateCaption(_ context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {
 	return entity.Caption{ID: captionID, VideoID: videoID, SentenceOrder: input.SentenceOrder, Content: input.Content}, nil
 }

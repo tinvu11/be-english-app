@@ -36,4 +36,7 @@ var (
 	ErrInvalidCaption          = errors.New("invalid caption")
 	ErrInvalidSRT              = errors.New("invalid srt file")
 	ErrCaptionTranslationCount = errors.New("caption translation count does not match original")
+	ErrManualSubtitleNotFound  = errors.New("manual YouTube subtitle not found")
+	ErrSubtitleDownloadFailed  = errors.New("YouTube subtitle download failed")
+	ErrInvalidWebVTT           = errors.New("invalid WebVTT subtitle")
 )

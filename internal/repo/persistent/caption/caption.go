@@ -60,6 +60,18 @@ func (r *Repo) CreateCaption(ctx context.Context, videoID int64, input entity.Ca
 }
 
 func (r *Repo) ImportCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
+	return r.storeCaptions(ctx, videoID, inputs, false, false)
+}
+
+func (r *Repo) ImportCaptionsIfEmpty(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
+	return r.storeCaptions(ctx, videoID, inputs, false, true)
+}
+
+func (r *Repo) ReplaceCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
+	return r.storeCaptions(ctx, videoID, inputs, true, false)
+}
+
+func (r *Repo) storeCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput, replace, failIfExists bool) ([]entity.Caption, error) {
 	tx, err := r.Pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("CaptionRepo - ImportCaptions - begin: %w", err)
@@ -67,6 +79,20 @@ func (r *Repo) ImportCaptions(ctx context.Context, videoID int64, inputs []entit
 	defer func() { _ = tx.Rollback(ctx) }()
 	if err = ensureVideoTx(ctx, tx, videoID); err != nil {
 		return nil, err
+	}
+	if replace {
+		if _, err = tx.Exec(ctx, `DELETE FROM video_captions WHERE video_id=$1`, videoID); err != nil {
+			return nil, fmt.Errorf("CaptionRepo - ReplaceCaptions - delete existing: %w", err)
+		}
+	}
+	if failIfExists {
+		var exists bool
+		if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM video_captions WHERE video_id=$1)`, videoID).Scan(&exists); err != nil {
+			return nil, fmt.Errorf("CaptionRepo - ImportCaptionsIfEmpty - check existing: %w", err)
+		}
+		if exists {
+			return nil, entity.ErrCaptionExists
+		}
 	}
 	for _, input := range inputs {
 		var captionID int64
@@ -148,7 +174,7 @@ func (r *Repo) ensureVideo(ctx context.Context, videoID int64) error {
 
 func ensureVideoTx(ctx context.Context, tx pgx.Tx, videoID int64) error {
 	var exists bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM videos WHERE id=$1)`, videoID).Scan(&exists); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM videos WHERE id=$1 FOR UPDATE)`, videoID).Scan(&exists); err != nil {
 		return fmt.Errorf("CaptionRepo - ensureVideoTx: %w", err)
 	}
 	if !exists {

@@ -29,3 +29,5 @@ coverage.txt
 # Firebase credentials
 *firebase-service-account.json
 firebase-*.json
+
+.tmp-gocache

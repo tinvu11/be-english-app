@@ -58,6 +58,8 @@ func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Languag
 	captionRoutes := protected.Group("/videos/:videoId/captions")
 	captionRoutes.Get("/", ctrl.listCaptions)
 	captionRoutes.Post("/import", ctrl.importCaptions)
+	captionRoutes.Get("/youtube-tracks", ctrl.listYouTubeSubtitleTracks)
+	captionRoutes.Post("/import-youtube", ctrl.importYouTubeCaptions)
 	captionRoutes.Post("/", ctrl.createCaption)
 	captionRoutes.Put("/:captionId", ctrl.updateCaption)
 	captionRoutes.Delete("/:captionId", ctrl.deleteCaption)
