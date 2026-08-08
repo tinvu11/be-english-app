@@ -14,9 +14,9 @@ type tracedUseCase struct{ next usecase.Caption }
 
 func newTraced(next usecase.Caption) usecase.Caption { return &tracedUseCase{next: next} }
 
-func (u *tracedUseCase) ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error) {
+func (u *tracedUseCase) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
 	ctx, span := otel.Tracer("usecase.caption").Start(ctx, "CaptionUseCase.ListCaptions")
-	items, err := u.next.ListCaptions(ctx, videoID)
+	items, err := u.next.ListCaptions(ctx, videoID, filter)
 	finishSpan(span, err)
 	return items, err
 }

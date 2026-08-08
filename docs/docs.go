@@ -1911,16 +1911,27 @@ const docTemplate = `{
                         "name": "videoId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 50,
+                        "description": "Page size (1-200)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption"
-                            }
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionList"
                         }
                     },
                     "400": {
@@ -3069,6 +3080,21 @@ const docTemplate = `{
                 "videoId": {
                     "type": "integer",
                     "example": 10
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.CaptionList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 500
                 }
             }
         },

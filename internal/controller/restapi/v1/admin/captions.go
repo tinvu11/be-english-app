@@ -22,7 +22,9 @@ const maxSRTFileSize = 10 << 20
 // @Tags admin-captions
 // @Produce json
 // @Param videoId path int true "Video ID"
-// @Success 200 {array} entity.Caption
+// @Param limit query int false "Page size (1-200)" default(50)
+// @Param offset query int false "Offset" default(0)
+// @Success 200 {object} entity.CaptionList
 // @Failure 400,401,403,404,500 {object} response.Error
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions [get]
@@ -31,7 +33,20 @@ func (ctrl *controller) listCaptions(ctx *fiber.Ctx) error {
 	if err != nil {
 		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
 	}
-	items, err := ctrl.captions.ListCaptions(ctx.UserContext(), videoID)
+	filter := entity.CaptionFilter{Limit: 20}
+	if raw := ctx.Query("limit"); raw != "" {
+		filter.Limit, err = strconv.Atoi(raw)
+		if err != nil {
+			return errorResponse(ctx, http.StatusBadRequest, "invalid limit")
+		}
+	}
+	if raw := ctx.Query("offset"); raw != "" {
+		filter.Offset, err = strconv.Atoi(raw)
+		if err != nil {
+			return errorResponse(ctx, http.StatusBadRequest, "invalid offset")
+		}
+	}
+	items, err := ctrl.captions.ListCaptions(ctx.UserContext(), videoID, filter)
 	if err != nil {
 		return ctrl.captionError(ctx, err)
 	}

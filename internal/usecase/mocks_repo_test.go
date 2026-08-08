@@ -690,18 +690,18 @@ func (mr *MockCaptionRepoMockRecorder) ImportCaptions(ctx, videoID, inputs any) 
 }
 
 // ListCaptions mocks base method.
-func (m *MockCaptionRepo) ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error) {
+func (m *MockCaptionRepo) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListCaptions", ctx, videoID)
-	ret0, _ := ret[0].([]entity.Caption)
+	ret := m.ctrl.Call(m, "ListCaptions", ctx, videoID, filter)
+	ret0, _ := ret[0].(entity.CaptionList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListCaptions indicates an expected call of ListCaptions.
-func (mr *MockCaptionRepoMockRecorder) ListCaptions(ctx, videoID any) *gomock.Call {
+func (mr *MockCaptionRepoMockRecorder) ListCaptions(ctx, videoID, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCaptions", reflect.TypeOf((*MockCaptionRepo)(nil).ListCaptions), ctx, videoID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCaptions", reflect.TypeOf((*MockCaptionRepo)(nil).ListCaptions), ctx, videoID, filter)
 }
 
 // UpdateCaption mocks base method.

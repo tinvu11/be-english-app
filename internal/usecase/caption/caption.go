@@ -12,16 +12,17 @@ import (
 )
 
 const maxImportCaptions = 10000
+const maxCaptionPageSize = 200
 
 type UseCase struct{ repo repo.CaptionRepo }
 
 func New(repository repo.CaptionRepo) usecase.Caption { return newTraced(&UseCase{repo: repository}) }
 
-func (uc *UseCase) ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error) {
-	if videoID <= 0 {
-		return nil, entity.ErrInvalidCaption
+func (uc *UseCase) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
+	if videoID <= 0 || filter.Limit <= 0 || filter.Limit > maxCaptionPageSize || filter.Offset < 0 {
+		return entity.CaptionList{}, entity.ErrInvalidCaption
 	}
-	return uc.repo.ListCaptions(ctx, videoID)
+	return uc.repo.ListCaptions(ctx, videoID, filter)
 }
 
 func (uc *UseCase) CreateCaption(ctx context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error) {

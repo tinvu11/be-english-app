@@ -70,7 +70,7 @@ type (
 
 	// CaptionRepo persists video captions and translations atomically.
 	CaptionRepo interface {
-		ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error)
+		ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error)
 		CreateCaption(ctx context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error)
 		ImportCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error)
 		UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error)

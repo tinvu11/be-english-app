@@ -165,8 +165,8 @@ func (videosStub) DeleteVideo(context.Context, int64) error { return nil }
 
 type captionsStub struct{}
 
-func (captionsStub) ListCaptions(context.Context, int64) ([]entity.Caption, error) {
-	return []entity.Caption{}, nil
+func (captionsStub) ListCaptions(context.Context, int64, entity.CaptionFilter) (entity.CaptionList, error) {
+	return entity.CaptionList{Items: []entity.Caption{}}, nil
 }
 func (captionsStub) CreateCaption(_ context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error) {
 	return entity.Caption{ID: 1, VideoID: videoID, SentenceOrder: input.SentenceOrder, Content: input.Content}, nil

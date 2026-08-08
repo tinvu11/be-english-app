@@ -15,10 +15,10 @@ type tracedRepo struct{ next repo.CaptionRepo }
 
 func newTraced(next repo.CaptionRepo) repo.CaptionRepo { return &tracedRepo{next: next} }
 
-func (r *tracedRepo) ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error) {
+func (r *tracedRepo) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
 	ctx, span := otel.Tracer("repo.caption").Start(ctx, "CaptionRepo.ListCaptions")
 	span.SetAttributes(attribute.Int64("video.id", videoID))
-	items, err := r.next.ListCaptions(ctx, videoID)
+	items, err := r.next.ListCaptions(ctx, videoID, filter)
 	finishSpan(span, err)
 	return items, err
 }

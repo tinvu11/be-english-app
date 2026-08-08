@@ -521,6 +521,16 @@ definitions:
         example: 10
         type: integer
     type: object
+  github_com_evrone_go-clean-template_internal_entity.CaptionList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+        type: array
+      total:
+        example: 500
+        type: integer
+    type: object
   github_com_evrone_go-clean-template_internal_entity.CaptionTranslation:
     properties:
       languageCode:
@@ -1776,15 +1786,23 @@ paths:
         name: videoId
         required: true
         type: integer
+      - default: 50
+        description: Page size (1-200)
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
-            type: array
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionList'
         "400":
           description: Bad Request
           schema:

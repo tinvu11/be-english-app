@@ -23,27 +23,32 @@ type Repo struct{ *postgres.Postgres }
 
 func New(pg *postgres.Postgres) repo.CaptionRepo { return newTraced(&Repo{Postgres: pg}) }
 
-func (r *Repo) ListCaptions(ctx context.Context, videoID int64) ([]entity.Caption, error) {
+func (r *Repo) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
 	if err := r.ensureVideo(ctx, videoID); err != nil {
-		return nil, err
+		return entity.CaptionList{}, err
 	}
-	rows, err := r.Pool.Query(ctx, `SELECT `+captionColumns+` FROM video_captions c WHERE c.video_id=$1 ORDER BY c.sentence_order ASC`, videoID)
+	var total int
+	if err := r.Pool.QueryRow(ctx, `SELECT COUNT(*) FROM video_captions WHERE video_id=$1`, videoID).Scan(&total); err != nil {
+		return entity.CaptionList{}, fmt.Errorf("CaptionRepo - ListCaptions - count: %w", err)
+	}
+	rows, err := r.Pool.Query(ctx, `SELECT `+captionColumns+` FROM video_captions c WHERE c.video_id=$1
+		ORDER BY c.sentence_order ASC LIMIT $2 OFFSET $3`, videoID, filter.Limit, filter.Offset)
 	if err != nil {
-		return nil, fmt.Errorf("CaptionRepo - ListCaptions: %w", err)
+		return entity.CaptionList{}, fmt.Errorf("CaptionRepo - ListCaptions: %w", err)
 	}
 	defer rows.Close()
 	items := make([]entity.Caption, 0)
 	for rows.Next() {
 		item, scanErr := scanCaption(rows)
 		if scanErr != nil {
-			return nil, fmt.Errorf("CaptionRepo - ListCaptions - scan: %w", scanErr)
+			return entity.CaptionList{}, fmt.Errorf("CaptionRepo - ListCaptions - scan: %w", scanErr)
 		}
 		items = append(items, item)
 	}
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("CaptionRepo - ListCaptions - rows: %w", err)
+		return entity.CaptionList{}, fmt.Errorf("CaptionRepo - ListCaptions - rows: %w", err)
 	}
-	return items, nil
+	return entity.CaptionList{Items: items, Total: total}, nil
 }
 
 func (r *Repo) CreateCaption(ctx context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error) {
@@ -78,8 +83,11 @@ func (r *Repo) ImportCaptions(ctx context.Context, videoID int64, inputs []entit
 	if err = tx.Commit(ctx); err != nil {
 		return nil, fmt.Errorf("CaptionRepo - ImportCaptions - commit: %w", err)
 	}
-	return r.ListCaptions(ctx, videoID)
+	result, err := r.ListCaptions(ctx, videoID, entity.CaptionFilter{Limit: maxInt, Offset: 0})
+	return result.Items, err
 }
+
+const maxInt = int(^uint(0) >> 1)
 
 func (r *Repo) UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {
 	tx, err := r.Pool.Begin(ctx)

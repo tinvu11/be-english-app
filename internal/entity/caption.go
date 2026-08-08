@@ -21,6 +21,16 @@ type Caption struct {
 	CreatedAt        time.Time            `json:"createdAt"`
 }
 
+type CaptionFilter struct {
+	Limit  int
+	Offset int
+}
+
+type CaptionList struct {
+	Items []Caption `json:"items"`
+	Total int       `json:"total" example:"500"`
+}
+
 type CaptionTranslationInput struct {
 	LanguageID int
 	Text       string
