@@ -500,6 +500,15 @@ definitions:
     required:
     - status
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview:
+    properties:
+      youtubeUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        maxLength: 2048
+        type: string
+    required:
+    - youtubeUrl
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login:
     properties:
       authenticated:
@@ -596,6 +605,28 @@ definitions:
         items:
           $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack'
         type: array
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview:
+    properties:
+      channelName:
+        type: string
+      channelYoutubeId:
+        type: string
+      durationSeconds:
+        example: 300
+        type: integer
+      manualSubtitleTracks:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack'
+        type: array
+      thumbnailUrl:
+        type: string
+      title:
+        example: Video title
+        type: string
+      youtubeId:
+        example: dQw4w9WgXcQ
+        type: string
     type: object
   internal_controller_restapi_v1_admin.dashboardResponse:
     properties:
@@ -2212,6 +2243,55 @@ paths:
       summary: List creator-provided YouTube subtitle tracks
       tags:
       - admin-captions
+  /admin/videos/youtube-preview:
+    post:
+      consumes:
+      - application/json
+      description: Returns metadata and creator-provided subtitle tracks without saving
+        the video
+      parameters:
+      - description: YouTube URL or ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Preview YouTube video metadata
+      tags:
+      - admin-videos
   /user/profile:
     get:
       description: Get current user profile

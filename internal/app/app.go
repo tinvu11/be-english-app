@@ -69,7 +69,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		topic:     topic.New(topicRepo),
 		channel:   channel.New(channelRepo),
 		adminUser: adminuser.New(adminUserRepo),
-		video:     video.New(videoRepo),
+		video:     video.New(videoRepo, subtitleProvider),
 		caption:   caption.New(captionRepo, videoRepo, subtitleProvider),
 	}
 }

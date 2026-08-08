@@ -152,6 +152,9 @@ func (videosStub) ListVideos(context.Context, entity.VideoFilter) (entity.VideoL
 func (videosStub) GetVideo(_ context.Context, id int64) (entity.Video, error) {
 	return entity.Video{ID: id, Status: entity.VideoStatusDraft, Topics: []entity.VideoTopic{}}, nil
 }
+func (videosStub) PreviewYouTubeVideo(context.Context, string) (entity.YouTubeVideoPreview, error) {
+	return entity.YouTubeVideoPreview{YouTubeID: "dQw4w9WgXcQ", Title: "Preview"}, nil
+}
 func (videosStub) CreateVideo(_ context.Context, input entity.VideoInput) (entity.Video, error) {
 	return entity.Video{ID: 1, Title: input.Title, YouTubeID: input.YouTubeID, Status: input.Status}, nil
 }

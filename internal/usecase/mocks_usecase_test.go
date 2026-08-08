@@ -586,6 +586,21 @@ func (mr *MockVideoMockRecorder) ListVideos(ctx, filter any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVideos", reflect.TypeOf((*MockVideo)(nil).ListVideos), ctx, filter)
 }
 
+// PreviewYouTubeVideo mocks base method.
+func (m *MockVideo) PreviewYouTubeVideo(ctx context.Context, youtubeURLOrID string) (entity.YouTubeVideoPreview, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PreviewYouTubeVideo", ctx, youtubeURLOrID)
+	ret0, _ := ret[0].(entity.YouTubeVideoPreview)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PreviewYouTubeVideo indicates an expected call of PreviewYouTubeVideo.
+func (mr *MockVideoMockRecorder) PreviewYouTubeVideo(ctx, youtubeURLOrID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PreviewYouTubeVideo", reflect.TypeOf((*MockVideo)(nil).PreviewYouTubeVideo), ctx, youtubeURLOrID)
+}
+
 // TransitionVideoStatus mocks base method.
 func (m *MockVideo) TransitionVideoStatus(ctx context.Context, id int64, status string) (entity.Video, error) {
 	m.ctrl.T.Helper()

@@ -76,3 +76,13 @@ type VideoList struct {
 	Items []Video `json:"items"`
 	Total int     `json:"total" example:"100"`
 } // @name entity.VideoList
+
+type YouTubeVideoPreview struct {
+	YouTubeID            string                 `json:"youtubeId" example:"dQw4w9WgXcQ"`
+	Title                string                 `json:"title" example:"Video title"`
+	ThumbnailURL         string                 `json:"thumbnailUrl,omitempty"`
+	DurationSeconds      int                    `json:"durationSeconds" example:"300"`
+	ChannelYouTubeID     string                 `json:"channelYoutubeId,omitempty"`
+	ChannelName          string                 `json:"channelName,omitempty"`
+	ManualSubtitleTracks []YouTubeSubtitleTrack `json:"manualSubtitleTracks"`
+}

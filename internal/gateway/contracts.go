@@ -9,6 +9,7 @@ import (
 
 // YouTubeSubtitleProvider exposes only creator-provided YouTube subtitles.
 type YouTubeSubtitleProvider interface {
+	PreviewVideo(ctx context.Context, youtubeID string) (entity.YouTubeVideoPreview, error)
 	ListManualSubtitles(ctx context.Context, youtubeID string) ([]entity.YouTubeSubtitleTrack, error)
 	DownloadManualSubtitle(ctx context.Context, youtubeID, languageCode string) ([]byte, error)
 }

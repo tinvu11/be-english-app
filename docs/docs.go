@@ -1615,6 +1615,81 @@ const docTemplate = `{
                 ]
             }
         },
+        "/admin/videos/youtube-preview": {
+            "post": {
+                "description": "Returns metadata and creator-provided subtitle tracks without saving the video",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-videos"
+                ],
+                "summary": "Preview YouTube video metadata",
+                "parameters": [
+                    {
+                        "description": "YouTube URL or ID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/videos/{id}": {
             "get": {
                 "produces": [
@@ -3228,6 +3303,19 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview": {
+            "type": "object",
+            "required": [
+                "youtubeUrl"
+            ],
+            "properties": {
+                "youtubeUrl": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login": {
             "type": "object",
             "properties": {
@@ -3365,6 +3453,38 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack"
                     }
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview": {
+            "type": "object",
+            "properties": {
+                "channelName": {
+                    "type": "string"
+                },
+                "channelYoutubeId": {
+                    "type": "string"
+                },
+                "durationSeconds": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "manualSubtitleTracks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack"
+                    }
+                },
+                "thumbnailUrl": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Video title"
+                },
+                "youtubeId": {
+                    "type": "string",
+                    "example": "dQw4w9WgXcQ"
                 }
             }
         },

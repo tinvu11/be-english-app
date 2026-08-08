@@ -49,6 +49,7 @@ func NewRoutes(apiV1 fiber.Router, users usecase.User, languages usecase.Languag
 
 	videoRoutes := protected.Group("/videos")
 	videoRoutes.Get("/", ctrl.listVideos)
+	videoRoutes.Post("/youtube-preview", ctrl.previewYouTubeVideo)
 	videoRoutes.Get("/:id", ctrl.getVideo)
 	videoRoutes.Post("/", ctrl.createVideo)
 	videoRoutes.Put("/:id", ctrl.updateVideo)

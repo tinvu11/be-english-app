@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strconv"
@@ -10,6 +11,28 @@ import (
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gofiber/fiber/v2"
 )
+
+// @Summary Preview YouTube video metadata
+// @Description Returns metadata and creator-provided subtitle tracks without saving the video
+// @Tags admin-videos
+// @Accept json
+// @Produce json
+// @Param request body adminrequest.YouTubePreview true "YouTube URL or ID"
+// @Success 200 {object} entity.YouTubeVideoPreview
+// @Failure 400,401,403,502,504,500 {object} response.Error
+// @Security BearerAuth
+// @Router /admin/videos/youtube-preview [post]
+func (ctrl *controller) previewYouTubeVideo(ctx *fiber.Ctx) error {
+	var body adminrequest.YouTubePreview
+	if err := ctx.BodyParser(&body); err != nil || ctrl.validate.Struct(body) != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid YouTube URL")
+	}
+	item, err := ctrl.videos.PreviewYouTubeVideo(ctx.UserContext(), body.YouTubeURL)
+	if err != nil {
+		return ctrl.videoError(ctx, err)
+	}
+	return ctx.JSON(item)
+}
 
 // @Summary List videos
 // @Description Returns videos with language, level, channel, and translated topics
@@ -218,6 +241,11 @@ func (ctrl *controller) videoError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusConflict, "invalid video status transition")
 	case errors.Is(err, entity.ErrConcurrentVideoUpdate):
 		return errorResponse(ctx, http.StatusConflict, "video status changed concurrently")
+	case errors.Is(err, entity.ErrSubtitleDownloadFailed):
+		if errors.Is(err, context.DeadlineExceeded) {
+			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube metadata request timed out")
+		}
+		return errorResponse(ctx, http.StatusBadGateway, "YouTube metadata provider failed")
 	default:
 		ctrl.log.Error(err, "restapi - v1 - admin - video")
 		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")

@@ -3,18 +3,25 @@ package video
 
 import (
 	"context"
+	"net/url"
 	"strings"
 
 	"github.com/evrone/go-clean-template/internal/entity"
+	"github.com/evrone/go-clean-template/internal/gateway"
 	"github.com/evrone/go-clean-template/internal/repo"
 	"github.com/evrone/go-clean-template/internal/usecase"
 )
 
 const maxPageSize = 100
 
-type UseCase struct{ repo repo.VideoRepo }
+type UseCase struct {
+	repo    repo.VideoRepo
+	youtube gateway.YouTubeSubtitleProvider
+}
 
-func New(repository repo.VideoRepo) usecase.Video { return newTraced(&UseCase{repo: repository}) }
+func New(repository repo.VideoRepo, youtube gateway.YouTubeSubtitleProvider) usecase.Video {
+	return newTraced(&UseCase{repo: repository, youtube: youtube})
+}
 
 func (uc *UseCase) ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {
 	filter.Search = strings.TrimSpace(filter.Search)
@@ -32,6 +39,14 @@ func (uc *UseCase) GetVideo(ctx context.Context, id int64) (entity.Video, error)
 		return entity.Video{}, entity.ErrInvalidVideo
 	}
 	return uc.repo.GetVideo(ctx, id)
+}
+
+func (uc *UseCase) PreviewYouTubeVideo(ctx context.Context, youtubeURLOrID string) (entity.YouTubeVideoPreview, error) {
+	youtubeID, err := parseYouTubeID(youtubeURLOrID)
+	if err != nil {
+		return entity.YouTubeVideoPreview{}, err
+	}
+	return uc.youtube.PreviewVideo(ctx, youtubeID)
 }
 
 func (uc *UseCase) CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error) {
@@ -102,4 +117,47 @@ func validStatus(status string) bool {
 func validTransition(current, next string) bool {
 	return (current == entity.VideoStatusDraft && next == entity.VideoStatusPublished) ||
 		(current == entity.VideoStatusPublished && next == entity.VideoStatusArchived)
+}
+
+func parseYouTubeID(raw string) (string, error) {
+	raw = strings.TrimSpace(raw)
+	if validYouTubeID(raw) {
+		return raw, nil
+	}
+	parsed, err := url.ParseRequestURI(raw)
+	if err != nil || (parsed.Scheme != "https" && parsed.Scheme != "http") {
+		return "", entity.ErrInvalidVideo
+	}
+	host := strings.ToLower(parsed.Hostname())
+	var id string
+	switch host {
+	case "youtu.be":
+		id = strings.Trim(strings.Split(strings.Trim(parsed.Path, "/"), "/")[0], " ")
+	case "youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com":
+		if parsed.Path == "/watch" {
+			id = parsed.Query().Get("v")
+		} else {
+			parts := strings.Split(strings.Trim(parsed.Path, "/"), "/")
+			if len(parts) == 2 && (parts[0] == "shorts" || parts[0] == "embed" || parts[0] == "live") {
+				id = parts[1]
+			}
+		}
+	}
+	if !validYouTubeID(id) {
+		return "", entity.ErrInvalidVideo
+	}
+	return id, nil
+}
+
+func validYouTubeID(value string) bool {
+	if len(value) < 6 || len(value) > 50 {
+		return false
+	}
+	for _, char := range value {
+		if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') ||
+			(char >= '0' && char <= '9') || char == '-' || char == '_') {
+			return false
+		}
+	}
+	return true
 }

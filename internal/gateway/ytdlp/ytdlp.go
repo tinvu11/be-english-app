@@ -37,6 +37,13 @@ func New(binaryPath string, timeout time.Duration, maxBytes int64) gateway.YouTu
 }
 
 type metadata struct {
+	ID        string                      `json:"id"`
+	Title     string                      `json:"title"`
+	Thumbnail string                      `json:"thumbnail"`
+	Duration  float64                     `json:"duration"`
+	ChannelID string                      `json:"channel_id"`
+	Channel   string                      `json:"channel"`
+	Uploader  string                      `json:"uploader"`
 	Subtitles map[string][]subtitleFormat `json:"subtitles"`
 }
 
@@ -46,17 +53,25 @@ type subtitleFormat struct {
 }
 
 func (p *Provider) ListManualSubtitles(ctx context.Context, youtubeID string) ([]entity.YouTubeSubtitleTrack, error) {
+	preview, err := p.PreviewVideo(ctx, youtubeID)
+	if err != nil {
+		return nil, err
+	}
+	return preview.ManualSubtitleTracks, nil
+}
+
+func (p *Provider) PreviewVideo(ctx context.Context, youtubeID string) (entity.YouTubeVideoPreview, error) {
 	if !validYouTubeID(youtubeID) {
-		return nil, entity.ErrInvalidVideo
+		return entity.YouTubeVideoPreview{}, entity.ErrInvalidVideo
 	}
 	output, err := p.run(ctx, "--no-config", "--dump-single-json", "--skip-download", "--no-playlist",
 		"--no-warnings", youtubeURL(youtubeID))
 	if err != nil {
-		return nil, err
+		return entity.YouTubeVideoPreview{}, err
 	}
 	var info metadata
 	if err = json.Unmarshal(output, &info); err != nil {
-		return nil, fmt.Errorf("%w: invalid metadata", entity.ErrSubtitleDownloadFailed)
+		return entity.YouTubeVideoPreview{}, fmt.Errorf("%w: invalid metadata", entity.ErrSubtitleDownloadFailed)
 	}
 	tracks := make([]entity.YouTubeSubtitleTrack, 0, len(info.Subtitles))
 	for languageCode, formats := range info.Subtitles {
@@ -77,7 +92,13 @@ func (p *Provider) ListManualSubtitles(ctx context.Context, youtubeID string) ([
 		tracks = append(tracks, track)
 	}
 	sort.Slice(tracks, func(i, j int) bool { return tracks[i].LanguageCode < tracks[j].LanguageCode })
-	return tracks, nil
+	channelName := info.Channel
+	if channelName == "" {
+		channelName = info.Uploader
+	}
+	return entity.YouTubeVideoPreview{YouTubeID: info.ID, Title: info.Title, ThumbnailURL: info.Thumbnail,
+		DurationSeconds: int(info.Duration), ChannelYouTubeID: info.ChannelID, ChannelName: channelName,
+		ManualSubtitleTracks: tracks}, nil
 }
 
 func (p *Provider) DownloadManualSubtitle(ctx context.Context, youtubeID, languageCode string) ([]byte, error) {

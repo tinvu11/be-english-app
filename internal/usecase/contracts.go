@@ -61,6 +61,7 @@ type (
 	Video interface {
 		ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error)
 		GetVideo(ctx context.Context, id int64) (entity.Video, error)
+		PreviewYouTubeVideo(ctx context.Context, youtubeURLOrID string) (entity.YouTubeVideoPreview, error)
 		CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error)
 		UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error)
 		TransitionVideoStatus(ctx context.Context, id int64, status string) (entity.Video, error)
