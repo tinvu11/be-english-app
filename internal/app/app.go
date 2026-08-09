@@ -62,7 +62,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	adminUserRepo := persistAdminUserRepo.New(pg)
 	videoRepo := persistVideoRepo.New(pg)
 	captionRepo := persistCaptionRepo.New(pg)
-	subtitleProvider := ytdlp.New(cfg.YTDLP.BinaryPath, time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20)
+	subtitleProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
 	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})

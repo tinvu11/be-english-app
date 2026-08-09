@@ -1,4 +1,4 @@
-// Package ytdlp implements YouTube subtitle access through the yt-dlp executable.
+// Package ytdlp implements local and remote YouTube subtitle providers.
 package ytdlp
 
 import (
@@ -26,7 +26,8 @@ type Provider struct {
 	maxBytes   int64
 }
 
-func New(binaryPath string, timeout time.Duration, maxBytes int64) gateway.YouTubeSubtitleProvider {
+// NewLocal returns the executable-backed provider used by the dedicated yt-dlp service.
+func NewLocal(binaryPath string, timeout time.Duration, maxBytes int64) gateway.YouTubeSubtitleProvider {
 	if timeout <= 0 {
 		timeout = 45 * time.Second
 	}

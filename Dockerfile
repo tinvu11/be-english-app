@@ -16,14 +16,24 @@ COPY . /app
 WORKDIR /app
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -tags migrate -o /bin/app ./cmd/app
+    go build -tags migrate -o /bin/app ./cmd/app && \
+    go build -o /bin/ytdlp-service ./cmd/ytdlp-service
 
 # Step 3: Final
-FROM alpine:3.23
+FROM alpine:3.23 AS app
 
-RUN apk add --no-cache ca-certificates yt-dlp
+RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /app/config /config
 COPY --from=builder /app/migrations /migrations
 COPY --from=builder /bin/app /app
 CMD ["/app"]
+
+# Dedicated yt-dlp HTTP service; the backend image does not contain yt-dlp.
+FROM alpine:3.23 AS ytdlp-service
+
+RUN apk add --no-cache ca-certificates yt-dlp
+
+COPY --from=builder /bin/ytdlp-service /ytdlp-service
+EXPOSE 8081
+CMD ["/ytdlp-service"]
