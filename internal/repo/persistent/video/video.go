@@ -24,7 +24,20 @@ const videoColumns = `v.id,v.title,v.youtube_id,COALESCE(v.thumbnail_url,''),v.d
 		'id',t.id,'slug',t.slug,'name',COALESCE((SELECT tt.name FROM topic_translations tt
 			WHERE tt.topic_id=t.id ORDER BY (tt.language_id=v.language_id) DESC,tt.language_id LIMIT 1),t.slug),
 		'iconUrl',COALESCE(t.icon_url,'')) ORDER BY t.slug)
-		FROM video_topics vt JOIN topics t ON t.id=vt.topic_id WHERE vt.video_id=v.id),'[]'::jsonb)`
+		FROM video_topics vt JOIN topics t ON t.id=vt.topic_id WHERE vt.video_id=v.id),'[]'::jsonb),
+	(SELECT COUNT(*) FROM video_captions vc WHERE vc.video_id=v.id),
+	COALESCE((SELECT jsonb_agg(jsonb_build_object(
+		'languageId',translated.language_id,'languageCode',translated.language_code,
+		'languageName',translated.language_name,'translatedCaptionCount',translated.caption_count,
+		'isComplete',translated.caption_count=(SELECT COUNT(*) FROM video_captions all_captions WHERE all_captions.video_id=v.id))
+		ORDER BY translated.language_code)
+		FROM (SELECT lang_translation.id AS language_id,lang_translation.code AS language_code,
+			lang_translation.name AS language_name,COUNT(*) AS caption_count
+			FROM video_captions translated_caption
+			JOIN caption_translations ct ON ct.caption_id=translated_caption.id
+			JOIN languages lang_translation ON lang_translation.id=ct.language_id
+			WHERE translated_caption.video_id=v.id
+			GROUP BY lang_translation.id,lang_translation.code,lang_translation.name) translated),'[]'::jsonb)`
 
 const videoJoins = ` FROM videos v
 	JOIN languages lang ON lang.id=v.language_id
@@ -158,10 +171,12 @@ type scanner interface{ Scan(...any) error }
 func scanVideo(row scanner, total *int) (entity.Video, error) {
 	var video entity.Video
 	var topicsJSON []byte
+	var translationsJSON []byte
 	destinations := []any{&video.ID, &video.Title, &video.YouTubeID, &video.ThumbnailURL, &video.DurationSeconds,
 		&video.Status, &video.CreatedAt, &video.UpdatedAt, &video.Language.ID, &video.Language.Code,
 		&video.Language.Name, &video.Level.ID, &video.Level.Code, &video.Level.Name, &video.Channel.ID,
-		&video.Channel.ChannelYouTubeID, &video.Channel.Name, &video.Channel.AvatarURL, &topicsJSON}
+		&video.Channel.ChannelYouTubeID, &video.Channel.Name, &video.Channel.AvatarURL, &topicsJSON,
+		&video.CaptionAvailability.CaptionCount, &translationsJSON}
 	if total != nil {
 		destinations = append(destinations, total)
 	}
@@ -170,6 +185,10 @@ func scanVideo(row scanner, total *int) (entity.Video, error) {
 	}
 	if err := json.Unmarshal(topicsJSON, &video.Topics); err != nil {
 		return video, fmt.Errorf("decode topics: %w", err)
+	}
+	video.CaptionAvailability.HasOriginal = video.CaptionAvailability.CaptionCount > 0
+	if err := json.Unmarshal(translationsJSON, &video.CaptionAvailability.Translations); err != nil {
+		return video, fmt.Errorf("decode caption availability: %w", err)
 	}
 	video.VideoURL = "https://www.youtube.com/watch?v=" + video.YouTubeID
 	return video, nil

@@ -140,6 +140,8 @@ definitions:
     type: object
   entity.Video:
     properties:
+      captionAvailability:
+        $ref: '#/definitions/entity.VideoCaptionAvailability'
       channel:
         $ref: '#/definitions/entity.VideoChannel'
       createdAt:
@@ -174,6 +176,37 @@ definitions:
       youtubeId:
         example: dQw4w9WgXcQ
         type: string
+    type: object
+  entity.VideoCaptionAvailability:
+    properties:
+      captionCount:
+        example: 120
+        type: integer
+      hasOriginal:
+        example: true
+        type: boolean
+      translations:
+        items:
+          $ref: '#/definitions/entity.VideoCaptionTranslationAvailability'
+        type: array
+    type: object
+  entity.VideoCaptionTranslationAvailability:
+    properties:
+      isComplete:
+        example: true
+        type: boolean
+      languageCode:
+        example: vi
+        type: string
+      languageId:
+        example: 2
+        type: integer
+      languageName:
+        example: Vietnamese
+        type: string
+      translatedCaptionCount:
+        example: 120
+        type: integer
     type: object
   entity.VideoChannel:
     properties:

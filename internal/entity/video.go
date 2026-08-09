@@ -44,20 +44,35 @@ type VideoTopic struct {
 	IconURL string `json:"iconUrl,omitempty"`
 } // @name entity.VideoTopic
 
+type VideoCaptionTranslationAvailability struct {
+	LanguageID             int    `json:"languageId" example:"2"`
+	LanguageCode           string `json:"languageCode" example:"vi"`
+	LanguageName           string `json:"languageName" example:"Vietnamese"`
+	TranslatedCaptionCount int    `json:"translatedCaptionCount" example:"120"`
+	IsComplete             bool   `json:"isComplete" example:"true"`
+} // @name entity.VideoCaptionTranslationAvailability
+
+type VideoCaptionAvailability struct {
+	CaptionCount int                                   `json:"captionCount" example:"120"`
+	HasOriginal  bool                                  `json:"hasOriginal" example:"true"`
+	Translations []VideoCaptionTranslationAvailability `json:"translations"`
+} // @name entity.VideoCaptionAvailability
+
 type Video struct {
-	ID              int64         `json:"id" example:"1"`
-	Title           string        `json:"title" example:"Learn English with Music"`
-	YouTubeID       string        `json:"youtubeId" example:"dQw4w9WgXcQ"`
-	VideoURL        string        `json:"videoUrl" example:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
-	ThumbnailURL    string        `json:"thumbnailUrl,omitempty"`
-	DurationSeconds int           `json:"durationSeconds" example:"300"`
-	Status          string        `json:"status" example:"published"`
-	Language        VideoLanguage `json:"language"`
-	Level           VideoLevel    `json:"level"`
-	Channel         VideoChannel  `json:"channel"`
-	Topics          []VideoTopic  `json:"topics"`
-	CreatedAt       time.Time     `json:"createdAt"`
-	UpdatedAt       time.Time     `json:"updatedAt"`
+	ID                  int64                    `json:"id" example:"1"`
+	Title               string                   `json:"title" example:"Learn English with Music"`
+	YouTubeID           string                   `json:"youtubeId" example:"dQw4w9WgXcQ"`
+	VideoURL            string                   `json:"videoUrl" example:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
+	ThumbnailURL        string                   `json:"thumbnailUrl,omitempty"`
+	DurationSeconds     int                      `json:"durationSeconds" example:"300"`
+	Status              string                   `json:"status" example:"published"`
+	Language            VideoLanguage            `json:"language"`
+	Level               VideoLevel               `json:"level"`
+	Channel             VideoChannel             `json:"channel"`
+	Topics              []VideoTopic             `json:"topics"`
+	CaptionAvailability VideoCaptionAvailability `json:"captionAvailability"`
+	CreatedAt           time.Time                `json:"createdAt"`
+	UpdatedAt           time.Time                `json:"updatedAt"`
 } // @name entity.Video
 
 type VideoInput struct {

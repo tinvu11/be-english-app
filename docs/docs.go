@@ -2913,6 +2913,9 @@ const docTemplate = `{
         "entity.Video": {
             "type": "object",
             "properties": {
+                "captionAvailability": {
+                    "$ref": "#/definitions/entity.VideoCaptionAvailability"
+                },
                 "channel": {
                     "$ref": "#/definitions/entity.VideoChannel"
                 },
@@ -2960,6 +2963,50 @@ const docTemplate = `{
                 "youtubeId": {
                     "type": "string",
                     "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
+        "entity.VideoCaptionAvailability": {
+            "type": "object",
+            "properties": {
+                "captionCount": {
+                    "type": "integer",
+                    "example": 120
+                },
+                "hasOriginal": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "translations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.VideoCaptionTranslationAvailability"
+                    }
+                }
+            }
+        },
+        "entity.VideoCaptionTranslationAvailability": {
+            "type": "object",
+            "properties": {
+                "isComplete": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "languageCode": {
+                    "type": "string",
+                    "example": "vi"
+                },
+                "languageId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "languageName": {
+                    "type": "string",
+                    "example": "Vietnamese"
+                },
+                "translatedCaptionCount": {
+                    "type": "integer",
+                    "example": 120
                 }
             }
         },
