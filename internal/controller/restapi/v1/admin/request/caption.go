@@ -18,3 +18,8 @@ type ImportYouTubeCaptions struct {
 	LanguageCode string `json:"languageCode" validate:"required,max=35" example:"en"`
 	Mode         string `json:"mode" validate:"required,oneof=fail_if_exists replace_all" example:"replace_all"`
 }
+
+type TranslateCaptions struct {
+	TargetLanguageID int    `json:"targetLanguageId" validate:"required,gt=0" example:"2"`
+	Mode             string `json:"mode" validate:"required,oneof=missing_only replace" example:"missing_only"`
+}

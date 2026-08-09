@@ -13,3 +13,8 @@ type YouTubeSubtitleProvider interface {
 	ListManualSubtitles(ctx context.Context, youtubeID string) ([]entity.YouTubeSubtitleTrack, error)
 	DownloadManualSubtitle(ctx context.Context, youtubeID, languageCode string) ([]byte, error)
 }
+
+// CaptionTranslator translates caption text without exposing a provider-specific API.
+type CaptionTranslator interface {
+	TranslateCaptions(ctx context.Context, input entity.CaptionTranslationRequest) ([]entity.TranslatedCaption, error)
+}

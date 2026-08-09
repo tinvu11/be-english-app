@@ -457,6 +457,21 @@ definitions:
     - languageId
     - name
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions:
+    properties:
+      mode:
+        enum:
+        - missing_only
+        - replace
+        example: missing_only
+        type: string
+      targetLanguageId:
+        example: 2
+        type: integer
+    required:
+    - mode
+    - targetLanguageId
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage:
     properties:
       isActive:
@@ -570,6 +585,19 @@ definitions:
       text:
         example: Xin chào
         type: string
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult:
+    properties:
+      skippedCount:
+        type: integer
+      sourceLanguageCode:
+        type: string
+      targetLanguageCode:
+        type: string
+      translatedCount:
+        type: integer
+      videoId:
+        type: integer
     type: object
   github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult:
     properties:
@@ -2192,6 +2220,79 @@ paths:
       security:
       - BearerAuth: []
       summary: Import creator-provided YouTube captions
+      tags:
+      - admin-captions
+  /admin/videos/{videoId}/captions/translate:
+    post:
+      consumes:
+      - application/json
+      description: mode is missing_only or replace
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption translation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Translate video captions with the configured AI provider
       tags:
       - admin-captions
   /admin/videos/{videoId}/captions/youtube-tracks:

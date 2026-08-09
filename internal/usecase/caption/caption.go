@@ -16,13 +16,20 @@ const maxImportCaptions = 10000
 const maxCaptionPageSize = 200
 
 type UseCase struct {
-	repo      repo.CaptionRepo
-	videos    repo.VideoRepo
-	subtitles gateway.YouTubeSubtitleProvider
+	repo           repo.CaptionRepo
+	videos         repo.VideoRepo
+	languages      repo.LanguageRepo
+	subtitles      gateway.YouTubeSubtitleProvider
+	translator     gateway.CaptionTranslator
+	translateBatch int
 }
 
-func New(repository repo.CaptionRepo, videos repo.VideoRepo, subtitles gateway.YouTubeSubtitleProvider) usecase.Caption {
-	return newTraced(&UseCase{repo: repository, videos: videos, subtitles: subtitles})
+func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, subtitles gateway.YouTubeSubtitleProvider, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
+	if translateBatch <= 0 {
+		translateBatch = 50
+	}
+	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, subtitles: subtitles,
+		translator: translator, translateBatch: translateBatch})
 }
 
 func (uc *UseCase) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {
@@ -119,6 +126,92 @@ func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languag
 	}
 	return entity.YouTubeCaptionImportResult{VideoID: videoID, LanguageCode: languageCode,
 		Source: "youtube_manual", ImportedCount: len(inputs)}, nil
+}
+
+func (uc *UseCase) TranslateCaptions(ctx context.Context, videoID int64, targetLanguageID int, mode string) (entity.CaptionTranslationResult, error) {
+	mode = strings.ToLower(strings.TrimSpace(mode))
+	if videoID <= 0 || targetLanguageID <= 0 || (mode != entity.CaptionTranslationMissingOnly && mode != entity.CaptionTranslationReplace) {
+		return entity.CaptionTranslationResult{}, entity.ErrInvalidCaption
+	}
+	video, err := uc.videos.GetVideo(ctx, videoID)
+	if err != nil {
+		return entity.CaptionTranslationResult{}, err
+	}
+	target, err := uc.languages.GetLanguage(ctx, targetLanguageID)
+	if err != nil {
+		return entity.CaptionTranslationResult{}, err
+	}
+	if !target.IsActive || strings.EqualFold(video.Language.Code, target.Code) {
+		return entity.CaptionTranslationResult{}, entity.ErrInvalidLanguage
+	}
+	items, total, err := uc.repo.ListCaptionsForTranslation(ctx, videoID, targetLanguageID, mode == entity.CaptionTranslationMissingOnly)
+	if err != nil {
+		return entity.CaptionTranslationResult{}, err
+	}
+	if total == 0 {
+		return entity.CaptionTranslationResult{}, entity.ErrCaptionTranslationEmpty
+	}
+	result := entity.CaptionTranslationResult{VideoID: videoID, SourceLanguageCode: video.Language.Code,
+		TargetLanguageCode: target.Code, SkippedCount: total - len(items)}
+	if len(items) == 0 {
+		return result, nil
+	}
+	translations := make([]entity.CaptionTranslationUpsert, 0, len(items))
+	for start := 0; start < len(items); start += uc.translateBatch {
+		end := min(start+uc.translateBatch, len(items))
+		batch := items[start:end]
+		requestItems := make([]entity.CaptionText, len(batch))
+		for index, caption := range batch {
+			requestItems[index] = entity.CaptionText{CaptionID: caption.ID, Order: caption.SentenceOrder, Text: caption.Content}
+		}
+		translated, translateErr := uc.translator.TranslateCaptions(ctx, entity.CaptionTranslationRequest{
+			SourceLanguage: video.Language.Code, TargetLanguage: target.Code, Items: requestItems,
+		})
+		if translateErr != nil {
+			return entity.CaptionTranslationResult{}, translateErr
+		}
+		validated, validateErr := validateTranslationBatch(requestItems, translated)
+		if validateErr != nil {
+			return entity.CaptionTranslationResult{}, validateErr
+		}
+		translations = append(translations, validated...)
+	}
+	if err = uc.repo.UpsertTranslations(ctx, videoID, targetLanguageID, translations); err != nil {
+		return entity.CaptionTranslationResult{}, err
+	}
+	result.TranslatedCount = len(translations)
+	return result, nil
+}
+
+func validateTranslationBatch(source []entity.CaptionText, translated []entity.TranslatedCaption) ([]entity.CaptionTranslationUpsert, error) {
+	if len(source) != len(translated) {
+		return nil, fmt.Errorf("%w: item count mismatch expected=%d actual=%d", entity.ErrInvalidTranslation, len(source), len(translated))
+	}
+	expected := make(map[int64]int, len(source))
+	for _, item := range source {
+		expected[item.CaptionID] = item.Order
+	}
+	result := make([]entity.CaptionTranslationUpsert, 0, len(translated))
+	seen := make(map[int64]struct{}, len(translated))
+	for _, item := range translated {
+		order, exists := expected[item.CaptionID]
+		item.Text = strings.TrimSpace(item.Text)
+		if !exists {
+			return nil, fmt.Errorf("%w: unexpected caption_id=%d", entity.ErrInvalidTranslation, item.CaptionID)
+		}
+		if order != item.Order {
+			return nil, fmt.Errorf("%w: caption_id=%d order mismatch expected=%d actual=%d", entity.ErrInvalidTranslation, item.CaptionID, order, item.Order)
+		}
+		if item.Text == "" {
+			return nil, fmt.Errorf("%w: empty text caption_id=%d order=%d", entity.ErrInvalidTranslation, item.CaptionID, item.Order)
+		}
+		if _, duplicate := seen[item.CaptionID]; duplicate {
+			return nil, fmt.Errorf("%w: duplicate caption_id=%d", entity.ErrInvalidTranslation, item.CaptionID)
+		}
+		seen[item.CaptionID] = struct{}{}
+		result = append(result, entity.CaptionTranslationUpsert{CaptionID: item.CaptionID, Text: item.Text})
+	}
+	return result, nil
 }
 
 func (uc *UseCase) UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {

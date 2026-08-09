@@ -3,9 +3,36 @@ package caption
 import (
 	"testing"
 
+	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestValidateTranslationBatch(t *testing.T) {
+	t.Parallel()
+	source := []entity.CaptionText{{CaptionID: 1, Order: 1}, {CaptionID: 2, Order: 2}}
+	items, err := validateTranslationBatch(source, []entity.TranslatedCaption{
+		{CaptionID: 2, Order: 2, Text: " Hai "},
+		{CaptionID: 1, Order: 1, Text: "Một"},
+	})
+	require.NoError(t, err)
+	assert.Equal(t, []entity.CaptionTranslationUpsert{{CaptionID: 2, Text: "Hai"}, {CaptionID: 1, Text: "Một"}}, items)
+}
+
+func TestValidateTranslationBatchRejectsProviderDrift(t *testing.T) {
+	t.Parallel()
+	source := []entity.CaptionText{{CaptionID: 1, Order: 1}}
+	tests := [][]entity.TranslatedCaption{
+		{},
+		{{CaptionID: 99, Order: 1, Text: "text"}},
+		{{CaptionID: 1, Order: 2, Text: "text"}},
+		{{CaptionID: 1, Order: 1, Text: " "}},
+	}
+	for _, translated := range tests {
+		_, err := validateTranslationBatch(source, translated)
+		assert.ErrorIs(t, err, entity.ErrInvalidTranslation)
+	}
+}
 
 func TestParseSRT(t *testing.T) {
 	t.Parallel()

@@ -24,6 +24,7 @@ type (
 		ListLanguages(ctx context.Context) ([]entity.Language, error)
 		CreateLanguage(ctx context.Context, language *entity.Language) error
 		UpdateLanguage(ctx context.Context, language *entity.Language) error
+		GetLanguage(ctx context.Context, id int) (entity.Language, error)
 	}
 
 	// LevelRepo persists levels and their translations.
@@ -77,5 +78,7 @@ type (
 		ReplaceCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error)
 		UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error)
 		DeleteCaption(ctx context.Context, videoID, captionID int64) error
+		ListCaptionsForTranslation(ctx context.Context, videoID int64, targetLanguageID int, missingOnly bool) ([]entity.Caption, int, error)
+		UpsertTranslations(ctx context.Context, videoID int64, languageID int, items []entity.CaptionTranslationUpsert) error
 	}
 )

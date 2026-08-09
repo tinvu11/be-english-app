@@ -183,6 +183,9 @@ func (captionsStub) ListYouTubeSubtitleTracks(context.Context, int64) (entity.Yo
 func (captionsStub) ImportFromYouTube(context.Context, int64, string, string) (entity.YouTubeCaptionImportResult, error) {
 	return entity.YouTubeCaptionImportResult{}, nil
 }
+func (captionsStub) TranslateCaptions(context.Context, int64, int, string) (entity.CaptionTranslationResult, error) {
+	return entity.CaptionTranslationResult{}, nil
+}
 func (captionsStub) UpdateCaption(_ context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error) {
 	return entity.Caption{ID: captionID, VideoID: videoID, SentenceOrder: input.SentenceOrder, Content: input.Content}, nil
 }

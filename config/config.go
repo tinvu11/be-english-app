@@ -18,6 +18,7 @@ type (
 		Swagger  swagger
 		Tracing  tracing
 		YTDLP    ytdlp
+		DeepSeek deepseek
 	}
 
 	// App -.
@@ -71,6 +72,15 @@ type (
 		BinaryPath     string `env:"YTDLP_BINARY_PATH" envDefault:"yt-dlp"`
 		TimeoutSeconds int    `env:"YTDLP_TIMEOUT_SECONDS" envDefault:"45"`
 		MaxFileMB      int64  `env:"YTDLP_MAX_FILE_MB" envDefault:"10"`
+	}
+
+	deepseek struct {
+		BaseURL        string `env:"DEEPSEEK_BASE_URL" envDefault:"https://api.deepseek.com"`
+		APIKey         string `env:"DEEPSEEK_API_KEY"`
+		Model          string `env:"DEEPSEEK_MODEL" envDefault:"deepseek-v4-flash"`
+		TimeoutSeconds int    `env:"DEEPSEEK_TIMEOUT_SECONDS" envDefault:"60"`
+		MaxBatchItems  int    `env:"DEEPSEEK_MAX_BATCH_ITEMS" envDefault:"50"`
+		MaxRetries     int    `env:"DEEPSEEK_MAX_RETRIES" envDefault:"2"`
 	}
 )
 

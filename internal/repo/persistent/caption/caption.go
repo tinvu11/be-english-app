@@ -153,6 +153,67 @@ func (r *Repo) DeleteCaption(ctx context.Context, videoID, captionID int64) erro
 	return nil
 }
 
+func (r *Repo) ListCaptionsForTranslation(ctx context.Context, videoID int64, targetLanguageID int, missingOnly bool) ([]entity.Caption, int, error) {
+	if err := r.ensureVideo(ctx, videoID); err != nil {
+		return nil, 0, err
+	}
+	var total int
+	if err := r.Pool.QueryRow(ctx, `SELECT COUNT(*) FROM video_captions WHERE video_id=$1`, videoID).Scan(&total); err != nil {
+		return nil, 0, fmt.Errorf("CaptionRepo - ListCaptionsForTranslation - count: %w", err)
+	}
+	query := `SELECT ` + captionColumns + ` FROM video_captions c WHERE c.video_id=$1`
+	args := []any{videoID}
+	if missingOnly {
+		query += ` AND NOT EXISTS (SELECT 1 FROM caption_translations existing WHERE existing.caption_id=c.id AND existing.language_id=$2)`
+		args = append(args, targetLanguageID)
+	}
+	query += ` ORDER BY c.sentence_order ASC`
+	rows, err := r.Pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("CaptionRepo - ListCaptionsForTranslation: %w", err)
+	}
+	defer rows.Close()
+	items := make([]entity.Caption, 0)
+	for rows.Next() {
+		item, scanErr := scanCaption(rows)
+		if scanErr != nil {
+			return nil, 0, fmt.Errorf("CaptionRepo - ListCaptionsForTranslation - scan: %w", scanErr)
+		}
+		items = append(items, item)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("CaptionRepo - ListCaptionsForTranslation - rows: %w", err)
+	}
+	return items, total, nil
+}
+
+func (r *Repo) UpsertTranslations(ctx context.Context, videoID int64, languageID int, items []entity.CaptionTranslationUpsert) error {
+	tx, err := r.Pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("CaptionRepo - UpsertTranslations - begin: %w", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	if err = ensureVideoTx(ctx, tx, videoID); err != nil {
+		return err
+	}
+	for _, item := range items {
+		result, execErr := tx.Exec(ctx, `INSERT INTO caption_translations(caption_id,language_id,translated_text)
+			SELECT id,$3,$4 FROM video_captions WHERE id=$1 AND video_id=$2
+			ON CONFLICT(caption_id,language_id) DO UPDATE SET translated_text=EXCLUDED.translated_text`,
+			item.CaptionID, videoID, languageID, item.Text)
+		if execErr != nil {
+			return mapWriteError("UpsertTranslations", execErr)
+		}
+		if result.RowsAffected() == 0 {
+			return entity.ErrCaptionNotFound
+		}
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("CaptionRepo - UpsertTranslations - commit: %w", err)
+	}
+	return nil
+}
+
 func (r *Repo) getCaption(ctx context.Context, videoID, captionID int64) (entity.Caption, error) {
 	item, err := scanCaption(r.Pool.QueryRow(ctx, `SELECT `+captionColumns+` FROM video_captions c WHERE c.video_id=$1 AND c.id=$2`, videoID, captionID))
 	if errors.Is(err, pgx.ErrNoRows) {

@@ -71,3 +71,39 @@ type YouTubeCaptionImportResult struct {
 	Source        string `json:"source" example:"youtube_manual"`
 	ImportedCount int    `json:"importedCount" example:"128"`
 }
+
+const (
+	CaptionTranslationMissingOnly = "missing_only"
+	CaptionTranslationReplace     = "replace"
+)
+
+type CaptionText struct {
+	CaptionID int64  `json:"captionId"`
+	Order     int    `json:"order"`
+	Text      string `json:"text"`
+}
+
+type CaptionTranslationRequest struct {
+	SourceLanguage string        `json:"sourceLanguage"`
+	TargetLanguage string        `json:"targetLanguage"`
+	Items          []CaptionText `json:"items"`
+}
+
+type TranslatedCaption struct {
+	CaptionID int64  `json:"captionId"`
+	Order     int    `json:"order"`
+	Text      string `json:"text"`
+}
+
+type CaptionTranslationUpsert struct {
+	CaptionID int64
+	Text      string
+}
+
+type CaptionTranslationResult struct {
+	VideoID            int64  `json:"videoId"`
+	SourceLanguageCode string `json:"sourceLanguageCode"`
+	TargetLanguageCode string `json:"targetLanguageCode"`
+	TranslatedCount    int    `json:"translatedCount"`
+	SkippedCount       int    `json:"skippedCount"`
+}

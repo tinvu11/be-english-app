@@ -58,6 +58,20 @@ func (r *tracedRepo) DeleteCaption(ctx context.Context, videoID, captionID int64
 	finishSpan(span, err)
 	return err
 }
+func (r *tracedRepo) ListCaptionsForTranslation(ctx context.Context, videoID int64, targetLanguageID int, missingOnly bool) ([]entity.Caption, int, error) {
+	ctx, span := otel.Tracer("repo.caption").Start(ctx, "CaptionRepo.ListCaptionsForTranslation")
+	span.SetAttributes(attribute.Int64("video.id", videoID), attribute.Int("language.id", targetLanguageID))
+	items, total, err := r.next.ListCaptionsForTranslation(ctx, videoID, targetLanguageID, missingOnly)
+	finishSpan(span, err)
+	return items, total, err
+}
+func (r *tracedRepo) UpsertTranslations(ctx context.Context, videoID int64, languageID int, items []entity.CaptionTranslationUpsert) error {
+	ctx, span := otel.Tracer("repo.caption").Start(ctx, "CaptionRepo.UpsertTranslations")
+	span.SetAttributes(attribute.Int64("video.id", videoID), attribute.Int("language.id", languageID))
+	err := r.next.UpsertTranslations(ctx, videoID, languageID, items)
+	finishSpan(span, err)
+	return err
+}
 
 func finishSpan(span trace.Span, err error) {
 	if err != nil {

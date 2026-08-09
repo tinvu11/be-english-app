@@ -66,6 +66,37 @@ func (ctrl *controller) importYouTubeCaptions(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusCreated).JSON(result)
 }
 
+// @Summary Translate video captions with the configured AI provider
+// @Description mode is missing_only or replace
+// @Tags admin-captions
+// @Accept json
+// @Produce json
+// @Param videoId path int true "Video ID"
+// @Param request body adminrequest.TranslateCaptions true "Caption translation"
+// @Success 200 {object} entity.CaptionTranslationResult
+// @Failure 400,401,403,404,409,422,429,502,503,504,500 {object} response.Error
+// @Security BearerAuth
+// @Router /admin/videos/{videoId}/captions/translate [post]
+func (ctrl *controller) translateCaptions(ctx *fiber.Ctx) error {
+	videoID, err := positiveInt64(ctx.Params("videoId"))
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	var body adminrequest.TranslateCaptions
+	if err = ctx.BodyParser(&body); err != nil || ctrl.validate.Struct(body) != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid caption translation request")
+	}
+	result, err := ctrl.captions.TranslateCaptions(ctx.UserContext(), videoID, body.TargetLanguageID, body.Mode)
+	if err != nil {
+		if errors.Is(err, entity.ErrInvalidTranslation) {
+			ctrl.log.Warn("caption translation response rejected: video_id=%d target_language_id=%d mode=%s error=%v",
+				videoID, body.TargetLanguageID, body.Mode, err)
+		}
+		return ctrl.captionError(ctx, err)
+	}
+	return ctx.JSON(result)
+}
+
 // @Summary List all captions of a video
 // @Description Sorted by sentenceOrder ascending and includes all translations
 // @Tags admin-captions
@@ -295,6 +326,23 @@ func (ctrl *controller) captionError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusBadRequest, err.Error())
 	case errors.Is(err, entity.ErrCaptionTranslationCount):
 		return errorResponse(ctx, http.StatusBadRequest, "translation caption count does not match original")
+	case errors.Is(err, entity.ErrLanguageNotFound):
+		return errorResponse(ctx, http.StatusNotFound, "language not found")
+	case errors.Is(err, entity.ErrInvalidLanguage):
+		return errorResponse(ctx, http.StatusBadRequest, "invalid target language")
+	case errors.Is(err, entity.ErrCaptionTranslationEmpty):
+		return errorResponse(ctx, http.StatusConflict, "video has no captions to translate")
+	case errors.Is(err, entity.ErrInvalidTranslation):
+		return errorResponse(ctx, http.StatusUnprocessableEntity, "translation provider returned invalid captions")
+	case errors.Is(err, entity.ErrTranslationRateLimited):
+		return errorResponse(ctx, http.StatusTooManyRequests, "translation provider rate limit reached")
+	case errors.Is(err, entity.ErrTranslationUnavailable):
+		return errorResponse(ctx, http.StatusServiceUnavailable, "caption translation is not configured")
+	case errors.Is(err, entity.ErrTranslationFailed):
+		if errors.Is(err, context.DeadlineExceeded) {
+			return errorResponse(ctx, http.StatusGatewayTimeout, "translation request timed out")
+		}
+		return errorResponse(ctx, http.StatusBadGateway, "translation provider failed")
 	case errors.Is(err, entity.ErrVideoNotFound):
 		return errorResponse(ctx, http.StatusNotFound, "video not found")
 	case errors.Is(err, entity.ErrCaptionNotFound):

@@ -41,6 +41,13 @@ func (r *tracedRepo) ListLanguages(ctx context.Context) ([]entity.Language, erro
 	return result, err
 }
 
+func (r *tracedRepo) GetLanguage(ctx context.Context, id int) (entity.Language, error) {
+	ctx, span := startSpan(ctx, "LanguageRepo.GetLanguage", attribute.Int("language.id", id))
+	result, err := r.next.GetLanguage(ctx, id)
+	endSpan(span, err)
+	return result, err
+}
+
 func (r *tracedRepo) CreateLanguage(ctx context.Context, language *entity.Language) error {
 	ctx, span := startSpan(ctx, "LanguageRepo.CreateLanguage", attribute.String("language.code", language.Code))
 	err := r.next.CreateLanguage(ctx, language)

@@ -2331,6 +2331,118 @@ const docTemplate = `{
                 ]
             }
         },
+        "/admin/videos/{videoId}/captions/translate": {
+            "post": {
+                "description": "mode is missing_only or replace",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-captions"
+                ],
+                "summary": "Translate video captions with the configured AI provider",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Caption translation",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/videos/{videoId}/captions/youtube-tracks": {
             "get": {
                 "description": "Automatic and auto-translated captions are excluded",
@@ -3241,6 +3353,27 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions": {
+            "type": "object",
+            "required": [
+                "mode",
+                "targetLanguageId"
+            ],
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "missing_only",
+                        "replace"
+                    ],
+                    "example": "missing_only"
+                },
+                "targetLanguageId": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage": {
             "type": "object",
             "required": [
@@ -3402,6 +3535,26 @@ const docTemplate = `{
                 "text": {
                     "type": "string",
                     "example": "Xin chào"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult": {
+            "type": "object",
+            "properties": {
+                "skippedCount": {
+                    "type": "integer"
+                },
+                "sourceLanguageCode": {
+                    "type": "string"
+                },
+                "targetLanguageCode": {
+                    "type": "string"
+                },
+                "translatedCount": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
                 }
             }
         },

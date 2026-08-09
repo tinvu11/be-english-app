@@ -4,6 +4,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	"github.com/evrone/go-clean-template/internal/gateway/deepseek"
 	"github.com/evrone/go-clean-template/internal/gateway/ytdlp"
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
@@ -61,6 +63,9 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	videoRepo := persistVideoRepo.New(pg)
 	captionRepo := persistCaptionRepo.New(pg)
 	subtitleProvider := ytdlp.New(cfg.YTDLP.BinaryPath, time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20)
+	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
+		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
+		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
 
 	return useCases{
 		user:      user.New(userRepo),
@@ -70,7 +75,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		channel:   channel.New(channelRepo),
 		adminUser: adminuser.New(adminUserRepo),
 		video:     video.New(videoRepo, subtitleProvider),
-		caption:   caption.New(captionRepo, videoRepo, subtitleProvider),
+		caption:   caption.New(captionRepo, videoRepo, languageRepo, subtitleProvider, translator, cfg.DeepSeek.MaxBatchItems),
 	}
 }
 

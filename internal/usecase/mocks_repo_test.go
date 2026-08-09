@@ -152,6 +152,21 @@ func (mr *MockLanguageRepoMockRecorder) CreateLanguage(ctx, language any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLanguage", reflect.TypeOf((*MockLanguageRepo)(nil).CreateLanguage), ctx, language)
 }
 
+// GetLanguage mocks base method.
+func (m *MockLanguageRepo) GetLanguage(ctx context.Context, id int) (entity.Language, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLanguage", ctx, id)
+	ret0, _ := ret[0].(entity.Language)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLanguage indicates an expected call of GetLanguage.
+func (mr *MockLanguageRepoMockRecorder) GetLanguage(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLanguage", reflect.TypeOf((*MockLanguageRepo)(nil).GetLanguage), ctx, id)
+}
+
 // ListLanguages mocks base method.
 func (m *MockLanguageRepo) ListLanguages(ctx context.Context) ([]entity.Language, error) {
 	m.ctrl.T.Helper()
@@ -719,6 +734,22 @@ func (mr *MockCaptionRepoMockRecorder) ListCaptions(ctx, videoID, filter any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCaptions", reflect.TypeOf((*MockCaptionRepo)(nil).ListCaptions), ctx, videoID, filter)
 }
 
+// ListCaptionsForTranslation mocks base method.
+func (m *MockCaptionRepo) ListCaptionsForTranslation(ctx context.Context, videoID int64, targetLanguageID int, missingOnly bool) ([]entity.Caption, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCaptionsForTranslation", ctx, videoID, targetLanguageID, missingOnly)
+	ret0, _ := ret[0].([]entity.Caption)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListCaptionsForTranslation indicates an expected call of ListCaptionsForTranslation.
+func (mr *MockCaptionRepoMockRecorder) ListCaptionsForTranslation(ctx, videoID, targetLanguageID, missingOnly any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCaptionsForTranslation", reflect.TypeOf((*MockCaptionRepo)(nil).ListCaptionsForTranslation), ctx, videoID, targetLanguageID, missingOnly)
+}
+
 // ReplaceCaptions mocks base method.
 func (m *MockCaptionRepo) ReplaceCaptions(ctx context.Context, videoID int64, inputs []entity.CaptionInput) ([]entity.Caption, error) {
 	m.ctrl.T.Helper()
@@ -747,4 +778,18 @@ func (m *MockCaptionRepo) UpdateCaption(ctx context.Context, videoID, captionID 
 func (mr *MockCaptionRepoMockRecorder) UpdateCaption(ctx, videoID, captionID, input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCaption", reflect.TypeOf((*MockCaptionRepo)(nil).UpdateCaption), ctx, videoID, captionID, input)
+}
+
+// UpsertTranslations mocks base method.
+func (m *MockCaptionRepo) UpsertTranslations(ctx context.Context, videoID int64, languageID int, items []entity.CaptionTranslationUpsert) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertTranslations", ctx, videoID, languageID, items)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertTranslations indicates an expected call of UpsertTranslations.
+func (mr *MockCaptionRepoMockRecorder) UpsertTranslations(ctx, videoID, languageID, items any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertTranslations", reflect.TypeOf((*MockCaptionRepo)(nil).UpsertTranslations), ctx, videoID, languageID, items)
 }
