@@ -2733,6 +2733,59 @@ const docTemplate = `{
                 ]
             }
         },
+        "/user/levels": {
+            "get": {
+                "description": "Return levels for the current user's target language, localized in their native language",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user levels",
+                "operationId": "user-list-levels",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.UserLevel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/onboarding": {
             "get": {
                 "description": "Return active learning languages, translation languages, and active topics. Pass translationLanguageId to localize topic names; without it, the first available translation is used.",
@@ -3924,6 +3977,23 @@ const docTemplate = `{
                 "slug": {
                     "type": "string",
                     "example": "travel"
+                }
+            }
+        },
+        "response.UserLevel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "A1"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Beginner"
                 }
             }
         },

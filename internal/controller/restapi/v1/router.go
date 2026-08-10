@@ -14,6 +14,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	r := &V1{
 		u:         u,
 		languages: languages,
+		levels:    levels,
 		topics:    topics,
 		l:         l,
 		v:         validator.New(validator.WithRequiredStructEnabled()),
@@ -27,6 +28,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		userGroup.Get("/profile", r.profile)
 		userGroup.Put("/languages", r.updateUserLanguages)
 		userGroup.Get("/onboarding", r.onboarding)
+		userGroup.Get("/levels", r.listUserLevels)
 	}
 
 	admincontroller.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, captions, verifier, l)

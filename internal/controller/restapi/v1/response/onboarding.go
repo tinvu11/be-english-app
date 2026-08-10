@@ -16,6 +16,13 @@ type OnboardingTopic struct {
 	Name string `json:"name" example:"Travel"`
 } // @name response.OnboardingTopic
 
+// UserLevel is a proficiency level localized in the user's native language.
+type UserLevel struct {
+	ID   int    `json:"id" example:"1"`
+	Code string `json:"code" example:"A1"`
+	Name string `json:"name" example:"Beginner"`
+} // @name response.UserLevel
+
 // Onboarding contains the catalogs needed to render the onboarding screen.
 type Onboarding struct {
 	LearningLanguages    []OnboardingLanguage `json:"learningLanguages"`

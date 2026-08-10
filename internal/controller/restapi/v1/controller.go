@@ -10,6 +10,7 @@ import (
 type V1 struct {
 	u         usecase.User
 	languages usecase.Language
+	levels    usecase.Level
 	topics    usecase.Topic
 	l         logger.Interface
 	v         *validator.Validate

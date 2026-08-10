@@ -777,6 +777,18 @@ definitions:
         example: travel
         type: string
     type: object
+  response.UserLevel:
+    properties:
+      code:
+        example: A1
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Beginner
+        type: string
+    type: object
   response.UserProfile:
     properties:
       avatarUrl:
@@ -2567,6 +2579,41 @@ paths:
       security:
       - BearerAuth: []
       summary: Update user languages
+      tags:
+      - user
+  /user/levels:
+    get:
+      description: Return levels for the current user's target language, localized
+        in their native language
+      operationId: user-list-levels
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.UserLevel'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get user levels
       tags:
       - user
   /user/onboarding:
