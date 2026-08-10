@@ -41,17 +41,17 @@ func (uc *tracedUseCase) ListLanguages(ctx context.Context) ([]entity.Language, 
 	return result, err
 }
 
-func (uc *tracedUseCase) CreateLanguage(ctx context.Context, code, name string) (entity.Language, error) {
+func (uc *tracedUseCase) CreateLanguage(ctx context.Context, code, name, flagEmoji string, isLearnable bool) (entity.Language, error) {
 	ctx, span := startSpan(ctx, "LanguageUseCase.CreateLanguage", attribute.String("language.code", code))
-	result, err := uc.next.CreateLanguage(ctx, code, name)
+	result, err := uc.next.CreateLanguage(ctx, code, name, flagEmoji, isLearnable)
 	endSpan(span, err)
 
 	return result, err
 }
 
-func (uc *tracedUseCase) UpdateLanguage(ctx context.Context, id int, name string, isActive bool) (entity.Language, error) {
+func (uc *tracedUseCase) UpdateLanguage(ctx context.Context, id int, name, flagEmoji string, isActive, isLearnable bool) (entity.Language, error) {
 	ctx, span := startSpan(ctx, "LanguageUseCase.UpdateLanguage", attribute.Int("language.id", id))
-	result, err := uc.next.UpdateLanguage(ctx, id, name, isActive)
+	result, err := uc.next.UpdateLanguage(ctx, id, name, flagEmoji, isActive, isLearnable)
 	endSpan(span, err)
 
 	return result, err

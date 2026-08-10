@@ -21,8 +21,8 @@ type (
 	// Language manages the platform language catalog.
 	Language interface {
 		ListLanguages(ctx context.Context) ([]entity.Language, error)
-		CreateLanguage(ctx context.Context, code, name string) (entity.Language, error)
-		UpdateLanguage(ctx context.Context, id int, name string, isActive bool) (entity.Language, error)
+		CreateLanguage(ctx context.Context, code, name, flagEmoji string, isLearnable bool) (entity.Language, error)
+		UpdateLanguage(ctx context.Context, id int, name, flagEmoji string, isActive, isLearnable bool) (entity.Language, error)
 	}
 
 	// Level manages language-specific proficiency levels and translations.

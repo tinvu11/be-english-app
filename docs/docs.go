@@ -2669,6 +2669,58 @@ const docTemplate = `{
                 ]
             }
         },
+        "/user/onboarding": {
+            "get": {
+                "description": "Return active learning languages, translation languages, and active topics. Pass translationLanguageId to localize topic names; without it, the first available translation is used.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get onboarding data",
+                "operationId": "user-onboarding",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Language ID used for topic names",
+                        "name": "translationLanguageId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Onboarding"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/profile": {
             "get": {
                 "description": "Get current user profile",
@@ -2755,6 +2807,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "2026-08-06T00:00:00Z"
                 },
+                "flagEmoji": {
+                    "type": "string",
+                    "example": "🇬🇧"
+                },
                 "id": {
                     "type": "integer",
                     "example": 1
@@ -2762,6 +2818,10 @@ const docTemplate = `{
                 "isActive": {
                     "type": "boolean",
                     "example": true
+                },
+                "isLearnable": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "name": {
                     "type": "string",
@@ -3036,6 +3096,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "en"
                 },
+                "flagEmoji": {
+                    "type": "string",
+                    "example": "🇬🇧"
+                },
                 "id": {
                     "type": "integer",
                     "example": 1
@@ -3119,6 +3183,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "code",
+                "flagEmoji",
                 "name"
             ],
             "properties": {
@@ -3126,6 +3191,15 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 10,
                     "example": "en"
+                },
+                "flagEmoji": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "example": "🇬🇧"
+                },
+                "isLearnable": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "name": {
                     "type": "string",
@@ -3424,13 +3498,23 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage": {
             "type": "object",
             "required": [
+                "flagEmoji",
                 "isActive",
                 "name"
             ],
             "properties": {
+                "flagEmoji": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "example": "🇬🇧"
+                },
                 "isActive": {
                     "type": "boolean",
                     "example": true
+                },
+                "isLearnable": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "name": {
                     "type": "string",
@@ -3694,6 +3778,71 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Welcome to the admin dashboard!"
+                }
+            }
+        },
+        "response.Onboarding": {
+            "type": "object",
+            "properties": {
+                "learningLanguages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.OnboardingLanguage"
+                    }
+                },
+                "topics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.OnboardingTopic"
+                    }
+                },
+                "translationLanguages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.OnboardingLanguage"
+                    }
+                }
+            }
+        },
+        "response.OnboardingLanguage": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "flag": {
+                    "type": "string",
+                    "example": "🇬🇧"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "English"
+                }
+            }
+        },
+        "response.OnboardingTopic": {
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "string",
+                    "example": "https://example.com/travel.svg"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Travel"
+                },
+                "slug": {
+                    "type": "string",
+                    "example": "travel"
                 }
             }
         },

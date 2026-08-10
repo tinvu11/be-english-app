@@ -57,7 +57,7 @@ func (ctrl *controller) createLanguage(ctx *fiber.Ctx) error {
 		return errorResponse(ctx, http.StatusBadRequest, "invalid language")
 	}
 
-	language, err := ctrl.languages.CreateLanguage(ctx.UserContext(), body.Code, body.Name)
+	language, err := ctrl.languages.CreateLanguage(ctx.UserContext(), body.Code, body.Name, body.FlagEmoji, body.IsLearnable)
 	if err != nil {
 		return ctrl.languageError(ctx, err)
 	}
@@ -95,7 +95,7 @@ func (ctrl *controller) updateLanguage(ctx *fiber.Ctx) error {
 		return errorResponse(ctx, http.StatusBadRequest, "invalid language")
 	}
 
-	language, err := ctrl.languages.UpdateLanguage(ctx.UserContext(), id, body.Name, *body.IsActive)
+	language, err := ctrl.languages.UpdateLanguage(ctx.UserContext(), id, body.Name, body.FlagEmoji, *body.IsActive, body.IsLearnable)
 	if err != nil {
 		return ctrl.languageError(ctx, err)
 	}

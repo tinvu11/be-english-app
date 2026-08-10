@@ -22,7 +22,7 @@ func New(pg *postgres.Postgres) repo.LanguageRepo {
 }
 
 func (r *Repo) ListLanguages(ctx context.Context) ([]entity.Language, error) {
-	rows, err := r.Pool.Query(ctx, `SELECT id, code, name, is_active, created_at FROM languages ORDER BY code`)
+	rows, err := r.Pool.Query(ctx, `SELECT id, code, name, flag_emoji, is_learnable, is_active, created_at FROM languages ORDER BY code`)
 	if err != nil {
 		return nil, fmt.Errorf("LanguageRepo - ListLanguages: %w", err)
 	}
@@ -31,7 +31,7 @@ func (r *Repo) ListLanguages(ctx context.Context) ([]entity.Language, error) {
 	languages := make([]entity.Language, 0)
 	for rows.Next() {
 		var language entity.Language
-		if err = rows.Scan(&language.ID, &language.Code, &language.Name, &language.IsActive, &language.CreatedAt); err != nil {
+		if err = rows.Scan(&language.ID, &language.Code, &language.Name, &language.FlagEmoji, &language.IsLearnable, &language.IsActive, &language.CreatedAt); err != nil {
 			return nil, fmt.Errorf("LanguageRepo - ListLanguages - scan: %w", err)
 		}
 		languages = append(languages, language)
@@ -45,8 +45,8 @@ func (r *Repo) ListLanguages(ctx context.Context) ([]entity.Language, error) {
 
 func (r *Repo) GetLanguage(ctx context.Context, id int) (entity.Language, error) {
 	var language entity.Language
-	err := r.Pool.QueryRow(ctx, `SELECT id, code, name, is_active, created_at FROM languages WHERE id=$1`, id).
-		Scan(&language.ID, &language.Code, &language.Name, &language.IsActive, &language.CreatedAt)
+	err := r.Pool.QueryRow(ctx, `SELECT id, code, name, flag_emoji, is_learnable, is_active, created_at FROM languages WHERE id=$1`, id).
+		Scan(&language.ID, &language.Code, &language.Name, &language.FlagEmoji, &language.IsLearnable, &language.IsActive, &language.CreatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return entity.Language{}, entity.ErrLanguageNotFound
 	}
@@ -58,9 +58,9 @@ func (r *Repo) GetLanguage(ctx context.Context, id int) (entity.Language, error)
 
 func (r *Repo) CreateLanguage(ctx context.Context, language *entity.Language) error {
 	err := r.Pool.QueryRow(ctx,
-		`INSERT INTO languages(code, name, is_active) VALUES($1, $2, $3)
+		`INSERT INTO languages(code, name, flag_emoji, is_learnable, is_active) VALUES($1, $2, $3, $4, $5)
 		 RETURNING id, created_at`,
-		language.Code, language.Name, language.IsActive,
+		language.Code, language.Name, language.FlagEmoji, language.IsLearnable, language.IsActive,
 	).Scan(&language.ID, &language.CreatedAt)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -76,9 +76,9 @@ func (r *Repo) CreateLanguage(ctx context.Context, language *entity.Language) er
 
 func (r *Repo) UpdateLanguage(ctx context.Context, language *entity.Language) error {
 	err := r.Pool.QueryRow(ctx,
-		`UPDATE languages SET name=$2, is_active=$3 WHERE id=$1
+		`UPDATE languages SET name=$2, flag_emoji=$3, is_active=$4, is_learnable=$5 WHERE id=$1
 		 RETURNING code, created_at`,
-		language.ID, language.Name, language.IsActive,
+		language.ID, language.Name, language.FlagEmoji, language.IsActive, language.IsLearnable,
 	).Scan(&language.Code, &language.CreatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

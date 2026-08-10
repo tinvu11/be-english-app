@@ -19,9 +19,10 @@ type VideoFilter struct {
 }
 
 type VideoLanguage struct {
-	ID   int    `json:"id" example:"1"`
-	Code string `json:"code" example:"en"`
-	Name string `json:"name" example:"English"`
+	ID        int    `json:"id" example:"1"`
+	Code      string `json:"code" example:"en"`
+	Name      string `json:"name" example:"English"`
+	FlagEmoji string `json:"flagEmoji" example:"🇬🇧"`
 } // @name entity.VideoLanguage
 
 type VideoLevel struct {

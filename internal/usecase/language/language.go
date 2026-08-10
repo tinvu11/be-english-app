@@ -25,14 +25,15 @@ func (uc *UseCase) ListLanguages(ctx context.Context) ([]entity.Language, error)
 	return uc.repo.ListLanguages(ctx)
 }
 
-func (uc *UseCase) CreateLanguage(ctx context.Context, code, name string) (entity.Language, error) {
+func (uc *UseCase) CreateLanguage(ctx context.Context, code, name, flagEmoji string, isLearnable bool) (entity.Language, error) {
 	code = strings.ToLower(strings.TrimSpace(code))
 	name = strings.TrimSpace(name)
-	if !codePattern.MatchString(code) || name == "" || len(name) > 50 {
+	flagEmoji = strings.TrimSpace(flagEmoji)
+	if !codePattern.MatchString(code) || name == "" || len(name) > 50 || flagEmoji == "" || len([]rune(flagEmoji)) > 16 {
 		return entity.Language{}, entity.ErrInvalidLanguage
 	}
 
-	language := entity.Language{Code: code, Name: name, IsActive: true}
+	language := entity.Language{Code: code, Name: name, FlagEmoji: flagEmoji, IsLearnable: isLearnable, IsActive: true}
 	if err := uc.repo.CreateLanguage(ctx, &language); err != nil {
 		return entity.Language{}, err
 	}
@@ -40,13 +41,14 @@ func (uc *UseCase) CreateLanguage(ctx context.Context, code, name string) (entit
 	return language, nil
 }
 
-func (uc *UseCase) UpdateLanguage(ctx context.Context, id int, name string, isActive bool) (entity.Language, error) {
+func (uc *UseCase) UpdateLanguage(ctx context.Context, id int, name, flagEmoji string, isActive, isLearnable bool) (entity.Language, error) {
 	name = strings.TrimSpace(name)
-	if id <= 0 || name == "" || len(name) > 50 {
+	flagEmoji = strings.TrimSpace(flagEmoji)
+	if id <= 0 || name == "" || len(name) > 50 || flagEmoji == "" || len([]rune(flagEmoji)) > 16 {
 		return entity.Language{}, entity.ErrInvalidLanguage
 	}
 
-	language := entity.Language{ID: id, Name: name, IsActive: isActive}
+	language := entity.Language{ID: id, Name: name, FlagEmoji: flagEmoji, IsActive: isActive, IsLearnable: isLearnable}
 	if err := uc.repo.UpdateLanguage(ctx, &language); err != nil {
 		return entity.Language{}, err
 	}

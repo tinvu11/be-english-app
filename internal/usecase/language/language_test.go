@@ -47,11 +47,13 @@ func TestCreateLanguage(t *testing.T) {
 	repository := &repoStub{}
 	uc := &UseCase{repo: repository}
 
-	result, err := uc.CreateLanguage(t.Context(), " EN ", " English ")
+	result, err := uc.CreateLanguage(t.Context(), " EN ", " English ", " 🇬🇧 ", false)
 	require.NoError(t, err)
 	assert.Equal(t, "en", result.Code)
 	assert.Equal(t, "English", result.Name)
+	assert.Equal(t, "🇬🇧", result.FlagEmoji)
 	assert.True(t, result.IsActive)
+	assert.False(t, result.IsLearnable)
 	assert.Equal(t, result.Code, repository.created.Code)
 }
 
@@ -59,7 +61,7 @@ func TestCreateLanguageRejectsInvalidCode(t *testing.T) {
 	t.Parallel()
 
 	uc := &UseCase{repo: &repoStub{}}
-	_, err := uc.CreateLanguage(t.Context(), "english!", "English")
+	_, err := uc.CreateLanguage(t.Context(), "english!", "English", "🇬🇧", false)
 
 	require.ErrorIs(t, err, entity.ErrInvalidLanguage)
 }
@@ -70,10 +72,12 @@ func TestUpdateLanguage(t *testing.T) {
 	repository := &repoStub{}
 	uc := &UseCase{repo: repository}
 
-	result, err := uc.UpdateLanguage(t.Context(), 4, " Vietnamese ", false)
+	result, err := uc.UpdateLanguage(t.Context(), 4, " Vietnamese ", " 🇻🇳 ", false, true)
 	require.NoError(t, err)
 	assert.Equal(t, 4, result.ID)
 	assert.Equal(t, "Vietnamese", result.Name)
+	assert.Equal(t, "🇻🇳", result.FlagEmoji)
 	assert.False(t, result.IsActive)
+	assert.True(t, result.IsLearnable)
 	assert.Equal(t, result.ID, repository.updated.ID)
 }

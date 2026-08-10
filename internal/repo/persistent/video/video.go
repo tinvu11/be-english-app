@@ -16,7 +16,7 @@ import (
 
 const videoColumns = `v.id,v.title,v.youtube_id,COALESCE(v.thumbnail_url,''),v.duration_seconds,v.status,
 	v.created_at,v.updated_at,
-	lang.id,lang.code,lang.name,
+	lang.id,lang.code,lang.name,lang.flag_emoji,
 	COALESCE(l.id,0),COALESCE(l.code,''),COALESCE((SELECT lt.name FROM level_translations lt WHERE lt.level_id=l.id
 		ORDER BY (lt.language_id=v.language_id) DESC,lt.language_id LIMIT 1),l.code,''),
 	COALESCE(c.id,0),COALESCE(c.channel_youtube_id,''),COALESCE(c.channel_name,''),COALESCE(c.avatar_url,''),
@@ -175,7 +175,7 @@ func scanVideo(row scanner, total *int) (entity.Video, error) {
 	var translationsJSON []byte
 	destinations := []any{&video.ID, &video.Title, &video.YouTubeID, &video.ThumbnailURL, &video.DurationSeconds,
 		&video.Status, &video.CreatedAt, &video.UpdatedAt, &video.Language.ID, &video.Language.Code,
-		&video.Language.Name, &video.Level.ID, &video.Level.Code, &video.Level.Name, &video.Channel.ID,
+		&video.Language.Name, &video.Language.FlagEmoji, &video.Level.ID, &video.Level.Code, &video.Level.Name, &video.Channel.ID,
 		&video.Channel.ChannelYouTubeID, &video.Channel.Name, &video.Channel.AvatarURL, &topicsJSON,
 		&video.CaptionAvailability.CaptionCount, &translationsJSON}
 	if total != nil {

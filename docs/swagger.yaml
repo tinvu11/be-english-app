@@ -29,11 +29,17 @@ definitions:
       createdAt:
         example: "2026-08-06T00:00:00Z"
         type: string
+      flagEmoji:
+        example: "\U0001F1EC\U0001F1E7"
+        type: string
       id:
         example: 1
         type: integer
       isActive:
         example: true
+        type: boolean
+      isLearnable:
+        example: false
         type: boolean
       name:
         example: English
@@ -226,6 +232,9 @@ definitions:
       code:
         example: en
         type: string
+      flagEmoji:
+        example: "\U0001F1EC\U0001F1E7"
+        type: string
       id:
         example: 1
         type: integer
@@ -287,12 +296,20 @@ definitions:
         example: en
         maxLength: 10
         type: string
+      flagEmoji:
+        example: "\U0001F1EC\U0001F1E7"
+        maxLength: 16
+        type: string
+      isLearnable:
+        example: false
+        type: boolean
       name:
         example: English
         maxLength: 50
         type: string
     required:
     - code
+    - flagEmoji
     - name
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions:
@@ -507,14 +524,22 @@ definitions:
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage:
     properties:
+      flagEmoji:
+        example: "\U0001F1EC\U0001F1E7"
+        maxLength: 16
+        type: string
       isActive:
         example: true
+        type: boolean
+      isLearnable:
+        example: false
         type: boolean
       name:
         example: English
         maxLength: 50
         type: string
     required:
+    - flagEmoji
     - isActive
     - name
     type: object
@@ -693,6 +718,51 @@ definitions:
     properties:
       message:
         example: Welcome to the admin dashboard!
+        type: string
+    type: object
+  response.Onboarding:
+    properties:
+      learningLanguages:
+        items:
+          $ref: '#/definitions/response.OnboardingLanguage'
+        type: array
+      topics:
+        items:
+          $ref: '#/definitions/response.OnboardingTopic'
+        type: array
+      translationLanguages:
+        items:
+          $ref: '#/definitions/response.OnboardingLanguage'
+        type: array
+    type: object
+  response.OnboardingLanguage:
+    properties:
+      code:
+        example: en
+        type: string
+      flag:
+        example: "\U0001F1EC\U0001F1E7"
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: English
+        type: string
+    type: object
+  response.OnboardingTopic:
+    properties:
+      icon:
+        example: https://example.com/travel.svg
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Travel
+        type: string
+      slug:
+        example: travel
         type: string
     type: object
   v1.Error:
@@ -2426,6 +2496,41 @@ paths:
       summary: Preview YouTube video metadata
       tags:
       - admin-videos
+  /user/onboarding:
+    get:
+      description: Return active learning languages, translation languages, and active
+        topics. Pass translationLanguageId to localize topic names; without it, the
+        first available translation is used.
+      operationId: user-onboarding
+      parameters:
+      - description: Language ID used for topic names
+        in: query
+        name: translationLanguageId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Onboarding'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get onboarding data
+      tags:
+      - user
   /user/profile:
     get:
       description: Get current user profile

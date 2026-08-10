@@ -11,7 +11,13 @@ import (
 
 // NewRoutes -.
 func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, verifier middleware.TokenVerifier, l logger.Interface) {
-	r := &V1{u: u, l: l, v: validator.New(validator.WithRequiredStructEnabled())}
+	r := &V1{
+		u:         u,
+		languages: languages,
+		topics:    topics,
+		l:         l,
+		v:         validator.New(validator.WithRequiredStructEnabled()),
+	}
 
 	// Protected routes
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
@@ -19,6 +25,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	userGroup := protected.Group("/user")
 	{
 		userGroup.Get("/profile", r.profile)
+		userGroup.Get("/onboarding", r.onboarding)
 	}
 
 	admincontroller.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, captions, verifier, l)

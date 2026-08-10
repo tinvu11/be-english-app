@@ -1,0 +1,2 @@
+ALTER TABLE languages
+    ADD COLUMN is_learnable BOOLEAN NOT NULL DEFAULT FALSE;
