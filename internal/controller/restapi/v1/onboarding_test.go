@@ -76,3 +76,18 @@ func TestBuildHomeFeedGroupsVideosByChannel(t *testing.T) {
 	require.Len(t, got.Sections[0].Videos, 2)
 	assert.Equal(t, "A1", got.Sections[0].Videos[0].LevelCode)
 }
+
+func TestBuildChannelVideos(t *testing.T) {
+	list := entity.VideoList{Total: 21, Items: []entity.Video{{
+		ID: 1, Title: "Lesson", YouTubeID: "youtube1", ThumbnailURL: "lesson.jpg",
+		DurationSeconds: 90, Level: entity.VideoLevel{Code: "A1"},
+	}}}
+
+	got := buildChannelVideos(list, 2, 10)
+
+	assert.Equal(t, 3, got.TotalPages)
+	assert.Equal(t, 2, got.Page)
+	require.Len(t, got.Videos, 1)
+	assert.Equal(t, "Lesson", got.Videos[0].Title)
+	assert.Equal(t, "A1", got.Videos[0].LevelCode)
+}

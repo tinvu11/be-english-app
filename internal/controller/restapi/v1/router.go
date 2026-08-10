@@ -26,6 +26,10 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	{
 		homeGroup.Get("/feed", r.homeFeed)
 	}
+	channelGroup := protected.Group("/channels")
+	{
+		channelGroup.Get("/:channelId/videos", r.channelVideos)
+	}
 
 	userGroup := protected.Group("/user")
 	{

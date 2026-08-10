@@ -23,3 +23,11 @@ type FeedSection struct {
 type HomeFeed struct {
 	Sections []FeedSection `json:"sections"`
 } // @name response.HomeFeed
+
+type ChannelVideos struct {
+	Videos     []FeedVideo `json:"videos"`
+	Page       int         `json:"page" example:"1"`
+	Limit      int         `json:"limit" example:"20"`
+	Total      int         `json:"total" example:"42"`
+	TotalPages int         `json:"total_pages" example:"3"`
+} // @name response.ChannelVideos
