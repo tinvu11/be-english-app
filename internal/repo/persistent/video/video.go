@@ -17,9 +17,9 @@ import (
 const videoColumns = `v.id,v.title,v.youtube_id,COALESCE(v.thumbnail_url,''),v.duration_seconds,v.status,
 	v.created_at,v.updated_at,
 	lang.id,lang.code,lang.name,
-	l.id,l.code,COALESCE((SELECT lt.name FROM level_translations lt WHERE lt.level_id=l.id
-		ORDER BY (lt.language_id=v.language_id) DESC,lt.language_id LIMIT 1),l.code),
-	c.id,c.channel_youtube_id,c.channel_name,COALESCE(c.avatar_url,''),
+	COALESCE(l.id,0),COALESCE(l.code,''),COALESCE((SELECT lt.name FROM level_translations lt WHERE lt.level_id=l.id
+		ORDER BY (lt.language_id=v.language_id) DESC,lt.language_id LIMIT 1),l.code,''),
+	COALESCE(c.id,0),COALESCE(c.channel_youtube_id,''),COALESCE(c.channel_name,''),COALESCE(c.avatar_url,''),
 	COALESCE((SELECT jsonb_agg(jsonb_build_object(
 		'id',t.id,'slug',t.slug,'name',COALESCE((SELECT tt.name FROM topic_translations tt
 			WHERE tt.topic_id=t.id ORDER BY (tt.language_id=v.language_id) DESC,tt.language_id LIMIT 1),t.slug),
@@ -41,8 +41,8 @@ const videoColumns = `v.id,v.title,v.youtube_id,COALESCE(v.thumbnail_url,''),v.d
 
 const videoJoins = ` FROM videos v
 	JOIN languages lang ON lang.id=v.language_id
-	JOIN levels l ON l.id=v.level_id
-	JOIN channels c ON c.id=v.channel_id `
+	LEFT JOIN levels l ON l.id=v.level_id
+	LEFT JOIN channels c ON c.id=v.channel_id `
 
 type Repo struct{ *postgres.Postgres }
 
@@ -50,7 +50,8 @@ func New(pg *postgres.Postgres) repo.VideoRepo { return newTraced(&Repo{Postgres
 
 func (r *Repo) ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {
 	query := `SELECT ` + videoColumns + `,COUNT(*) OVER()` + videoJoins + `
-		WHERE ($1::int IS NULL OR v.language_id=$1)
+		WHERE v.is_system=TRUE
+		AND ($1::int IS NULL OR v.language_id=$1)
 		AND ($2::int IS NULL OR v.level_id=$2)
 		AND ($3::int IS NULL OR v.channel_id=$3)
 		AND ($4='' OR v.status=$4)
@@ -96,8 +97,8 @@ func (r *Repo) CreateVideo(ctx context.Context, input entity.VideoInput) (entity
 	defer func() { _ = tx.Rollback(ctx) }()
 
 	var id int64
-	err = tx.QueryRow(ctx, `INSERT INTO videos(title,youtube_id,thumbnail_url,duration_seconds,status,language_id,level_id,channel_id)
-		VALUES($1,$2,NULLIF($3,''),$4,$5,$6,$7,$8) RETURNING id`, input.Title, input.YouTubeID,
+	err = tx.QueryRow(ctx, `INSERT INTO videos(title,youtube_id,thumbnail_url,duration_seconds,status,language_id,level_id,channel_id,is_system)
+		VALUES($1,$2,NULLIF($3,''),$4,$5,$6,$7,$8,TRUE) RETURNING id`, input.Title, input.YouTubeID,
 		input.ThumbnailURL, input.DurationSeconds, input.Status, input.LanguageID, input.LevelID, input.ChannelID).Scan(&id)
 	if err != nil {
 		return entity.Video{}, mapWriteError("CreateVideo", err)

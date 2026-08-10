@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS user_videos;
+
+ALTER TABLE videos
+    ALTER COLUMN channel_id SET NOT NULL,
+    ALTER COLUMN level_id SET NOT NULL;
