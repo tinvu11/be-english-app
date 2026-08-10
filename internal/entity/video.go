@@ -9,13 +9,16 @@ const (
 )
 
 type VideoFilter struct {
-	LanguageID *int
-	LevelID    *int
-	ChannelID  *int
-	Status     string
-	Search     string
-	Limit      int
-	Offset     int
+	LanguageID         *int
+	LevelID            *int
+	ChannelID          *int
+	TopicID            *int
+	Status             string
+	Search             string
+	OnlyActiveChannels bool
+	PerChannelLimit    int
+	Limit              int
+	Offset             int
 }
 
 type VideoLanguage struct {

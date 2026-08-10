@@ -61,3 +61,18 @@ func TestUserLevelsResponse(t *testing.T) {
 	assert.Equal(t, "A1", got[0].Code)
 	assert.Equal(t, "Sơ cấp", got[0].Name)
 }
+
+func TestBuildHomeFeedGroupsVideosByChannel(t *testing.T) {
+	list := entity.VideoList{Total: 3, Items: []entity.Video{
+		{ID: 3, Title: "First", YouTubeID: "youtube1", ThumbnailURL: "first.jpg", DurationSeconds: 120, Level: entity.VideoLevel{Code: "A1"}, Channel: entity.VideoChannel{ID: 1, Name: "BBC", AvatarURL: "bbc.png"}},
+		{ID: 2, Title: "Second", YouTubeID: "youtube2", Level: entity.VideoLevel{Code: "A2"}, Channel: entity.VideoChannel{ID: 2, Name: "VOA"}},
+		{ID: 1, Title: "Third", YouTubeID: "youtube3", Level: entity.VideoLevel{Code: "B1"}, Channel: entity.VideoChannel{ID: 1, Name: "BBC", AvatarURL: "bbc.png"}},
+	}}
+
+	got := buildHomeFeed(list)
+
+	require.Len(t, got.Sections, 2)
+	assert.Equal(t, "BBC", got.Sections[0].Channel.Name)
+	require.Len(t, got.Sections[0].Videos, 2)
+	assert.Equal(t, "A1", got.Sections[0].Videos[0].LevelCode)
+}

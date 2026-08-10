@@ -2669,6 +2669,70 @@ const docTemplate = `{
                 ]
             }
         },
+        "/home/feed": {
+            "get": {
+                "description": "Return published videos for the user's target language, grouped by channel",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "home"
+                ],
+                "summary": "Get home feed",
+                "operationId": "user-home-feed",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "topicId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Level ID",
+                        "name": "levelId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.HomeFeed"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/languages": {
             "put": {
                 "description": "Update the native translation language and target learning language of the current user",
@@ -3912,6 +3976,77 @@ const docTemplate = `{
                 "targetLanguageId": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "response.FeedChannel": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string",
+                    "example": "https://cdn.app.com/channels/bbc.png"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "BBC Learning English"
+                }
+            }
+        },
+        "response.FeedSection": {
+            "type": "object",
+            "properties": {
+                "channel": {
+                    "$ref": "#/definitions/response.FeedChannel"
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.FeedVideo"
+                    }
+                }
+            }
+        },
+        "response.FeedVideo": {
+            "type": "object",
+            "properties": {
+                "duration_seconds": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "level_code": {
+                    "type": "string",
+                    "example": "A1"
+                },
+                "thumbnail_url": {
+                    "type": "string",
+                    "example": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Learn English with the News"
+                },
+                "youtube_id": {
+                    "type": "string",
+                    "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
+        "response.HomeFeed": {
+            "type": "object",
+            "properties": {
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.FeedSection"
+                    }
                 }
             }
         },

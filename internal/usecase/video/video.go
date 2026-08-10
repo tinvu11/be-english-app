@@ -27,8 +27,10 @@ func (uc *UseCase) ListVideos(ctx context.Context, filter entity.VideoFilter) (e
 	filter.Search = strings.TrimSpace(filter.Search)
 	filter.Status = strings.ToLower(strings.TrimSpace(filter.Status))
 	if filter.Limit <= 0 || filter.Limit > maxPageSize || filter.Offset < 0 || len(filter.Search) > 255 ||
+		filter.PerChannelLimit < 0 || filter.PerChannelLimit > maxPageSize ||
 		(filter.LanguageID != nil && *filter.LanguageID <= 0) || (filter.LevelID != nil && *filter.LevelID <= 0) ||
-		(filter.ChannelID != nil && *filter.ChannelID <= 0) || (filter.Status != "" && !validStatus(filter.Status)) {
+		(filter.ChannelID != nil && *filter.ChannelID <= 0) || (filter.TopicID != nil && *filter.TopicID <= 0) ||
+		(filter.Status != "" && !validStatus(filter.Status)) {
 		return entity.VideoList{}, entity.ErrInvalidVideo
 	}
 	return uc.repo.ListVideos(ctx, filter)

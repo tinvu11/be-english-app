@@ -732,6 +732,55 @@ definitions:
     - nativeLanguageId
     - targetLanguageId
     type: object
+  response.FeedChannel:
+    properties:
+      avatar_url:
+        example: https://cdn.app.com/channels/bbc.png
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: BBC Learning English
+        type: string
+    type: object
+  response.FeedSection:
+    properties:
+      channel:
+        $ref: '#/definitions/response.FeedChannel'
+      videos:
+        items:
+          $ref: '#/definitions/response.FeedVideo'
+        type: array
+    type: object
+  response.FeedVideo:
+    properties:
+      duration_seconds:
+        example: 300
+        type: integer
+      id:
+        example: 1
+        type: integer
+      level_code:
+        example: A1
+        type: string
+      thumbnail_url:
+        example: https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg
+        type: string
+      title:
+        example: Learn English with the News
+        type: string
+      youtube_id:
+        example: dQw4w9WgXcQ
+        type: string
+    type: object
+  response.HomeFeed:
+    properties:
+      sections:
+        items:
+          $ref: '#/definitions/response.FeedSection'
+        type: array
+    type: object
   response.Onboarding:
     properties:
       learningLanguages:
@@ -2539,6 +2588,48 @@ paths:
       summary: Preview YouTube video metadata
       tags:
       - admin-videos
+  /home/feed:
+    get:
+      description: Return published videos for the user's target language, grouped
+        by channel
+      operationId: user-home-feed
+      parameters:
+      - description: Topic ID
+        in: query
+        name: topicId
+        type: integer
+      - description: Level ID
+        in: query
+        name: levelId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.HomeFeed'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get home feed
+      tags:
+      - home
   /user/languages:
     put:
       consumes:

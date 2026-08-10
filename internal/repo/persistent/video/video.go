@@ -49,6 +49,9 @@ type Repo struct{ *postgres.Postgres }
 func New(pg *postgres.Postgres) repo.VideoRepo { return newTraced(&Repo{Postgres: pg}) }
 
 func (r *Repo) ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {
+	if filter.PerChannelLimit > 0 {
+		return r.listVideosPerChannel(ctx, filter)
+	}
 	query := `SELECT ` + videoColumns + `,COUNT(*) OVER()` + videoJoins + `
 		WHERE v.is_system=TRUE
 		AND ($1::int IS NULL OR v.language_id=$1)
@@ -56,9 +59,11 @@ func (r *Repo) ListVideos(ctx context.Context, filter entity.VideoFilter) (entit
 		AND ($3::int IS NULL OR v.channel_id=$3)
 		AND ($4='' OR v.status=$4)
 		AND ($5='' OR v.title ILIKE '%' || $5 || '%')
-		ORDER BY v.created_at DESC,v.id DESC LIMIT $6 OFFSET $7`
+		AND ($6::int IS NULL OR EXISTS (SELECT 1 FROM video_topics filtered_vt WHERE filtered_vt.video_id=v.id AND filtered_vt.topic_id=$6))
+		AND (NOT $7::boolean OR c.is_active=TRUE)
+		ORDER BY v.created_at DESC,v.id DESC LIMIT $8 OFFSET $9`
 	rows, err := r.Pool.Query(ctx, query, filter.LanguageID, filter.LevelID, filter.ChannelID,
-		filter.Status, filter.Search, filter.Limit, filter.Offset)
+		filter.Status, filter.Search, filter.TopicID, filter.OnlyActiveChannels, filter.Limit, filter.Offset)
 	if err != nil {
 		return entity.VideoList{}, fmt.Errorf("VideoRepo - ListVideos: %w", err)
 	}
@@ -75,6 +80,51 @@ func (r *Repo) ListVideos(ctx context.Context, filter entity.VideoFilter) (entit
 	if err = rows.Err(); err != nil {
 		return entity.VideoList{}, fmt.Errorf("VideoRepo - ListVideos - rows: %w", err)
 	}
+	return result, nil
+}
+
+func (r *Repo) listVideosPerChannel(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {
+	query := `WITH ranked AS (
+		SELECT filtered.id,ROW_NUMBER() OVER (
+			PARTITION BY filtered.channel_id ORDER BY filtered.created_at DESC,filtered.id DESC
+		) AS channel_position
+		FROM videos filtered
+		JOIN channels filtered_channel ON filtered_channel.id=filtered.channel_id
+		WHERE filtered.is_system=TRUE
+		AND ($1::int IS NULL OR filtered.language_id=$1)
+		AND ($2::int IS NULL OR filtered.level_id=$2)
+		AND ($3::int IS NULL OR filtered.channel_id=$3)
+		AND ($4='' OR filtered.status=$4)
+		AND ($5='' OR filtered.title ILIKE '%' || $5 || '%')
+		AND ($6::int IS NULL OR EXISTS (
+			SELECT 1 FROM video_topics filtered_vt
+			WHERE filtered_vt.video_id=filtered.id AND filtered_vt.topic_id=$6
+		))
+		AND (NOT $7::boolean OR filtered_channel.is_active=TRUE)
+	)
+	SELECT ` + videoColumns + videoJoins + `
+	JOIN ranked ON ranked.id=v.id
+	WHERE ranked.channel_position <= $8
+	ORDER BY c.channel_name,c.id,v.created_at DESC,v.id DESC`
+	rows, err := r.Pool.Query(ctx, query, filter.LanguageID, filter.LevelID, filter.ChannelID,
+		filter.Status, filter.Search, filter.TopicID, filter.OnlyActiveChannels, filter.PerChannelLimit)
+	if err != nil {
+		return entity.VideoList{}, fmt.Errorf("VideoRepo - listVideosPerChannel: %w", err)
+	}
+	defer rows.Close()
+
+	result := entity.VideoList{Items: make([]entity.Video, 0)}
+	for rows.Next() {
+		video, scanErr := scanVideo(rows, nil)
+		if scanErr != nil {
+			return entity.VideoList{}, fmt.Errorf("VideoRepo - listVideosPerChannel - scan: %w", scanErr)
+		}
+		result.Items = append(result.Items, video)
+	}
+	if err = rows.Err(); err != nil {
+		return entity.VideoList{}, fmt.Errorf("VideoRepo - listVideosPerChannel - rows: %w", err)
+	}
+	result.Total = len(result.Items)
 	return result, nil
 }
 

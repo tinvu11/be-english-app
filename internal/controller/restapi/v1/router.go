@@ -16,12 +16,16 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		languages: languages,
 		levels:    levels,
 		topics:    topics,
+		videos:    videos,
 		l:         l,
 		v:         validator.New(validator.WithRequiredStructEnabled()),
 	}
-
 	// Protected routes
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
+	homeGroup := protected.Group("/home")
+	{
+		homeGroup.Get("/feed", r.homeFeed)
+	}
 
 	userGroup := protected.Group("/user")
 	{

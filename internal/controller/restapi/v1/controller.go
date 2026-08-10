@@ -12,6 +12,7 @@ type V1 struct {
 	languages usecase.Language
 	levels    usecase.Level
 	topics    usecase.Topic
+	videos    usecase.Video
 	l         logger.Interface
 	v         *validator.Validate
 }
