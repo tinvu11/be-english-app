@@ -2669,6 +2669,70 @@ const docTemplate = `{
                 ]
             }
         },
+        "/user/languages": {
+            "put": {
+                "description": "Update the native translation language and target learning language of the current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user languages",
+                "operationId": "user-update-languages",
+                "parameters": [
+                    {
+                        "description": "Language choices",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateUserLanguages"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserProfile"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/onboarding": {
             "get": {
                 "description": "Return active learning languages, translation languages, and active topics. Pass translationLanguageId to localize topic names; without it, the first available translation is used.",
@@ -2736,7 +2800,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.User"
+                            "$ref": "#/definitions/response.UserProfile"
                         }
                     },
                     "401": {
@@ -3781,6 +3845,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateUserLanguages": {
+            "type": "object",
+            "required": [
+                "nativeLanguageId",
+                "targetLanguageId"
+            ],
+            "properties": {
+                "nativeLanguageId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "targetLanguageId": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "response.Onboarding": {
             "type": "object",
             "properties": {
@@ -3843,6 +3924,33 @@ const docTemplate = `{
                 "slug": {
                     "type": "string",
                     "example": "travel"
+                }
+            }
+        },
+        "response.UserProfile": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string",
+                    "example": "https://example.com/avatar.jpg"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "nativeLanguage": {
+                    "$ref": "#/definitions/response.OnboardingLanguage"
+                },
+                "targetLanguage": {
+                    "$ref": "#/definitions/response.OnboardingLanguage"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "johndoe"
                 }
             }
         },

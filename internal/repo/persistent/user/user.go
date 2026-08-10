@@ -62,6 +62,24 @@ func (r *Repo) UpdateFirebaseProfile(ctx context.Context, id, username, avatarUR
 	return nil
 }
 
+// UpdateLanguages saves the native and target language selected during onboarding.
+func (r *Repo) UpdateLanguages(ctx context.Context, id string, nativeLanguageID, targetLanguageID int) error {
+	result, err := r.Pool.Exec(ctx, `UPDATE users
+		SET native_language_id=$2,target_language_id=$3,updated_at=CURRENT_TIMESTAMP
+		WHERE id=$1`, id, nativeLanguageID, targetLanguageID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+			return entity.ErrInvalidReference
+		}
+		return fmt.Errorf("UserRepo - UpdateLanguages: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrUserNotFound
+	}
+	return nil
+}
+
 // GetByID -.
 func (r *Repo) GetByID(ctx context.Context, id string) (entity.User, error) {
 	return r.getUser(ctx, "id", id)

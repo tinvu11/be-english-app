@@ -22,3 +22,13 @@ type Onboarding struct {
 	TranslationLanguages []OnboardingLanguage `json:"translationLanguages"`
 	Topics               []OnboardingTopic    `json:"topics"`
 } // @name response.Onboarding
+
+// UserProfile is the public profile returned to the authenticated user.
+type UserProfile struct {
+	ID             string              `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Username       string              `json:"username" example:"johndoe"`
+	Email          string              `json:"email" example:"john@example.com"`
+	AvatarURL      string              `json:"avatarUrl" example:"https://example.com/avatar.jpg"`
+	NativeLanguage *OnboardingLanguage `json:"nativeLanguage"`
+	TargetLanguage *OnboardingLanguage `json:"targetLanguage"`
+} // @name response.UserProfile

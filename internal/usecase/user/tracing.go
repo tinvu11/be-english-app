@@ -72,3 +72,10 @@ func (u *tracedUseCase) GetUser(ctx context.Context, userID string) (entity.User
 
 	return result, err
 }
+
+func (u *tracedUseCase) UpdateLanguages(ctx context.Context, userID string, nativeLanguageID, targetLanguageID int) (entity.User, error) {
+	ctx, span := startSpan(ctx, "UserUseCase.UpdateLanguages", attribute.String("user.id", userID))
+	result, err := u.next.UpdateLanguages(ctx, userID, nativeLanguageID, targetLanguageID)
+	endSpan(span, err)
+	return result, err
+}

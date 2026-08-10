@@ -79,3 +79,10 @@ func (r *tracedRepo) UpdateFirebaseProfile(ctx context.Context, id, username, av
 
 	return err
 }
+
+func (r *tracedRepo) UpdateLanguages(ctx context.Context, id string, nativeLanguageID, targetLanguageID int) error {
+	ctx, span := startSpan(ctx, "UserRepo.UpdateLanguages", attribute.String("user.id", id))
+	err := r.next.UpdateLanguages(ctx, id, nativeLanguageID, targetLanguageID)
+	endSpan(span, err)
+	return err
+}

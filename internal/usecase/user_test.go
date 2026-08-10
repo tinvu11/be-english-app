@@ -15,19 +15,20 @@ import (
 
 var errUserRepo = errors.New("repository error")
 
-func newUserUseCase(t *testing.T) (usecase.User, *MockUserRepo) {
+func newUserUseCase(t *testing.T) (usecase.User, *MockUserRepo, *MockLanguageRepo) {
 	t.Helper()
 
 	ctrl := gomock.NewController(t)
 	repo := NewMockUserRepo(ctrl)
+	languages := NewMockLanguageRepo(ctrl)
 
-	return user.New(repo), repo
+	return user.New(repo, languages), repo, languages
 }
 
 func TestAuthenticateExistingFirebaseUser(t *testing.T) {
 	t.Parallel()
 
-	uc, repo := newUserUseCase(t)
+	uc, repo, _ := newUserUseCase(t)
 	identity := entity.AuthIdentity{UID: "firebase-123", Email: "test@example.com", Name: "Test User", Picture: "https://example.com/avatar.jpg"}
 	expected := entity.User{ID: "local-123", FirebaseUID: identity.UID, Email: identity.Email, Username: identity.Name, AvatarURL: identity.Picture}
 
@@ -43,7 +44,7 @@ func TestAuthenticateExistingFirebaseUser(t *testing.T) {
 func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 	t.Parallel()
 
-	uc, repo := newUserUseCase(t)
+	uc, repo, _ := newUserUseCase(t)
 	identity := entity.AuthIdentity{UID: "firebase-123456789", Email: "john@example.com", Name: "John Doe", Picture: "https://example.com/john.jpg"}
 
 	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(entity.User{}, entity.ErrUserNotFound)
@@ -67,7 +68,7 @@ func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 func TestAuthenticateRejectsEmptyUID(t *testing.T) {
 	t.Parallel()
 
-	uc, _ := newUserUseCase(t)
+	uc, _, _ := newUserUseCase(t)
 
 	_, err := uc.Authenticate(context.Background(), entity.AuthIdentity{})
 
@@ -77,7 +78,7 @@ func TestAuthenticateRejectsEmptyUID(t *testing.T) {
 func TestAuthenticateRepositoryError(t *testing.T) {
 	t.Parallel()
 
-	uc, repo := newUserUseCase(t)
+	uc, repo, _ := newUserUseCase(t)
 	repo.EXPECT().GetByFirebaseUID(gomock.Any(), "firebase-123").Return(entity.User{}, errUserRepo)
 
 	_, err := uc.Authenticate(context.Background(), entity.AuthIdentity{UID: "firebase-123"})
@@ -88,7 +89,7 @@ func TestAuthenticateRepositoryError(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	t.Parallel()
 
-	uc, repo := newUserUseCase(t)
+	uc, repo, _ := newUserUseCase(t)
 	expected := entity.User{ID: "local-123", FirebaseUID: "firebase-123"}
 	repo.EXPECT().GetByID(gomock.Any(), expected.ID).Return(expected, nil)
 
@@ -101,11 +102,40 @@ func TestGetUser(t *testing.T) {
 func TestLocalAuthenticationDisabled(t *testing.T) {
 	t.Parallel()
 
-	uc, _ := newUserUseCase(t)
+	uc, _, _ := newUserUseCase(t)
 
 	_, registerErr := uc.Register(context.Background(), "name", "email@example.com", "password")
 	_, loginErr := uc.Login(context.Background(), "email@example.com", "password")
 
 	require.ErrorIs(t, registerErr, entity.ErrLocalAuthDisabled)
 	require.ErrorIs(t, loginErr, entity.ErrLocalAuthDisabled)
+}
+
+func TestUpdateLanguages(t *testing.T) {
+	t.Parallel()
+
+	uc, users, languages := newUserUseCase(t)
+	nativeID, targetID := 2, 1
+	expected := entity.User{ID: "local-123", NativeLanguageID: &nativeID, TargetLanguageID: &targetID}
+	languages.EXPECT().GetLanguage(gomock.Any(), nativeID).Return(entity.Language{ID: nativeID, IsActive: true, IsLearnable: false}, nil)
+	languages.EXPECT().GetLanguage(gomock.Any(), targetID).Return(entity.Language{ID: targetID, IsActive: true, IsLearnable: true}, nil)
+	users.EXPECT().UpdateLanguages(gomock.Any(), expected.ID, nativeID, targetID).Return(nil)
+	users.EXPECT().GetByID(gomock.Any(), expected.ID).Return(expected, nil)
+
+	got, err := uc.UpdateLanguages(context.Background(), expected.ID, nativeID, targetID)
+
+	require.NoError(t, err)
+	assert.Equal(t, expected, got)
+}
+
+func TestUpdateLanguagesRejectsWrongKinds(t *testing.T) {
+	t.Parallel()
+
+	uc, _, languages := newUserUseCase(t)
+	languages.EXPECT().GetLanguage(gomock.Any(), 1).Return(entity.Language{ID: 1, IsActive: true, IsLearnable: true}, nil)
+	languages.EXPECT().GetLanguage(gomock.Any(), 2).Return(entity.Language{ID: 2, IsActive: true, IsLearnable: true}, nil)
+
+	_, err := uc.UpdateLanguages(context.Background(), "local-123", 1, 2)
+
+	require.ErrorIs(t, err, entity.ErrInvalidLanguage)
 }

@@ -68,7 +68,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
 
 	return useCases{
-		user:      user.New(userRepo),
+		user:      user.New(userRepo, languageRepo),
 		language:  language.New(languageRepo),
 		level:     level.New(levelRepo),
 		topic:     topic.New(topicRepo),

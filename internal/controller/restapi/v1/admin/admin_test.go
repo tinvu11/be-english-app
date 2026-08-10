@@ -46,6 +46,10 @@ func (stub usersStub) GetUser(ctx context.Context, _ string) (entity.User, error
 	return stub.Authenticate(ctx, entity.AuthIdentity{UID: "firebase-admin", Email: "admin@example.com"})
 }
 
+func (stub usersStub) UpdateLanguages(context.Context, string, int, int) (entity.User, error) {
+	return entity.User{}, nil
+}
+
 func (usersStub) Register(context.Context, string, string, string) (entity.User, error) {
 	return entity.User{}, entity.ErrLocalAuthDisabled
 }

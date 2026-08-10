@@ -16,6 +16,7 @@ type (
 		Register(ctx context.Context, username, email, password string) (entity.User, error)
 		Login(ctx context.Context, email, password string) (string, error)
 		GetUser(ctx context.Context, userID string) (entity.User, error)
+		UpdateLanguages(ctx context.Context, userID string, nativeLanguageID, targetLanguageID int) (entity.User, error)
 	}
 
 	// Language manages the platform language catalog.

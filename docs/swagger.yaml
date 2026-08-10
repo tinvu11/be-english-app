@@ -720,6 +720,18 @@ definitions:
         example: Welcome to the admin dashboard!
         type: string
     type: object
+  request.UpdateUserLanguages:
+    properties:
+      nativeLanguageId:
+        example: 2
+        type: integer
+      targetLanguageId:
+        example: 1
+        type: integer
+    required:
+    - nativeLanguageId
+    - targetLanguageId
+    type: object
   response.Onboarding:
     properties:
       learningLanguages:
@@ -763,6 +775,25 @@ definitions:
         type: string
       slug:
         example: travel
+        type: string
+    type: object
+  response.UserProfile:
+    properties:
+      avatarUrl:
+        example: https://example.com/avatar.jpg
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      nativeLanguage:
+        $ref: '#/definitions/response.OnboardingLanguage'
+      targetLanguage:
+        $ref: '#/definitions/response.OnboardingLanguage'
+      username:
+        example: johndoe
         type: string
     type: object
   v1.Error:
@@ -2496,6 +2527,48 @@ paths:
       summary: Preview YouTube video metadata
       tags:
       - admin-videos
+  /user/languages:
+    put:
+      consumes:
+      - application/json
+      description: Update the native translation language and target learning language
+        of the current user
+      operationId: user-update-languages
+      parameters:
+      - description: Language choices
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserLanguages'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserProfile'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Update user languages
+      tags:
+      - user
   /user/onboarding:
     get:
       description: Return active learning languages, translation languages, and active
@@ -2541,7 +2614,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.User'
+            $ref: '#/definitions/response.UserProfile'
         "401":
           description: Unauthorized
           schema:

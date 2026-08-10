@@ -15,12 +15,35 @@ import (
 
 // UseCase -.
 type UseCase struct {
-	repo repo.UserRepo
+	repo      repo.UserRepo
+	languages repo.LanguageRepo
 }
 
 // New returns a User usecase instrumented with OpenTelemetry tracing spans.
-func New(r repo.UserRepo) usecase.User {
-	return newTraced(&UseCase{repo: r})
+func New(r repo.UserRepo, languages repo.LanguageRepo) usecase.User {
+	return newTraced(&UseCase{repo: r, languages: languages})
+}
+
+// UpdateLanguages validates and saves the user's onboarding language choices.
+func (uc *UseCase) UpdateLanguages(ctx context.Context, userID string, nativeLanguageID, targetLanguageID int) (entity.User, error) {
+	if userID == "" || nativeLanguageID <= 0 || targetLanguageID <= 0 {
+		return entity.User{}, entity.ErrInvalidLanguage
+	}
+	nativeLanguage, err := uc.languages.GetLanguage(ctx, nativeLanguageID)
+	if err != nil {
+		return entity.User{}, err
+	}
+	targetLanguage, err := uc.languages.GetLanguage(ctx, targetLanguageID)
+	if err != nil {
+		return entity.User{}, err
+	}
+	if !nativeLanguage.IsActive || nativeLanguage.IsLearnable || !targetLanguage.IsActive || !targetLanguage.IsLearnable {
+		return entity.User{}, entity.ErrInvalidLanguage
+	}
+	if err = uc.repo.UpdateLanguages(ctx, userID, nativeLanguageID, targetLanguageID); err != nil {
+		return entity.User{}, err
+	}
+	return uc.GetUser(ctx, userID)
 }
 
 // Authenticate finds or provisions the local user for a verified Firebase identity.
