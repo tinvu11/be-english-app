@@ -903,6 +903,63 @@ definitions:
         example: dQw4w9WgXcQ
         type: string
     type: object
+  response.SearchVideo:
+    properties:
+      duration_seconds:
+        example: 300
+        type: integer
+      id:
+        example: 1
+        type: integer
+      language:
+        $ref: '#/definitions/response.SearchVideoLanguage'
+      level_code:
+        example: A1
+        type: string
+      thumbnail_url:
+        example: https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg
+        type: string
+      title:
+        example: Learn English with the News
+        type: string
+      youtube_id:
+        example: dQw4w9WgXcQ
+        type: string
+    type: object
+  response.SearchVideoLanguage:
+    properties:
+      code:
+        example: en
+        type: string
+      flag:
+        example: "\U0001F1EC\U0001F1E7"
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: English
+        type: string
+    type: object
+  response.SearchVideos:
+    properties:
+      limit:
+        example: 20
+        type: integer
+      page:
+        example: 1
+        type: integer
+      total:
+        example: 42
+        type: integer
+      total_pages:
+        example: 3
+        type: integer
+      videos:
+        items:
+          $ref: '#/definitions/response.SearchVideo'
+        type: array
+    type: object
   response.UserLevel:
     properties:
       code:
@@ -3152,6 +3209,51 @@ paths:
       summary: Save video to watch later
       tags:
       - user-videos
+  /videos/search:
+    get:
+      description: Search published system videos by title across active learnable
+        languages
+      operationId: user-search-videos
+      parameters:
+      - description: Video title keyword
+        in: query
+        name: search
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Videos per page (1-100)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SearchVideos'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Search system videos
+      tags:
+      - videos
 securityDefinitions:
   BearerAuth:
     in: header

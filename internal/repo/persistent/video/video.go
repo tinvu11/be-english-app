@@ -61,9 +61,11 @@ func (r *Repo) ListVideos(ctx context.Context, filter entity.VideoFilter) (entit
 		AND ($5='' OR v.title ILIKE '%' || $5 || '%')
 		AND ($6::int IS NULL OR EXISTS (SELECT 1 FROM video_topics filtered_vt WHERE filtered_vt.video_id=v.id AND filtered_vt.topic_id=$6))
 		AND (NOT $7::boolean OR c.is_active=TRUE)
-		ORDER BY v.created_at DESC,v.id DESC LIMIT $8 OFFSET $9`
+		AND (NOT $8::boolean OR (lang.is_active=TRUE AND lang.is_learnable=TRUE))
+		ORDER BY v.created_at DESC,v.id DESC LIMIT $9 OFFSET $10`
 	rows, err := r.Pool.Query(ctx, query, filter.LanguageID, filter.LevelID, filter.ChannelID,
-		filter.Status, filter.Search, filter.TopicID, filter.OnlyActiveChannels, filter.Limit, filter.Offset)
+		filter.Status, filter.Search, filter.TopicID, filter.OnlyActiveChannels, filter.OnlyLearnableLanguages,
+		filter.Limit, filter.Offset)
 	if err != nil {
 		return entity.VideoList{}, fmt.Errorf("VideoRepo - ListVideos: %w", err)
 	}
@@ -101,13 +103,19 @@ func (r *Repo) listVideosPerChannel(ctx context.Context, filter entity.VideoFilt
 			WHERE filtered_vt.video_id=filtered.id AND filtered_vt.topic_id=$6
 		))
 		AND (NOT $7::boolean OR filtered_channel.is_active=TRUE)
+		AND (NOT $8::boolean OR EXISTS (
+			SELECT 1 FROM languages filtered_language
+			WHERE filtered_language.id=filtered.language_id
+			AND filtered_language.is_active=TRUE AND filtered_language.is_learnable=TRUE
+		))
 	)
 	SELECT ` + videoColumns + videoJoins + `
 	JOIN ranked ON ranked.id=v.id
-	WHERE ranked.channel_position <= $8
+	WHERE ranked.channel_position <= $9
 	ORDER BY c.channel_name,c.id,v.created_at DESC,v.id DESC`
 	rows, err := r.Pool.Query(ctx, query, filter.LanguageID, filter.LevelID, filter.ChannelID,
-		filter.Status, filter.Search, filter.TopicID, filter.OnlyActiveChannels, filter.PerChannelLimit)
+		filter.Status, filter.Search, filter.TopicID, filter.OnlyActiveChannels, filter.OnlyLearnableLanguages,
+		filter.PerChannelLimit)
 	if err != nil {
 		return entity.VideoList{}, fmt.Errorf("VideoRepo - listVideosPerChannel: %w", err)
 	}

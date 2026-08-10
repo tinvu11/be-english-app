@@ -3349,6 +3349,73 @@
                     }
                 ]
             }
+        },
+        "/videos/search": {
+            "get": {
+                "description": "Search published system videos by title across active learnable languages",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "videos"
+                ],
+                "summary": "Search system videos",
+                "operationId": "user-search-videos",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Video title keyword",
+                        "name": "search",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Videos per page (1-100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SearchVideos"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -4623,6 +4690,86 @@
                 "youtube_id": {
                     "type": "string",
                     "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
+        "response.SearchVideo": {
+            "type": "object",
+            "properties": {
+                "duration_seconds": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "language": {
+                    "$ref": "#/definitions/response.SearchVideoLanguage"
+                },
+                "level_code": {
+                    "type": "string",
+                    "example": "A1"
+                },
+                "thumbnail_url": {
+                    "type": "string",
+                    "example": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Learn English with the News"
+                },
+                "youtube_id": {
+                    "type": "string",
+                    "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
+        "response.SearchVideoLanguage": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "flag": {
+                    "type": "string",
+                    "example": "🇬🇧"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "English"
+                }
+            }
+        },
+        "response.SearchVideos": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SearchVideo"
+                    }
                 }
             }
         },

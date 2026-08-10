@@ -34,6 +34,26 @@ type ChannelVideos struct {
 	TotalPages int         `json:"total_pages" example:"3"`
 } // @name response.ChannelVideos
 
+type SearchVideoLanguage struct {
+	ID   int    `json:"id" example:"1"`
+	Code string `json:"code" example:"en"`
+	Name string `json:"name" example:"English"`
+	Flag string `json:"flag" example:"🇬🇧"`
+} // @name response.SearchVideoLanguage
+
+type SearchVideo struct {
+	FeedVideo
+	Language SearchVideoLanguage `json:"language"`
+} // @name response.SearchVideo
+
+type SearchVideos struct {
+	Videos     []SearchVideo `json:"videos"`
+	Page       int           `json:"page" example:"1"`
+	Limit      int           `json:"limit" example:"20"`
+	Total      int           `json:"total" example:"42"`
+	TotalPages int           `json:"total_pages" example:"3"`
+} // @name response.SearchVideos
+
 type HistoryVideo struct {
 	FeedVideo
 	LastPositionSeconds int       `json:"last_position_seconds" example:"75"`

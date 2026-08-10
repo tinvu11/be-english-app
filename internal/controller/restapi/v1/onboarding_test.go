@@ -111,3 +111,17 @@ func TestBuildUserVideoLists(t *testing.T) {
 	assert.Equal(t, "Lesson", saved.Videos[0].Title)
 	assert.Equal(t, activityAt, saved.Videos[0].CreatedAt)
 }
+
+func TestBuildSearchVideosIncludesLanguage(t *testing.T) {
+	list := entity.VideoList{Total: 1, Items: []entity.Video{{
+		ID: 1, Title: "English lesson", YouTubeID: "youtube1", Level: entity.VideoLevel{Code: "A1"},
+		Language: entity.VideoLanguage{ID: 2, Code: "en", Name: "English", FlagEmoji: "🇬🇧"},
+	}}}
+
+	got := buildSearchVideos(list, 1, 20)
+
+	require.Len(t, got.Videos, 1)
+	assert.Equal(t, "English lesson", got.Videos[0].Title)
+	assert.Equal(t, "en", got.Videos[0].Language.Code)
+	assert.Equal(t, "🇬🇧", got.Videos[0].Language.Flag)
+}
