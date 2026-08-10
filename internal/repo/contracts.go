@@ -18,6 +18,8 @@ type (
 		GetByFirebaseUID(ctx context.Context, firebaseUID string) (entity.User, error)
 		UpdateFirebaseProfile(ctx context.Context, id, username, avatarURL string) error
 		UpdateLanguages(ctx context.Context, id string, nativeLanguageID, targetLanguageID int) error
+		ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
+		ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
 	}
 
 	// LanguageRepo persists languages.

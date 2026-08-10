@@ -79,3 +79,17 @@ func (u *tracedUseCase) UpdateLanguages(ctx context.Context, userID string, nati
 	endSpan(span, err)
 	return result, err
 }
+
+func (u *tracedUseCase) ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	ctx, span := startSpan(ctx, "UserUseCase.ListWatchHistory", attribute.String("user.id", userID))
+	result, err := u.next.ListWatchHistory(ctx, userID, limit, offset)
+	endSpan(span, err)
+	return result, err
+}
+
+func (u *tracedUseCase) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	ctx, span := startSpan(ctx, "UserUseCase.ListWatchLater", attribute.String("user.id", userID))
+	result, err := u.next.ListWatchLater(ctx, userID, limit, offset)
+	endSpan(span, err)
+	return result, err
+}

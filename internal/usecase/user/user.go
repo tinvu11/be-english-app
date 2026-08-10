@@ -46,6 +46,24 @@ func (uc *UseCase) UpdateLanguages(ctx context.Context, userID string, nativeLan
 	return uc.GetUser(ctx, userID)
 }
 
+func (uc *UseCase) ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	if !validUserVideoPage(userID, limit, offset) {
+		return entity.UserVideoList{}, entity.ErrInvalidVideo
+	}
+	return uc.repo.ListWatchHistory(ctx, userID, limit, offset)
+}
+
+func (uc *UseCase) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	if !validUserVideoPage(userID, limit, offset) {
+		return entity.UserVideoList{}, entity.ErrInvalidVideo
+	}
+	return uc.repo.ListWatchLater(ctx, userID, limit, offset)
+}
+
+func validUserVideoPage(userID string, limit, offset int) bool {
+	return userID != "" && limit > 0 && limit <= 100 && offset >= 0
+}
+
 // Authenticate finds or provisions the local user for a verified Firebase identity.
 func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error) {
 	if identity.UID == "" {

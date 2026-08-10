@@ -50,6 +50,14 @@ func (stub usersStub) UpdateLanguages(context.Context, string, int, int) (entity
 	return entity.User{}, nil
 }
 
+func (stub usersStub) ListWatchHistory(context.Context, string, int, int) (entity.UserVideoList, error) {
+	return entity.UserVideoList{}, nil
+}
+
+func (stub usersStub) ListWatchLater(context.Context, string, int, int) (entity.UserVideoList, error) {
+	return entity.UserVideoList{}, nil
+}
+
 func (usersStub) Register(context.Context, string, string, string) (entity.User, error) {
 	return entity.User{}, entity.ErrLocalAuthDisabled
 }

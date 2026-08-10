@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/evrone/go-clean-template/internal/entity"
@@ -78,6 +79,57 @@ func (r *Repo) UpdateLanguages(ctx context.Context, id string, nativeLanguageID,
 		return entity.ErrUserNotFound
 	}
 	return nil
+}
+
+func (r *Repo) ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	return r.listUserVideos(ctx, `user_watch_history`, "history", userID, limit, offset)
+}
+
+func (r *Repo) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	return r.listUserVideos(ctx, `user_watch_later`, "saved", userID, limit, offset)
+}
+
+func (r *Repo) listUserVideos(ctx context.Context, table, listType, userID string, limit, offset int) (entity.UserVideoList, error) {
+	positionColumn := "0"
+	orderColumn := "uv.created_at"
+	timestampColumn := "uv.created_at"
+	if listType == "history" {
+		positionColumn = "uv.last_position_seconds"
+		orderColumn = "uv.last_watched_at"
+		timestampColumn = "uv.last_watched_at"
+	}
+	query := fmt.Sprintf(`SELECT v.id,v.title,v.youtube_id,COALESCE(v.thumbnail_url,''),v.duration_seconds,
+		l.code,%s,%s,COUNT(*) OVER()
+		FROM %s uv
+		JOIN videos v ON v.id=uv.video_id
+		JOIN levels l ON l.id=v.level_id
+		JOIN channels c ON c.id=v.channel_id
+		WHERE uv.user_id=$1 AND v.is_system=TRUE AND v.status=$2 AND c.is_active=TRUE
+		ORDER BY %s DESC,uv.id DESC LIMIT $3 OFFSET $4`, positionColumn, timestampColumn, table, orderColumn)
+	rows, err := r.Pool.Query(ctx, query, userID, entity.VideoStatusPublished, limit, offset)
+	if err != nil {
+		return entity.UserVideoList{}, fmt.Errorf("UserRepo - listUserVideos: %w", err)
+	}
+	defer rows.Close()
+	result := entity.UserVideoList{Items: make([]entity.UserVideo, 0)}
+	for rows.Next() {
+		var item entity.UserVideo
+		var activityAt time.Time
+		if err = rows.Scan(&item.ID, &item.Title, &item.YouTubeID, &item.ThumbnailURL, &item.DurationSeconds,
+			&item.LevelCode, &item.LastPositionSeconds, &activityAt, &result.Total); err != nil {
+			return entity.UserVideoList{}, fmt.Errorf("UserRepo - listUserVideos - scan: %w", err)
+		}
+		if listType == "history" {
+			item.LastWatchedAt = activityAt
+		} else {
+			item.SavedAt = activityAt
+		}
+		result.Items = append(result.Items, item)
+	}
+	if err = rows.Err(); err != nil {
+		return entity.UserVideoList{}, fmt.Errorf("UserRepo - listUserVideos - rows: %w", err)
+	}
+	return result, nil
 }
 
 // GetByID -.

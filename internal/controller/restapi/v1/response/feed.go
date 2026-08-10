@@ -1,5 +1,7 @@
 package response
 
+import "time"
+
 type FeedChannel struct {
 	ID        int    `json:"id" example:"1"`
 	Name      string `json:"name" example:"BBC Learning English"`
@@ -31,3 +33,30 @@ type ChannelVideos struct {
 	Total      int         `json:"total" example:"42"`
 	TotalPages int         `json:"total_pages" example:"3"`
 } // @name response.ChannelVideos
+
+type HistoryVideo struct {
+	FeedVideo
+	LastPositionSeconds int       `json:"last_position_seconds" example:"75"`
+	LastWatchedAt       time.Time `json:"last_watched_at" example:"2026-08-11T10:30:00Z"`
+} // @name response.HistoryVideo
+
+type SavedVideo struct {
+	FeedVideo
+	CreatedAt time.Time `json:"created_at" example:"2026-08-11T10:30:00Z"`
+} // @name response.SavedVideo
+
+type WatchHistory struct {
+	Videos     []HistoryVideo `json:"videos"`
+	Page       int            `json:"page" example:"1"`
+	Limit      int            `json:"limit" example:"20"`
+	Total      int            `json:"total" example:"42"`
+	TotalPages int            `json:"total_pages" example:"3"`
+} // @name response.WatchHistory
+
+type WatchLater struct {
+	Videos     []SavedVideo `json:"videos"`
+	Page       int          `json:"page" example:"1"`
+	Limit      int          `json:"limit" example:"20"`
+	Total      int          `json:"total" example:"42"`
+	TotalPages int          `json:"total_pages" example:"3"`
+} // @name response.WatchLater

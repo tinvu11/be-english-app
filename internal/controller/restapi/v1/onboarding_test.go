@@ -2,6 +2,7 @@ package v1
 
 import (
 	"testing"
+	"time"
 
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/stretchr/testify/assert"
@@ -90,4 +91,23 @@ func TestBuildChannelVideos(t *testing.T) {
 	require.Len(t, got.Videos, 1)
 	assert.Equal(t, "Lesson", got.Videos[0].Title)
 	assert.Equal(t, "A1", got.Videos[0].LevelCode)
+}
+
+func TestBuildUserVideoLists(t *testing.T) {
+	activityAt := time.Date(2026, 8, 11, 10, 30, 0, 0, time.UTC)
+	list := entity.UserVideoList{Total: 21, Items: []entity.UserVideo{{
+		ID: 1, Title: "Lesson", YouTubeID: "youtube1", LevelCode: "A1", LastPositionSeconds: 75,
+		LastWatchedAt: activityAt, SavedAt: activityAt,
+	}}}
+
+	history := buildWatchHistory(list, 2, 10)
+	saved := buildWatchLater(list, 2, 10)
+
+	assert.Equal(t, 3, history.TotalPages)
+	require.Len(t, history.Videos, 1)
+	assert.Equal(t, 75, history.Videos[0].LastPositionSeconds)
+	assert.Equal(t, activityAt, history.Videos[0].LastWatchedAt)
+	require.Len(t, saved.Videos, 1)
+	assert.Equal(t, "Lesson", saved.Videos[0].Title)
+	assert.Equal(t, activityAt, saved.Videos[0].CreatedAt)
 }

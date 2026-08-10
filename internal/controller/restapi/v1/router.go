@@ -37,6 +37,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		userGroup.Put("/languages", r.updateUserLanguages)
 		userGroup.Get("/onboarding", r.onboarding)
 		userGroup.Get("/levels", r.listUserLevels)
+		userGroup.Get("/watch-history", r.watchHistory)
+		userGroup.Get("/watch-later", r.watchLater)
 	}
 
 	admincontroller.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, captions, verifier, l)

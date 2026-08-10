@@ -71,6 +71,36 @@ func (mr *MockUserMockRecorder) GetUser(ctx, userID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockUser)(nil).GetUser), ctx, userID)
 }
 
+// ListWatchHistory mocks base method.
+func (m *MockUser) ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListWatchHistory", ctx, userID, limit, offset)
+	ret0, _ := ret[0].(entity.UserVideoList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListWatchHistory indicates an expected call of ListWatchHistory.
+func (mr *MockUserMockRecorder) ListWatchHistory(ctx, userID, limit, offset any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWatchHistory", reflect.TypeOf((*MockUser)(nil).ListWatchHistory), ctx, userID, limit, offset)
+}
+
+// ListWatchLater mocks base method.
+func (m *MockUser) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListWatchLater", ctx, userID, limit, offset)
+	ret0, _ := ret[0].(entity.UserVideoList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListWatchLater indicates an expected call of ListWatchLater.
+func (mr *MockUserMockRecorder) ListWatchLater(ctx, userID, limit, offset any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWatchLater", reflect.TypeOf((*MockUser)(nil).ListWatchLater), ctx, userID, limit, offset)
+}
+
 // Login mocks base method.
 func (m *MockUser) Login(ctx context.Context, email, password string) (string, error) {
 	m.ctrl.T.Helper()

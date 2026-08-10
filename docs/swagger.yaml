@@ -793,6 +793,33 @@ definitions:
         example: dQw4w9WgXcQ
         type: string
     type: object
+  response.HistoryVideo:
+    properties:
+      duration_seconds:
+        example: 300
+        type: integer
+      id:
+        example: 1
+        type: integer
+      last_position_seconds:
+        example: 75
+        type: integer
+      last_watched_at:
+        example: "2026-08-11T10:30:00Z"
+        type: string
+      level_code:
+        example: A1
+        type: string
+      thumbnail_url:
+        example: https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg
+        type: string
+      title:
+        example: Learn English with the News
+        type: string
+      youtube_id:
+        example: dQw4w9WgXcQ
+        type: string
+    type: object
   response.HomeFeed:
     properties:
       sections:
@@ -845,6 +872,30 @@ definitions:
         example: travel
         type: string
     type: object
+  response.SavedVideo:
+    properties:
+      created_at:
+        example: "2026-08-11T10:30:00Z"
+        type: string
+      duration_seconds:
+        example: 300
+        type: integer
+      id:
+        example: 1
+        type: integer
+      level_code:
+        example: A1
+        type: string
+      thumbnail_url:
+        example: https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg
+        type: string
+      title:
+        example: Learn English with the News
+        type: string
+      youtube_id:
+        example: dQw4w9WgXcQ
+        type: string
+    type: object
   response.UserLevel:
     properties:
       code:
@@ -875,6 +926,44 @@ definitions:
       username:
         example: johndoe
         type: string
+    type: object
+  response.WatchHistory:
+    properties:
+      limit:
+        example: 20
+        type: integer
+      page:
+        example: 1
+        type: integer
+      total:
+        example: 42
+        type: integer
+      total_pages:
+        example: 3
+        type: integer
+      videos:
+        items:
+          $ref: '#/definitions/response.HistoryVideo'
+        type: array
+    type: object
+  response.WatchLater:
+    properties:
+      limit:
+        example: 20
+        type: integer
+      page:
+        example: 1
+        type: integer
+      total:
+        example: 42
+        type: integer
+      total_pages:
+        example: 3
+        type: integer
+      videos:
+        items:
+          $ref: '#/definitions/response.SavedVideo'
+        type: array
     type: object
   v1.Error:
     properties:
@@ -2846,6 +2935,84 @@ paths:
       summary: Get profile
       tags:
       - user
+  /user/watch-history:
+    get:
+      description: Return the current user's recently watched published videos
+      operationId: user-watch-history
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Videos per page (1-100)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WatchHistory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get watch history
+      tags:
+      - user-videos
+  /user/watch-later:
+    get:
+      description: Return the current user's saved published videos
+      operationId: user-watch-later
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Videos per page (1-100)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WatchLater'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get saved videos
+      tags:
+      - user-videos
 securityDefinitions:
   BearerAuth:
     in: header

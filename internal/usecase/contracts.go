@@ -17,6 +17,8 @@ type (
 		Login(ctx context.Context, email, password string) (string, error)
 		GetUser(ctx context.Context, userID string) (entity.User, error)
 		UpdateLanguages(ctx context.Context, userID string, nativeLanguageID, targetLanguageID int) (entity.User, error)
+		ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
+		ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
 	}
 
 	// Language manages the platform language catalog.

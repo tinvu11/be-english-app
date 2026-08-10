@@ -86,3 +86,17 @@ func (r *tracedRepo) UpdateLanguages(ctx context.Context, id string, nativeLangu
 	endSpan(span, err)
 	return err
 }
+
+func (r *tracedRepo) ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	ctx, span := startSpan(ctx, "UserRepo.ListWatchHistory", attribute.String("user.id", userID))
+	result, err := r.next.ListWatchHistory(ctx, userID, limit, offset)
+	endSpan(span, err)
+	return result, err
+}
+
+func (r *tracedRepo) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
+	ctx, span := startSpan(ctx, "UserRepo.ListWatchLater", attribute.String("user.id", userID))
+	result, err := r.next.ListWatchLater(ctx, userID, limit, offset)
+	endSpan(span, err)
+	return result, err
+}

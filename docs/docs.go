@@ -3030,6 +3030,126 @@ const docTemplate = `{
                     }
                 ]
             }
+        },
+        "/user/watch-history": {
+            "get": {
+                "description": "Return the current user's recently watched published videos",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Get watch history",
+                "operationId": "user-watch-history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Videos per page (1-100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WatchHistory"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/watch-later": {
+            "get": {
+                "description": "Return the current user's saved published videos",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Get saved videos",
+                "operationId": "user-watch-later",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Videos per page (1-100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WatchLater"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -4151,6 +4271,43 @@ const docTemplate = `{
                 }
             }
         },
+        "response.HistoryVideo": {
+            "type": "object",
+            "properties": {
+                "duration_seconds": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "last_position_seconds": {
+                    "type": "integer",
+                    "example": 75
+                },
+                "last_watched_at": {
+                    "type": "string",
+                    "example": "2026-08-11T10:30:00Z"
+                },
+                "level_code": {
+                    "type": "string",
+                    "example": "A1"
+                },
+                "thumbnail_url": {
+                    "type": "string",
+                    "example": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Learn English with the News"
+                },
+                "youtube_id": {
+                    "type": "string",
+                    "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
         "response.HomeFeed": {
             "type": "object",
             "properties": {
@@ -4227,6 +4384,39 @@ const docTemplate = `{
                 }
             }
         },
+        "response.SavedVideo": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2026-08-11T10:30:00Z"
+                },
+                "duration_seconds": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "level_code": {
+                    "type": "string",
+                    "example": "A1"
+                },
+                "thumbnail_url": {
+                    "type": "string",
+                    "example": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Learn English with the News"
+                },
+                "youtube_id": {
+                    "type": "string",
+                    "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
         "response.UserLevel": {
             "type": "object",
             "properties": {
@@ -4268,6 +4458,60 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "johndoe"
+                }
+            }
+        },
+        "response.WatchHistory": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.HistoryVideo"
+                    }
+                }
+            }
+        },
+        "response.WatchLater": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SavedVideo"
+                    }
                 }
             }
         },
