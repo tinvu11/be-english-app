@@ -100,3 +100,31 @@ func (r *tracedRepo) ListWatchLater(ctx context.Context, userID string, limit, o
 	endSpan(span, err)
 	return result, err
 }
+
+func (r *tracedRepo) UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error {
+	ctx, span := startSpan(ctx, "UserRepo.UpsertWatchHistory", attribute.String("user.id", userID))
+	err := r.next.UpsertWatchHistory(ctx, userID, videoID, lastPositionSeconds)
+	endSpan(span, err)
+	return err
+}
+
+func (r *tracedRepo) RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "UserRepo.RemoveWatchHistory", attribute.String("user.id", userID))
+	err := r.next.RemoveWatchHistory(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}
+
+func (r *tracedRepo) SaveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "UserRepo.SaveWatchLater", attribute.String("user.id", userID))
+	err := r.next.SaveWatchLater(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}
+
+func (r *tracedRepo) RemoveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "UserRepo.RemoveWatchLater", attribute.String("user.id", userID))
+	err := r.next.RemoveWatchLater(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}

@@ -116,6 +116,48 @@ func (mr *MockUserRepoMockRecorder) ListWatchLater(ctx, userID, limit, offset an
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWatchLater", reflect.TypeOf((*MockUserRepo)(nil).ListWatchLater), ctx, userID, limit, offset)
 }
 
+// RemoveWatchHistory mocks base method.
+func (m *MockUserRepo) RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveWatchHistory", ctx, userID, videoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveWatchHistory indicates an expected call of RemoveWatchHistory.
+func (mr *MockUserRepoMockRecorder) RemoveWatchHistory(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveWatchHistory", reflect.TypeOf((*MockUserRepo)(nil).RemoveWatchHistory), ctx, userID, videoID)
+}
+
+// RemoveWatchLater mocks base method.
+func (m *MockUserRepo) RemoveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveWatchLater", ctx, userID, videoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveWatchLater indicates an expected call of RemoveWatchLater.
+func (mr *MockUserRepoMockRecorder) RemoveWatchLater(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveWatchLater", reflect.TypeOf((*MockUserRepo)(nil).RemoveWatchLater), ctx, userID, videoID)
+}
+
+// SaveWatchLater mocks base method.
+func (m *MockUserRepo) SaveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveWatchLater", ctx, userID, videoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveWatchLater indicates an expected call of SaveWatchLater.
+func (mr *MockUserRepoMockRecorder) SaveWatchLater(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveWatchLater", reflect.TypeOf((*MockUserRepo)(nil).SaveWatchLater), ctx, userID, videoID)
+}
+
 // Store mocks base method.
 func (m *MockUserRepo) Store(ctx context.Context, user *entity.User) error {
 	m.ctrl.T.Helper()
@@ -156,6 +198,20 @@ func (m *MockUserRepo) UpdateLanguages(ctx context.Context, id string, nativeLan
 func (mr *MockUserRepoMockRecorder) UpdateLanguages(ctx, id, nativeLanguageID, targetLanguageID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLanguages", reflect.TypeOf((*MockUserRepo)(nil).UpdateLanguages), ctx, id, nativeLanguageID, targetLanguageID)
+}
+
+// UpsertWatchHistory mocks base method.
+func (m *MockUserRepo) UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertWatchHistory", ctx, userID, videoID, lastPositionSeconds)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertWatchHistory indicates an expected call of UpsertWatchHistory.
+func (mr *MockUserRepoMockRecorder) UpsertWatchHistory(ctx, userID, videoID, lastPositionSeconds any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertWatchHistory", reflect.TypeOf((*MockUserRepo)(nil).UpsertWatchHistory), ctx, userID, videoID, lastPositionSeconds)
 }
 
 // MockLanguageRepo is a mock of LanguageRepo interface.

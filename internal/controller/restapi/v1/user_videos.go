@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/request"
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/response"
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gofiber/fiber/v2"
@@ -54,6 +55,113 @@ func (r *V1) watchLater(ctx *fiber.Ctx) error {
 		return r.userVideoError(ctx, err, "watch later")
 	}
 	return ctx.Status(http.StatusOK).JSON(buildWatchLater(list, page, limit))
+}
+
+// @Summary Save video to watch later
+// @ID user-save-watch-later
+// @Tags user-videos
+// @Param videoId path int true "Video ID"
+// @Success 204
+// @Failure 400,401,404,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/watch-later/{videoId} [put]
+func (r *V1) saveWatchLater(ctx *fiber.Ctx) error {
+	userID, videoID, err := userVideoMutation(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	if err = r.u.SaveWatchLater(ctx.UserContext(), userID, videoID); err != nil {
+		return r.userVideoMutationError(ctx, err, "save watch later")
+	}
+	return ctx.SendStatus(http.StatusNoContent)
+}
+
+// @Summary Remove video from watch later
+// @ID user-remove-watch-later
+// @Tags user-videos
+// @Param videoId path int true "Video ID"
+// @Success 204
+// @Failure 400,401,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/watch-later/{videoId} [delete]
+func (r *V1) removeWatchLater(ctx *fiber.Ctx) error {
+	userID, videoID, err := userVideoMutation(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	if err = r.u.RemoveWatchLater(ctx.UserContext(), userID, videoID); err != nil {
+		return r.userVideoMutationError(ctx, err, "remove watch later")
+	}
+	return ctx.SendStatus(http.StatusNoContent)
+}
+
+// @Summary Record watch progress
+// @Description Create or update a video's latest watch position and last watched time
+// @ID user-upsert-watch-history
+// @Tags user-videos
+// @Accept json
+// @Param videoId path int true "Video ID"
+// @Param request body request.UpdateWatchHistory true "Watch progress"
+// @Success 204
+// @Failure 400,401,404,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/watch-history/{videoId} [put]
+func (r *V1) upsertWatchHistory(ctx *fiber.Ctx) error {
+	userID, videoID, err := userVideoMutation(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	var body request.UpdateWatchHistory
+	if err = ctx.BodyParser(&body); err != nil || r.v.Struct(body) != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid watch progress")
+	}
+	if err = r.u.UpsertWatchHistory(ctx.UserContext(), userID, videoID, body.LastPositionSeconds); err != nil {
+		return r.userVideoMutationError(ctx, err, "upsert watch history")
+	}
+	return ctx.SendStatus(http.StatusNoContent)
+}
+
+// @Summary Remove video from watch history
+// @ID user-remove-watch-history
+// @Tags user-videos
+// @Param videoId path int true "Video ID"
+// @Success 204
+// @Failure 400,401,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/watch-history/{videoId} [delete]
+func (r *V1) removeWatchHistory(ctx *fiber.Ctx) error {
+	userID, videoID, err := userVideoMutation(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	if err = r.u.RemoveWatchHistory(ctx.UserContext(), userID, videoID); err != nil {
+		return r.userVideoMutationError(ctx, err, "remove watch history")
+	}
+	return ctx.SendStatus(http.StatusNoContent)
+}
+
+func userVideoMutation(ctx *fiber.Ctx) (string, int64, error) {
+	userID, ok := ctx.Locals("userID").(string)
+	if !ok || userID == "" {
+		return "", 0, entity.ErrUserNotFound
+	}
+	videoID, err := strconv.ParseInt(ctx.Params("videoId"), 10, 64)
+	if err != nil || videoID <= 0 {
+		return "", 0, entity.ErrInvalidVideo
+	}
+	return userID, videoID, nil
+}
+
+func (r *V1) userVideoMutationError(ctx *fiber.Ctx, err error, operation string) error {
+	switch {
+	case errors.Is(err, entity.ErrInvalidVideo):
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video")
+	case errors.Is(err, entity.ErrVideoNotFound):
+		return errorResponse(ctx, http.StatusNotFound, "video not found")
+	default:
+		r.l.Error(err, "restapi - v1 - user videos - "+operation)
+		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")
+	}
 }
 
 func userVideoRequest(ctx *fiber.Ctx) (string, int, int, error) {

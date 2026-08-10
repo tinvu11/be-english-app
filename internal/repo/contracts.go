@@ -20,6 +20,10 @@ type (
 		UpdateLanguages(ctx context.Context, id string, nativeLanguageID, targetLanguageID int) error
 		ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
 		ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
+		UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error
+		RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error
+		SaveWatchLater(ctx context.Context, userID string, videoID int64) error
+		RemoveWatchLater(ctx context.Context, userID string, videoID int64) error
 	}
 
 	// LanguageRepo persists languages.

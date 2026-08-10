@@ -58,6 +58,11 @@ func (stub usersStub) ListWatchLater(context.Context, string, int, int) (entity.
 	return entity.UserVideoList{}, nil
 }
 
+func (stub usersStub) UpsertWatchHistory(context.Context, string, int64, int) error { return nil }
+func (stub usersStub) RemoveWatchHistory(context.Context, string, int64) error      { return nil }
+func (stub usersStub) SaveWatchLater(context.Context, string, int64) error          { return nil }
+func (stub usersStub) RemoveWatchLater(context.Context, string, int64) error        { return nil }
+
 func (usersStub) Register(context.Context, string, string, string) (entity.User, error) {
 	return entity.User{}, entity.ErrLocalAuthDisabled
 }

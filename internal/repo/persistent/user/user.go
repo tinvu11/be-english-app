@@ -132,6 +132,55 @@ func (r *Repo) listUserVideos(ctx context.Context, table, listType, userID strin
 	return result, nil
 }
 
+func (r *Repo) UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error {
+	result, err := r.Pool.Exec(ctx, `INSERT INTO user_watch_history(user_id,video_id,last_position_seconds,last_watched_at)
+		SELECT $1,v.id,$3,CURRENT_TIMESTAMP FROM videos v
+		JOIN channels c ON c.id=v.channel_id
+		WHERE v.id=$2 AND v.is_system=TRUE AND v.status=$4 AND c.is_active=TRUE
+		ON CONFLICT (user_id,video_id) DO UPDATE
+		SET last_position_seconds=EXCLUDED.last_position_seconds,last_watched_at=CURRENT_TIMESTAMP`,
+		userID, videoID, lastPositionSeconds, entity.VideoStatusPublished)
+	if err != nil {
+		return fmt.Errorf("UserRepo - UpsertWatchHistory: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrVideoNotFound
+	}
+	return nil
+}
+
+func (r *Repo) RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error {
+	_, err := r.Pool.Exec(ctx, `DELETE FROM user_watch_history WHERE user_id=$1 AND video_id=$2`, userID, videoID)
+	if err != nil {
+		return fmt.Errorf("UserRepo - RemoveWatchHistory: %w", err)
+	}
+	return nil
+}
+
+func (r *Repo) SaveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	result, err := r.Pool.Exec(ctx, `INSERT INTO user_watch_later(user_id,video_id,created_at)
+		SELECT $1,v.id,CURRENT_TIMESTAMP FROM videos v
+		JOIN channels c ON c.id=v.channel_id
+		WHERE v.id=$2 AND v.is_system=TRUE AND v.status=$3 AND c.is_active=TRUE
+		ON CONFLICT (user_id,video_id) DO UPDATE SET created_at=user_watch_later.created_at`,
+		userID, videoID, entity.VideoStatusPublished)
+	if err != nil {
+		return fmt.Errorf("UserRepo - SaveWatchLater: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrVideoNotFound
+	}
+	return nil
+}
+
+func (r *Repo) RemoveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	_, err := r.Pool.Exec(ctx, `DELETE FROM user_watch_later WHERE user_id=$1 AND video_id=$2`, userID, videoID)
+	if err != nil {
+		return fmt.Errorf("UserRepo - RemoveWatchLater: %w", err)
+	}
+	return nil
+}
+
 // GetByID -.
 func (r *Repo) GetByID(ctx context.Context, id string) (entity.User, error) {
 	return r.getUser(ctx, "id", id)

@@ -93,3 +93,31 @@ func (u *tracedUseCase) ListWatchLater(ctx context.Context, userID string, limit
 	endSpan(span, err)
 	return result, err
 }
+
+func (u *tracedUseCase) UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error {
+	ctx, span := startSpan(ctx, "UserUseCase.UpsertWatchHistory", attribute.String("user.id", userID))
+	err := u.next.UpsertWatchHistory(ctx, userID, videoID, lastPositionSeconds)
+	endSpan(span, err)
+	return err
+}
+
+func (u *tracedUseCase) RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "UserUseCase.RemoveWatchHistory", attribute.String("user.id", userID))
+	err := u.next.RemoveWatchHistory(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}
+
+func (u *tracedUseCase) SaveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "UserUseCase.SaveWatchLater", attribute.String("user.id", userID))
+	err := u.next.SaveWatchLater(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}
+
+func (u *tracedUseCase) RemoveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "UserUseCase.RemoveWatchLater", attribute.String("user.id", userID))
+	err := u.next.RemoveWatchLater(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}

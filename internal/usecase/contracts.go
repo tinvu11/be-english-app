@@ -19,6 +19,10 @@ type (
 		UpdateLanguages(ctx context.Context, userID string, nativeLanguageID, targetLanguageID int) (entity.User, error)
 		ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
 		ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
+		UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error
+		RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error
+		SaveWatchLater(ctx context.Context, userID string, videoID int64) error
+		RemoveWatchLater(ctx context.Context, userID string, videoID int64) error
 	}
 
 	// Language manages the platform language catalog.

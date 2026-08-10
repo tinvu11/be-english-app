@@ -17,3 +17,7 @@ type UpdateUserLanguages struct {
 	NativeLanguageID int `json:"nativeLanguageId" validate:"required,gt=0" example:"2"`
 	TargetLanguageID int `json:"targetLanguageId" validate:"required,gt=0" example:"1"`
 } // @name request.UpdateUserLanguages
+
+type UpdateWatchHistory struct {
+	LastPositionSeconds int `json:"lastPositionSeconds" validate:"gte=0" example:"75"`
+} // @name request.UpdateWatchHistory

@@ -64,6 +64,34 @@ func validUserVideoPage(userID string, limit, offset int) bool {
 	return userID != "" && limit > 0 && limit <= 100 && offset >= 0
 }
 
+func (uc *UseCase) UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error {
+	if userID == "" || videoID <= 0 || lastPositionSeconds < 0 {
+		return entity.ErrInvalidVideo
+	}
+	return uc.repo.UpsertWatchHistory(ctx, userID, videoID, lastPositionSeconds)
+}
+
+func (uc *UseCase) RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error {
+	if userID == "" || videoID <= 0 {
+		return entity.ErrInvalidVideo
+	}
+	return uc.repo.RemoveWatchHistory(ctx, userID, videoID)
+}
+
+func (uc *UseCase) SaveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	if userID == "" || videoID <= 0 {
+		return entity.ErrInvalidVideo
+	}
+	return uc.repo.SaveWatchLater(ctx, userID, videoID)
+}
+
+func (uc *UseCase) RemoveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	if userID == "" || videoID <= 0 {
+		return entity.ErrInvalidVideo
+	}
+	return uc.repo.RemoveWatchLater(ctx, userID, videoID)
+}
+
 // Authenticate finds or provisions the local user for a verified Firebase identity.
 func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error) {
 	if identity.UID == "" {

@@ -139,3 +139,26 @@ func TestUpdateLanguagesRejectsWrongKinds(t *testing.T) {
 
 	require.ErrorIs(t, err, entity.ErrInvalidLanguage)
 }
+
+func TestUserVideoMutations(t *testing.T) {
+	t.Parallel()
+
+	uc, users, _ := newUserUseCase(t)
+	users.EXPECT().SaveWatchLater(gomock.Any(), "local-123", int64(10)).Return(nil)
+	users.EXPECT().RemoveWatchLater(gomock.Any(), "local-123", int64(10)).Return(nil)
+	users.EXPECT().UpsertWatchHistory(gomock.Any(), "local-123", int64(10), 75).Return(nil)
+	users.EXPECT().RemoveWatchHistory(gomock.Any(), "local-123", int64(10)).Return(nil)
+
+	require.NoError(t, uc.SaveWatchLater(context.Background(), "local-123", 10))
+	require.NoError(t, uc.RemoveWatchLater(context.Background(), "local-123", 10))
+	require.NoError(t, uc.UpsertWatchHistory(context.Background(), "local-123", 10, 75))
+	require.NoError(t, uc.RemoveWatchHistory(context.Background(), "local-123", 10))
+}
+
+func TestUserVideoMutationsRejectInvalidInput(t *testing.T) {
+	t.Parallel()
+
+	uc, _, _ := newUserUseCase(t)
+	require.ErrorIs(t, uc.SaveWatchLater(context.Background(), "", 10), entity.ErrInvalidVideo)
+	require.ErrorIs(t, uc.UpsertWatchHistory(context.Background(), "local-123", 10, -1), entity.ErrInvalidVideo)
+}
