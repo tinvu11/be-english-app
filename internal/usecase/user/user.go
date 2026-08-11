@@ -37,7 +37,7 @@ func (uc *UseCase) UpdateLanguages(ctx context.Context, userID string, nativeLan
 	if err != nil {
 		return entity.User{}, err
 	}
-	if !nativeLanguage.IsActive || nativeLanguage.IsLearnable || !targetLanguage.IsActive || !targetLanguage.IsLearnable {
+	if !nativeLanguage.IsActive || !targetLanguage.IsActive || !targetLanguage.IsLearnable {
 		return entity.User{}, entity.ErrInvalidLanguage
 	}
 	if err = uc.repo.UpdateLanguages(ctx, userID, nativeLanguageID, targetLanguageID); err != nil {

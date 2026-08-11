@@ -63,10 +63,9 @@ func buildOnboardingResponse(languages []entity.Language, topics []entity.Topic,
 			continue
 		}
 		item := response.OnboardingLanguage{ID: language.ID, Code: language.Code, Name: language.Name, Flag: language.FlagEmoji}
+		result.TranslationLanguages = append(result.TranslationLanguages, item)
 		if language.IsLearnable {
 			result.LearningLanguages = append(result.LearningLanguages, item)
-		} else {
-			result.TranslationLanguages = append(result.TranslationLanguages, item)
 		}
 	}
 	for _, topic := range topics {

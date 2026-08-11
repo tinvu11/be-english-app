@@ -117,7 +117,7 @@ func TestUpdateLanguages(t *testing.T) {
 	uc, users, languages := newUserUseCase(t)
 	nativeID, targetID := 2, 1
 	expected := entity.User{ID: "local-123", NativeLanguageID: &nativeID, TargetLanguageID: &targetID}
-	languages.EXPECT().GetLanguage(gomock.Any(), nativeID).Return(entity.Language{ID: nativeID, IsActive: true, IsLearnable: false}, nil)
+	languages.EXPECT().GetLanguage(gomock.Any(), nativeID).Return(entity.Language{ID: nativeID, IsActive: true, IsLearnable: true}, nil)
 	languages.EXPECT().GetLanguage(gomock.Any(), targetID).Return(entity.Language{ID: targetID, IsActive: true, IsLearnable: true}, nil)
 	users.EXPECT().UpdateLanguages(gomock.Any(), expected.ID, nativeID, targetID).Return(nil)
 	users.EXPECT().GetByID(gomock.Any(), expected.ID).Return(expected, nil)
@@ -128,12 +128,12 @@ func TestUpdateLanguages(t *testing.T) {
 	assert.Equal(t, expected, got)
 }
 
-func TestUpdateLanguagesRejectsWrongKinds(t *testing.T) {
+func TestUpdateLanguagesRejectsNonLearnableTarget(t *testing.T) {
 	t.Parallel()
 
 	uc, _, languages := newUserUseCase(t)
 	languages.EXPECT().GetLanguage(gomock.Any(), 1).Return(entity.Language{ID: 1, IsActive: true, IsLearnable: true}, nil)
-	languages.EXPECT().GetLanguage(gomock.Any(), 2).Return(entity.Language{ID: 2, IsActive: true, IsLearnable: true}, nil)
+	languages.EXPECT().GetLanguage(gomock.Any(), 2).Return(entity.Language{ID: 2, IsActive: true, IsLearnable: false}, nil)
 
 	_, err := uc.UpdateLanguages(context.Background(), "local-123", 1, 2)
 

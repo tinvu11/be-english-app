@@ -26,8 +26,8 @@ func TestBuildOnboardingResponse(t *testing.T) {
 
 	require.Len(t, got.LearningLanguages, 1)
 	assert.Equal(t, "🇬🇧", got.LearningLanguages[0].Flag)
-	require.Len(t, got.TranslationLanguages, 1)
-	assert.Equal(t, "vi", got.TranslationLanguages[0].Code)
+	require.Len(t, got.TranslationLanguages, 2)
+	assert.Equal(t, []string{"en", "vi"}, []string{got.TranslationLanguages[0].Code, got.TranslationLanguages[1].Code})
 	require.Len(t, got.Topics, 1)
 	assert.Equal(t, "Du lịch", got.Topics[0].Name)
 	assert.Equal(t, "travel.svg", got.Topics[0].Icon)
