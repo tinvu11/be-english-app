@@ -44,6 +44,18 @@ func (u *tracedUseCase) ImportFromYouTube(ctx context.Context, videoID int64, la
 	finishSpan(span, err)
 	return item, err
 }
+func (u *tracedUseCase) GetOriginalCaptions(ctx context.Context, videoID int64) (entity.VideoCaptions, error) {
+	ctx, span := otel.Tracer("usecase.caption").Start(ctx, "CaptionUseCase.GetOriginalCaptions")
+	items, err := u.next.GetOriginalCaptions(ctx, videoID)
+	finishSpan(span, err)
+	return items, err
+}
+func (u *tracedUseCase) GetTranslatedCaptions(ctx context.Context, userID string, videoID int64) (entity.VideoCaptions, error) {
+	ctx, span := otel.Tracer("usecase.caption").Start(ctx, "CaptionUseCase.GetTranslatedCaptions")
+	items, err := u.next.GetTranslatedCaptions(ctx, userID, videoID)
+	finishSpan(span, err)
+	return items, err
+}
 func (u *tracedUseCase) TranslateCaptions(ctx context.Context, videoID int64, targetLanguageID int, mode string) (entity.CaptionTranslationResult, error) {
 	ctx, span := otel.Tracer("usecase.caption").Start(ctx, "CaptionUseCase.TranslateCaptions")
 	item, err := u.next.TranslateCaptions(ctx, videoID, targetLanguageID, mode)

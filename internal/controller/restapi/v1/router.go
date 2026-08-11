@@ -36,6 +36,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		videoGroup.Get("/search", r.searchVideos)
 		videoGroup.Post("/youtube-preview", r.previewUserYouTubeVideo)
 		videoGroup.Post("/import-youtube", r.importUserYouTubeVideo)
+		videoGroup.Get("/:videoId/captions", r.getOriginalVideoCaptions)
+		videoGroup.Get("/:videoId/captions/translation", r.getTranslatedVideoCaptions)
 	}
 
 	userGroup := protected.Group("/user")

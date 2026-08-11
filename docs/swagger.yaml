@@ -694,6 +694,34 @@ definitions:
       video:
         $ref: '#/definitions/entity.Video'
     type: object
+  github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem:
+    properties:
+      endTimeMs:
+        type: integer
+      id:
+        type: integer
+      sentenceOrder:
+        type: integer
+      startTimeMs:
+        type: integer
+      text:
+        type: string
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VideoCaptions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem'
+        type: array
+      languageCode:
+        type: string
+      languageId:
+        type: integer
+      total:
+        type: integer
+      videoId:
+        type: integer
+    type: object
   github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult:
     properties:
       importedCount:
@@ -3248,6 +3276,105 @@ paths:
       security:
       - BearerAuth: []
       summary: Save video to watch later
+      tags:
+      - user-videos
+  /videos/{videoId}/captions:
+    get:
+      description: Returns original captions immediately without requesting a translation
+      operationId: user-video-original-captions
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get original video captions
+      tags:
+      - user-videos
+  /videos/{videoId}/captions/translation:
+    get:
+      description: Returns captions translated to the user's native language; missing
+        translations are generated and persisted before returning
+      operationId: user-video-translated-captions
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "429":
+          description: Too Many Requests
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get translated video captions
       tags:
       - user-videos
   /videos/import-youtube:

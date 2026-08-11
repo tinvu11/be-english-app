@@ -108,3 +108,19 @@ type CaptionTranslationResult struct {
 	TranslatedCount    int    `json:"translatedCount"`
 	SkippedCount       int    `json:"skippedCount"`
 }
+
+type VideoCaptionItem struct {
+	ID            int64  `json:"id"`
+	SentenceOrder int    `json:"sentenceOrder"`
+	StartTimeMS   int64  `json:"startTimeMs"`
+	EndTimeMS     int64  `json:"endTimeMs"`
+	Text          string `json:"text"`
+}
+
+type VideoCaptions struct {
+	VideoID      int64              `json:"videoId"`
+	LanguageID   int                `json:"languageId"`
+	LanguageCode string             `json:"languageCode"`
+	Items        []VideoCaptionItem `json:"items"`
+	Total        int                `json:"total"`
+}

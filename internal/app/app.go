@@ -75,7 +75,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		channel:   channel.New(channelRepo),
 		adminUser: adminuser.New(adminUserRepo),
 		video:     video.New(videoRepo, userRepo, subtitleProvider),
-		caption:   caption.New(captionRepo, videoRepo, languageRepo, subtitleProvider, translator, cfg.DeepSeek.MaxBatchItems),
+		caption:   caption.New(captionRepo, videoRepo, languageRepo, userRepo, subtitleProvider, translator, cfg.DeepSeek.MaxBatchItems),
 	}
 }
 

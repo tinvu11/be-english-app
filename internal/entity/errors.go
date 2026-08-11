@@ -30,6 +30,7 @@ var (
 	ErrVideoExists             = errors.New("YouTube video already exists")
 	ErrInvalidVideo            = errors.New("invalid video")
 	ErrTargetLanguageRequired  = errors.New("target language is required")
+	ErrNativeLanguageRequired  = errors.New("native language is required")
 	ErrInvalidVideoTransition  = errors.New("invalid video status transition")
 	ErrConcurrentVideoUpdate   = errors.New("video was updated concurrently")
 	ErrCaptionNotFound         = errors.New("caption not found")

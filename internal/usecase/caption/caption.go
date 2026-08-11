@@ -19,17 +19,118 @@ type UseCase struct {
 	repo           repo.CaptionRepo
 	videos         repo.VideoRepo
 	languages      repo.LanguageRepo
+	users          repo.UserRepo
 	subtitles      gateway.YouTubeSubtitleProvider
 	translator     gateway.CaptionTranslator
 	translateBatch int
 }
 
-func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, subtitles gateway.YouTubeSubtitleProvider, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
+func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, users repo.UserRepo, subtitles gateway.YouTubeSubtitleProvider, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
 	if translateBatch <= 0 {
 		translateBatch = 50
 	}
-	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, subtitles: subtitles,
+	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, users: users, subtitles: subtitles,
 		translator: translator, translateBatch: translateBatch})
+}
+
+func (uc *UseCase) GetOriginalCaptions(ctx context.Context, videoID int64) (entity.VideoCaptions, error) {
+	if videoID <= 0 {
+		return entity.VideoCaptions{}, entity.ErrInvalidCaption
+	}
+	video, err := uc.publishedVideo(ctx, videoID)
+	if err != nil {
+		return entity.VideoCaptions{}, err
+	}
+	list, err := uc.allCaptions(ctx, videoID)
+	if err != nil {
+		return entity.VideoCaptions{}, err
+	}
+	result := entity.VideoCaptions{VideoID: videoID, LanguageID: video.Language.ID, LanguageCode: video.Language.Code,
+		Items: make([]entity.VideoCaptionItem, 0, len(list.Items)), Total: list.Total}
+	for _, item := range list.Items {
+		result.Items = append(result.Items, captionItem(item, item.Content))
+	}
+	return result, nil
+}
+
+func (uc *UseCase) GetTranslatedCaptions(ctx context.Context, userID string, videoID int64) (entity.VideoCaptions, error) {
+	if strings.TrimSpace(userID) == "" || videoID <= 0 {
+		return entity.VideoCaptions{}, entity.ErrInvalidCaption
+	}
+	user, err := uc.users.GetByID(ctx, userID)
+	if err != nil {
+		return entity.VideoCaptions{}, err
+	}
+	if user.NativeLanguageID == nil || *user.NativeLanguageID <= 0 {
+		return entity.VideoCaptions{}, entity.ErrNativeLanguageRequired
+	}
+	video, err := uc.publishedVideo(ctx, videoID)
+	if err != nil {
+		return entity.VideoCaptions{}, err
+	}
+	target, err := uc.languages.GetLanguage(ctx, *user.NativeLanguageID)
+	if err != nil {
+		return entity.VideoCaptions{}, err
+	}
+	if !target.IsActive {
+		return entity.VideoCaptions{}, entity.ErrInvalidLanguage
+	}
+	sameLanguage := strings.EqualFold(video.Language.Code, target.Code)
+	if !sameLanguage {
+		if _, err = uc.TranslateCaptions(ctx, videoID, target.ID, entity.CaptionTranslationMissingOnly); err != nil {
+			return entity.VideoCaptions{}, err
+		}
+	}
+	list, err := uc.allCaptions(ctx, videoID)
+	if err != nil {
+		return entity.VideoCaptions{}, err
+	}
+	result := entity.VideoCaptions{VideoID: videoID, LanguageID: target.ID, LanguageCode: target.Code,
+		Items: make([]entity.VideoCaptionItem, 0, len(list.Items)), Total: list.Total}
+	for _, item := range list.Items {
+		text := item.Content
+		if !sameLanguage {
+			text = ""
+			for _, translation := range item.Translations {
+				if translation.LanguageID == target.ID {
+					text = translation.Text
+					break
+				}
+			}
+			if text == "" {
+				return entity.VideoCaptions{}, entity.ErrInvalidTranslation
+			}
+		}
+		result.Items = append(result.Items, captionItem(item, text))
+	}
+	return result, nil
+}
+
+func (uc *UseCase) publishedVideo(ctx context.Context, videoID int64) (entity.Video, error) {
+	video, err := uc.videos.GetVideo(ctx, videoID)
+	if err != nil {
+		return entity.Video{}, err
+	}
+	if video.Status != entity.VideoStatusPublished {
+		return entity.Video{}, entity.ErrVideoNotFound
+	}
+	return video, nil
+}
+
+func (uc *UseCase) allCaptions(ctx context.Context, videoID int64) (entity.CaptionList, error) {
+	list, err := uc.repo.ListCaptions(ctx, videoID, entity.CaptionFilter{Limit: maxImportCaptions, Offset: 0})
+	if err != nil {
+		return entity.CaptionList{}, err
+	}
+	if list.Total == 0 {
+		return entity.CaptionList{}, entity.ErrCaptionTranslationEmpty
+	}
+	return list, nil
+}
+
+func captionItem(item entity.Caption, text string) entity.VideoCaptionItem {
+	return entity.VideoCaptionItem{ID: item.ID, SentenceOrder: item.SentenceOrder,
+		StartTimeMS: item.StartTimeMS, EndTimeMS: item.EndTimeMS, Text: text}
 }
 
 func (uc *UseCase) ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error) {

@@ -3574,6 +3574,157 @@ const docTemplate = `{
                     }
                 ]
             }
+        },
+        "/videos/{videoId}/captions": {
+            "get": {
+                "description": "Returns original captions immediately without requesting a translation",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Get original video captions",
+                "operationId": "user-video-original-captions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/videos/{videoId}/captions/translation": {
+            "get": {
+                "description": "Returns captions translated to the user's native language; missing translations are generated and persisted before returning",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Get translated video captions",
+                "operationId": "user-video-translated-captions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -4548,6 +4699,49 @@ const docTemplate = `{
                 },
                 "video": {
                     "$ref": "#/definitions/entity.Video"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem": {
+            "type": "object",
+            "properties": {
+                "endTimeMs": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sentenceOrder": {
+                    "type": "integer"
+                },
+                "startTimeMs": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VideoCaptions": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem"
+                    }
+                },
+                "languageCode": {
+                    "type": "string"
+                },
+                "languageId": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
                 }
             }
         },

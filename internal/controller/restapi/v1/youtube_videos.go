@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/request"
 	"github.com/evrone/go-clean-template/internal/entity"
@@ -30,6 +31,73 @@ func (r *V1) previewUserYouTubeVideo(ctx *fiber.Ctx) error {
 		return r.youtubeVideoError(ctx, err, "preview")
 	}
 	return ctx.JSON(preview)
+}
+
+// @Summary Get original video captions
+// @Description Returns original captions immediately without requesting a translation
+// @ID user-video-original-captions
+// @Tags user-videos
+// @Produce json
+// @Param videoId path int true "Video ID"
+// @Success 200 {object} entity.VideoCaptions
+// @Failure 400,401,404 {object} map[string]string
+// @Security BearerAuth
+// @Router /videos/{videoId}/captions [get]
+func (r *V1) getOriginalVideoCaptions(ctx *fiber.Ctx) error {
+	videoID, err := strconv.ParseInt(ctx.Params("videoId"), 10, 64)
+	if err != nil || videoID <= 0 {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	result, err := r.captions.GetOriginalCaptions(ctx.UserContext(), videoID)
+	if err != nil {
+		return r.userCaptionError(ctx, err)
+	}
+	return ctx.JSON(result)
+}
+
+// @Summary Get translated video captions
+// @Description Returns captions translated to the user's native language; missing translations are generated and persisted before returning
+// @ID user-video-translated-captions
+// @Tags user-videos
+// @Produce json
+// @Param videoId path int true "Video ID"
+// @Success 200 {object} entity.VideoCaptions
+// @Failure 400,401,404,409,429,502 {object} map[string]string
+// @Security BearerAuth
+// @Router /videos/{videoId}/captions/translation [get]
+func (r *V1) getTranslatedVideoCaptions(ctx *fiber.Ctx) error {
+	userID, ok := ctx.Locals("userID").(string)
+	videoID, err := strconv.ParseInt(ctx.Params("videoId"), 10, 64)
+	if !ok || userID == "" {
+		return errorResponse(ctx, http.StatusUnauthorized, "unauthorized")
+	}
+	if err != nil || videoID <= 0 {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	result, err := r.captions.GetTranslatedCaptions(ctx.UserContext(), userID, videoID)
+	if err != nil {
+		return r.userCaptionError(ctx, err)
+	}
+	return ctx.JSON(result)
+}
+
+func (r *V1) userCaptionError(ctx *fiber.Ctx, err error) error {
+	switch {
+	case errors.Is(err, entity.ErrNativeLanguageRequired):
+		return errorResponse(ctx, http.StatusConflict, "native language must be selected first")
+	case errors.Is(err, entity.ErrVideoNotFound), errors.Is(err, entity.ErrCaptionTranslationEmpty):
+		return errorResponse(ctx, http.StatusNotFound, err.Error())
+	case errors.Is(err, entity.ErrInvalidCaption), errors.Is(err, entity.ErrInvalidLanguage):
+		return errorResponse(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, entity.ErrTranslationRateLimited):
+		return errorResponse(ctx, http.StatusTooManyRequests, "translation rate limit reached")
+	case errors.Is(err, entity.ErrTranslationUnavailable), errors.Is(err, entity.ErrTranslationFailed),
+		errors.Is(err, entity.ErrInvalidTranslation):
+		return errorResponse(ctx, http.StatusBadGateway, "caption translation failed")
+	default:
+		r.l.Error(err, "restapi - v1 - user captions")
+		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")
+	}
 }
 
 // @Summary Add a YouTube video for the current user

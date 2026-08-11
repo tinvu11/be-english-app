@@ -801,6 +801,36 @@ func (mr *MockCaptionMockRecorder) DeleteCaption(ctx, videoID, captionID any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCaption", reflect.TypeOf((*MockCaption)(nil).DeleteCaption), ctx, videoID, captionID)
 }
 
+// GetOriginalCaptions mocks base method.
+func (m *MockCaption) GetOriginalCaptions(ctx context.Context, videoID int64) (entity.VideoCaptions, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOriginalCaptions", ctx, videoID)
+	ret0, _ := ret[0].(entity.VideoCaptions)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOriginalCaptions indicates an expected call of GetOriginalCaptions.
+func (mr *MockCaptionMockRecorder) GetOriginalCaptions(ctx, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOriginalCaptions", reflect.TypeOf((*MockCaption)(nil).GetOriginalCaptions), ctx, videoID)
+}
+
+// GetTranslatedCaptions mocks base method.
+func (m *MockCaption) GetTranslatedCaptions(ctx context.Context, userID string, videoID int64) (entity.VideoCaptions, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTranslatedCaptions", ctx, userID, videoID)
+	ret0, _ := ret[0].(entity.VideoCaptions)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTranslatedCaptions indicates an expected call of GetTranslatedCaptions.
+func (mr *MockCaptionMockRecorder) GetTranslatedCaptions(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTranslatedCaptions", reflect.TypeOf((*MockCaption)(nil).GetTranslatedCaptions), ctx, userID, videoID)
+}
+
 // ImportFromYouTube mocks base method.
 func (m *MockCaption) ImportFromYouTube(ctx context.Context, videoID int64, languageCode, mode string) (entity.YouTubeCaptionImportResult, error) {
 	m.ctrl.T.Helper()
