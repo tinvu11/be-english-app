@@ -123,3 +123,10 @@ type YouTubeVideoPreview struct {
 	ChannelName          string                 `json:"channelName,omitempty"`
 	ManualSubtitleTracks []YouTubeSubtitleTrack `json:"manualSubtitleTracks"`
 }
+
+type UserYouTubeVideoResult struct {
+	Video           Video  `json:"video"`
+	Reused          bool   `json:"reused" example:"false"`
+	CaptionImported bool   `json:"captionImported" example:"true"`
+	CaptionSource   string `json:"captionSource,omitempty" example:"youtube_manual"`
+}

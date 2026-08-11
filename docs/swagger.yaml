@@ -590,6 +590,29 @@ definitions:
       user:
         $ref: '#/definitions/entity.User'
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo:
+    properties:
+      captionLanguageCode:
+        example: en
+        maxLength: 35
+        type: string
+      youtubeUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        maxLength: 2048
+        type: string
+    required:
+    - captionLanguageCode
+    - youtubeUrl
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview:
+    properties:
+      youtubeUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        maxLength: 2048
+        type: string
+    required:
+    - youtubeUrl
+    type: object
   github_com_evrone_go-clean-template_internal_entity.Caption:
     properties:
       content:
@@ -657,6 +680,20 @@ definitions:
       videoId:
         type: integer
     type: object
+  github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult:
+    properties:
+      captionImported:
+        example: true
+        type: boolean
+      captionSource:
+        example: youtube_manual
+        type: string
+      reused:
+        example: false
+        type: boolean
+      video:
+        $ref: '#/definitions/entity.Video'
+    type: object
   github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult:
     properties:
       importedCount:
@@ -678,6 +715,9 @@ definitions:
         items:
           type: string
         type: array
+      isAutomatic:
+        example: false
+        type: boolean
       languageCode:
         example: en
         type: string
@@ -2527,8 +2567,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Downloads manual WebVTT subtitles only; mode is fail_if_exists
-        or replace_all
+      description: Downloads manual or automatically generated WebVTT subtitles; mode
+        is fail_if_exists or replace_all
       parameters:
       - description: Video ID
         in: path
@@ -2586,7 +2626,7 @@ paths:
             $ref: '#/definitions/v1.Error'
       security:
       - BearerAuth: []
-      summary: Import creator-provided YouTube captions
+      summary: Import YouTube captions
       tags:
       - admin-captions
   /admin/videos/{videoId}/captions/translate:
@@ -2664,7 +2704,8 @@ paths:
       - admin-captions
   /admin/videos/{videoId}/captions/youtube-tracks:
     get:
-      description: Automatic and auto-translated captions are excluded
+      description: Returns creator-provided and automatically generated caption tracks;
+        manual tracks are preferred for duplicate language codes
       parameters:
       - description: Video ID
         in: path
@@ -2708,15 +2749,15 @@ paths:
             $ref: '#/definitions/v1.Error'
       security:
       - BearerAuth: []
-      summary: List creator-provided YouTube subtitle tracks
+      summary: List YouTube subtitle tracks
       tags:
       - admin-captions
   /admin/videos/youtube-preview:
     post:
       consumes:
       - application/json
-      description: Returns metadata and creator-provided subtitle tracks without saving
-        the video
+      description: Returns metadata and available manual or automatically generated
+        subtitle tracks without saving the video
       parameters:
       - description: YouTube URL or ID
         in: body
@@ -3209,6 +3250,63 @@ paths:
       summary: Save video to watch later
       tags:
       - user-videos
+  /videos/import-youtube:
+    post:
+      consumes:
+      - application/json
+      description: Reuses an existing video and captions when available; otherwise
+        creates it using the user's target language and imports manual captions before
+        falling back to automatic captions
+      operationId: user-import-youtube-video
+      parameters:
+      - description: YouTube video import
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add a YouTube video for the current user
+      tags:
+      - user-videos
   /videos/search:
     get:
       description: Search published system videos by title across active learnable
@@ -3254,6 +3352,50 @@ paths:
       summary: Search system videos
       tags:
       - videos
+  /videos/youtube-preview:
+    post:
+      consumes:
+      - application/json
+      description: Returns metadata and available caption tracks without saving the
+        video
+      operationId: user-preview-youtube-video
+      parameters:
+      - description: YouTube URL or ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Preview a YouTube video
+      tags:
+      - user-videos
 securityDefinitions:
   BearerAuth:
     in: header

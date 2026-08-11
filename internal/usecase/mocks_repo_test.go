@@ -736,6 +736,22 @@ func (mr *MockVideoRepoMockRecorder) UpdateVideo(ctx, id, input any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateVideo", reflect.TypeOf((*MockVideoRepo)(nil).UpdateVideo), ctx, id, input)
 }
 
+// UpsertUserVideo mocks base method.
+func (m *MockVideoRepo) UpsertUserVideo(ctx context.Context, userID string, preview entity.YouTubeVideoPreview, languageID int) (entity.Video, bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertUserVideo", ctx, userID, preview, languageID)
+	ret0, _ := ret[0].(entity.Video)
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// UpsertUserVideo indicates an expected call of UpsertUserVideo.
+func (mr *MockVideoRepoMockRecorder) UpsertUserVideo(ctx, userID, preview, languageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertUserVideo", reflect.TypeOf((*MockVideoRepo)(nil).UpsertUserVideo), ctx, userID, preview, languageID)
+}
+
 // MockCaptionRepo is a mock of CaptionRepo interface.
 type MockCaptionRepo struct {
 	ctrl     *gomock.Controller

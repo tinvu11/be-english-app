@@ -131,6 +131,48 @@ func (mr *MockUserMockRecorder) Register(ctx, username, email, password any) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockUser)(nil).Register), ctx, username, email, password)
 }
 
+// RemoveWatchHistory mocks base method.
+func (m *MockUser) RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveWatchHistory", ctx, userID, videoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveWatchHistory indicates an expected call of RemoveWatchHistory.
+func (mr *MockUserMockRecorder) RemoveWatchHistory(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveWatchHistory", reflect.TypeOf((*MockUser)(nil).RemoveWatchHistory), ctx, userID, videoID)
+}
+
+// RemoveWatchLater mocks base method.
+func (m *MockUser) RemoveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveWatchLater", ctx, userID, videoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveWatchLater indicates an expected call of RemoveWatchLater.
+func (mr *MockUserMockRecorder) RemoveWatchLater(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveWatchLater", reflect.TypeOf((*MockUser)(nil).RemoveWatchLater), ctx, userID, videoID)
+}
+
+// SaveWatchLater mocks base method.
+func (m *MockUser) SaveWatchLater(ctx context.Context, userID string, videoID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveWatchLater", ctx, userID, videoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveWatchLater indicates an expected call of SaveWatchLater.
+func (mr *MockUserMockRecorder) SaveWatchLater(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveWatchLater", reflect.TypeOf((*MockUser)(nil).SaveWatchLater), ctx, userID, videoID)
+}
+
 // UpdateLanguages mocks base method.
 func (m *MockUser) UpdateLanguages(ctx context.Context, userID string, nativeLanguageID, targetLanguageID int) (entity.User, error) {
 	m.ctrl.T.Helper()
@@ -144,6 +186,20 @@ func (m *MockUser) UpdateLanguages(ctx context.Context, userID string, nativeLan
 func (mr *MockUserMockRecorder) UpdateLanguages(ctx, userID, nativeLanguageID, targetLanguageID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLanguages", reflect.TypeOf((*MockUser)(nil).UpdateLanguages), ctx, userID, nativeLanguageID, targetLanguageID)
+}
+
+// UpsertWatchHistory mocks base method.
+func (m *MockUser) UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertWatchHistory", ctx, userID, videoID, lastPositionSeconds)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertWatchHistory indicates an expected call of UpsertWatchHistory.
+func (mr *MockUserMockRecorder) UpsertWatchHistory(ctx, userID, videoID, lastPositionSeconds any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertWatchHistory", reflect.TypeOf((*MockUser)(nil).UpsertWatchHistory), ctx, userID, videoID, lastPositionSeconds)
 }
 
 // MockLanguage is a mock of Language interface.
@@ -570,6 +626,22 @@ func NewMockVideo(ctrl *gomock.Controller) *MockVideo {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockVideo) EXPECT() *MockVideoMockRecorder {
 	return m.recorder
+}
+
+// AddUserYouTubeVideo mocks base method.
+func (m *MockVideo) AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOrID string) (entity.Video, bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddUserYouTubeVideo", ctx, userID, youtubeURLOrID)
+	ret0, _ := ret[0].(entity.Video)
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// AddUserYouTubeVideo indicates an expected call of AddUserYouTubeVideo.
+func (mr *MockVideoMockRecorder) AddUserYouTubeVideo(ctx, userID, youtubeURLOrID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUserYouTubeVideo", reflect.TypeOf((*MockVideo)(nil).AddUserYouTubeVideo), ctx, userID, youtubeURLOrID)
 }
 
 // CreateVideo mocks base method.

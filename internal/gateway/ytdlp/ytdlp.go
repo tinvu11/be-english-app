@@ -38,14 +38,15 @@ func NewLocal(binaryPath string, timeout time.Duration, maxBytes int64) gateway.
 }
 
 type metadata struct {
-	ID        string                      `json:"id"`
-	Title     string                      `json:"title"`
-	Thumbnail string                      `json:"thumbnail"`
-	Duration  float64                     `json:"duration"`
-	ChannelID string                      `json:"channel_id"`
-	Channel   string                      `json:"channel"`
-	Uploader  string                      `json:"uploader"`
-	Subtitles map[string][]subtitleFormat `json:"subtitles"`
+	ID                string                      `json:"id"`
+	Title             string                      `json:"title"`
+	Thumbnail         string                      `json:"thumbnail"`
+	Duration          float64                     `json:"duration"`
+	ChannelID         string                      `json:"channel_id"`
+	Channel           string                      `json:"channel"`
+	Uploader          string                      `json:"uploader"`
+	Subtitles         map[string][]subtitleFormat `json:"subtitles"`
+	AutomaticCaptions map[string][]subtitleFormat `json:"automatic_captions"`
 }
 
 type subtitleFormat struct {
@@ -74,25 +75,7 @@ func (p *Provider) PreviewVideo(ctx context.Context, youtubeID string) (entity.Y
 	if err = json.Unmarshal(output, &info); err != nil {
 		return entity.YouTubeVideoPreview{}, fmt.Errorf("%w: invalid metadata", entity.ErrSubtitleDownloadFailed)
 	}
-	tracks := make([]entity.YouTubeSubtitleTrack, 0, len(info.Subtitles))
-	for languageCode, formats := range info.Subtitles {
-		track := entity.YouTubeSubtitleTrack{LanguageCode: languageCode}
-		seen := make(map[string]struct{}, len(formats))
-		for _, format := range formats {
-			if track.Name == "" {
-				track.Name = format.Name
-			}
-			if format.Extension != "" {
-				if _, exists := seen[format.Extension]; !exists {
-					track.Formats = append(track.Formats, format.Extension)
-					seen[format.Extension] = struct{}{}
-				}
-			}
-		}
-		sort.Strings(track.Formats)
-		tracks = append(tracks, track)
-	}
-	sort.Slice(tracks, func(i, j int) bool { return tracks[i].LanguageCode < tracks[j].LanguageCode })
+	tracks := subtitleTracks(info.Subtitles, info.AutomaticCaptions)
 	channelName := info.Channel
 	if channelName == "" {
 		channelName = info.Uploader
@@ -100,6 +83,42 @@ func (p *Provider) PreviewVideo(ctx context.Context, youtubeID string) (entity.Y
 	return entity.YouTubeVideoPreview{YouTubeID: info.ID, Title: info.Title, ThumbnailURL: info.Thumbnail,
 		DurationSeconds: int(info.Duration), ChannelYouTubeID: info.ChannelID, ChannelName: channelName,
 		ManualSubtitleTracks: tracks}, nil
+}
+
+func subtitleTracks(manual, automatic map[string][]subtitleFormat) []entity.YouTubeSubtitleTrack {
+	tracksByLanguage := make(map[string]entity.YouTubeSubtitleTrack, len(manual)+len(automatic))
+	addTracks := func(subtitles map[string][]subtitleFormat, automatic bool) {
+		for languageCode, formats := range subtitles {
+			// A creator-provided track is preferred when YouTube exposes both kinds
+			// under the same language code.
+			if existing, found := tracksByLanguage[languageCode]; found && (!existing.IsAutomatic || automatic) {
+				continue
+			}
+			track := entity.YouTubeSubtitleTrack{LanguageCode: languageCode, IsAutomatic: automatic}
+			seen := make(map[string]struct{}, len(formats))
+			for _, format := range formats {
+				if track.Name == "" {
+					track.Name = format.Name
+				}
+				if format.Extension != "" {
+					if _, exists := seen[format.Extension]; !exists {
+						track.Formats = append(track.Formats, format.Extension)
+						seen[format.Extension] = struct{}{}
+					}
+				}
+			}
+			sort.Strings(track.Formats)
+			tracksByLanguage[languageCode] = track
+		}
+	}
+	addTracks(automatic, true)
+	addTracks(manual, false)
+	tracks := make([]entity.YouTubeSubtitleTrack, 0, len(tracksByLanguage))
+	for _, track := range tracksByLanguage {
+		tracks = append(tracks, track)
+	}
+	sort.Slice(tracks, func(i, j int) bool { return tracks[i].LanguageCode < tracks[j].LanguageCode })
+	return tracks
 }
 
 func (p *Provider) DownloadManualSubtitle(ctx context.Context, youtubeID, languageCode string) ([]byte, error) {
@@ -111,9 +130,11 @@ func (p *Provider) DownloadManualSubtitle(ctx context.Context, youtubeID, langua
 		return nil, err
 	}
 	found := false
+	automatic := false
 	for _, track := range tracks {
 		if track.LanguageCode == languageCode {
 			found = true
+			automatic = track.IsAutomatic
 			break
 		}
 	}
@@ -125,8 +146,12 @@ func (p *Provider) DownloadManualSubtitle(ctx context.Context, youtubeID, langua
 		return nil, fmt.Errorf("%w: create temporary directory", entity.ErrSubtitleDownloadFailed)
 	}
 	defer os.RemoveAll(tempDir)
+	writeFlag := "--write-subs"
+	if automatic {
+		writeFlag = "--write-auto-subs"
+	}
 	_, err = p.run(ctx, "--no-config", "--skip-download", "--no-playlist", "--no-warnings",
-		"--write-subs", "--no-write-auto-subs", "--sub-langs", languageCode, "--sub-format", "vtt",
+		writeFlag, "--sub-langs", languageCode, "--sub-format", "vtt",
 		"--paths", tempDir, "--output", "subtitle.%(ext)s", youtubeURL(youtubeID))
 	if err != nil {
 		return nil, err

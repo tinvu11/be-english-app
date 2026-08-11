@@ -124,8 +124,17 @@ func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languag
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}
+	source := "youtube_manual"
+	if tracks, listErr := uc.subtitles.ListManualSubtitles(ctx, video.YouTubeID); listErr == nil {
+		for _, track := range tracks {
+			if track.LanguageCode == languageCode && track.IsAutomatic {
+				source = "youtube_auto"
+				break
+			}
+		}
+	}
 	return entity.YouTubeCaptionImportResult{VideoID: videoID, LanguageCode: languageCode,
-		Source: "youtube_manual", ImportedCount: len(inputs)}, nil
+		Source: source, ImportedCount: len(inputs)}, nil
 }
 
 func (uc *UseCase) TranslateCaptions(ctx context.Context, videoID int64, targetLanguageID int, mode string) (entity.CaptionTranslationResult, error) {

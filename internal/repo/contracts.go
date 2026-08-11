@@ -70,6 +70,7 @@ type (
 	VideoRepo interface {
 		ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error)
 		GetVideo(ctx context.Context, id int64) (entity.Video, error)
+		UpsertUserVideo(ctx context.Context, userID string, preview entity.YouTubeVideoPreview, languageID int) (entity.Video, bool, error)
 		CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error)
 		UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error)
 		SetVideoStatus(ctx context.Context, id int64, expectedStatus, nextStatus string) (entity.Video, error)

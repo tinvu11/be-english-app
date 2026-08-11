@@ -13,7 +13,7 @@ import (
 )
 
 // @Summary Preview YouTube video metadata
-// @Description Returns metadata and creator-provided subtitle tracks without saving the video
+// @Description Returns metadata and available manual or automatically generated subtitle tracks without saving the video
 // @Tags admin-videos
 // @Accept json
 // @Produce json

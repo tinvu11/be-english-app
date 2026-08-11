@@ -1617,7 +1617,7 @@ const docTemplate = `{
         },
         "/admin/videos/youtube-preview": {
             "post": {
-                "description": "Returns metadata and creator-provided subtitle tracks without saving the video",
+                "description": "Returns metadata and available manual or automatically generated subtitle tracks without saving the video",
                 "consumes": [
                     "application/json"
                 ],
@@ -2233,7 +2233,7 @@ const docTemplate = `{
         },
         "/admin/videos/{videoId}/captions/import-youtube": {
             "post": {
-                "description": "Downloads manual WebVTT subtitles only; mode is fail_if_exists or replace_all",
+                "description": "Downloads manual or automatically generated WebVTT subtitles; mode is fail_if_exists or replace_all",
                 "consumes": [
                     "application/json"
                 ],
@@ -2243,7 +2243,7 @@ const docTemplate = `{
                 "tags": [
                     "admin-captions"
                 ],
-                "summary": "Import creator-provided YouTube captions",
+                "summary": "Import YouTube captions",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2445,14 +2445,14 @@ const docTemplate = `{
         },
         "/admin/videos/{videoId}/captions/youtube-tracks": {
             "get": {
-                "description": "Automatic and auto-translated captions are excluded",
+                "description": "Returns creator-provided and automatically generated caption tracks; manual tracks are preferred for duplicate language codes",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "admin-captions"
                 ],
-                "summary": "List creator-provided YouTube subtitle tracks",
+                "summary": "List YouTube subtitle tracks",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3356,6 +3356,91 @@ const docTemplate = `{
                 ]
             }
         },
+        "/videos/import-youtube": {
+            "post": {
+                "description": "Reuses an existing video and captions when available; otherwise creates it using the user's target language and imports manual captions before falling back to automatic captions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Add a YouTube video for the current user",
+                "operationId": "user-import-youtube-video",
+                "parameters": [
+                    {
+                        "description": "YouTube video import",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/videos/search": {
             "get": {
                 "description": "Search published system videos by title across active learnable languages",
@@ -3413,6 +3498,73 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/videos/youtube-preview": {
+            "post": {
+                "description": "Returns metadata and available caption tracks without saving the video",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Preview a YouTube video",
+                "operationId": "user-preview-youtube-video",
+                "parameters": [
+                    {
+                        "description": "YouTube URL or ID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 },
@@ -4250,6 +4402,38 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo": {
+            "type": "object",
+            "required": [
+                "captionLanguageCode",
+                "youtubeUrl"
+            ],
+            "properties": {
+                "captionLanguageCode": {
+                    "type": "string",
+                    "maxLength": 35,
+                    "example": "en"
+                },
+                "youtubeUrl": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview": {
+            "type": "object",
+            "required": [
+                "youtubeUrl"
+            ],
+            "properties": {
+                "youtubeUrl": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.Caption": {
             "type": "object",
             "properties": {
@@ -4347,6 +4531,26 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult": {
+            "type": "object",
+            "properties": {
+                "captionImported": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "captionSource": {
+                    "type": "string",
+                    "example": "youtube_manual"
+                },
+                "reused": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "video": {
+                    "$ref": "#/definitions/entity.Video"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult": {
             "type": "object",
             "properties": {
@@ -4376,6 +4580,10 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "isAutomatic": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "languageCode": {
                     "type": "string",

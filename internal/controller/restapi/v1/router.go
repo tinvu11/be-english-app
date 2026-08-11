@@ -17,6 +17,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		levels:    levels,
 		topics:    topics,
 		videos:    videos,
+		captions:  captions,
 		l:         l,
 		v:         validator.New(validator.WithRequiredStructEnabled()),
 	}
@@ -33,6 +34,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	videoGroup := protected.Group("/videos")
 	{
 		videoGroup.Get("/search", r.searchVideos)
+		videoGroup.Post("/youtube-preview", r.previewUserYouTubeVideo)
+		videoGroup.Post("/import-youtube", r.importUserYouTubeVideo)
 	}
 
 	userGroup := protected.Group("/user")

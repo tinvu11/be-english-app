@@ -147,6 +147,37 @@ func (r *Repo) GetVideo(ctx context.Context, id int64) (entity.Video, error) {
 	return video, nil
 }
 
+func (r *Repo) UpsertUserVideo(ctx context.Context, userID string, preview entity.YouTubeVideoPreview, languageID int) (entity.Video, bool, error) {
+	tx, err := r.Pool.Begin(ctx)
+	if err != nil {
+		return entity.Video{}, false, fmt.Errorf("VideoRepo - UpsertUserVideo - begin: %w", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	var id int64
+	created := true
+	err = tx.QueryRow(ctx, `INSERT INTO videos(title,youtube_id,thumbnail_url,duration_seconds,status,language_id,level_id,channel_id,is_system)
+		VALUES($1,$2,NULLIF($3,''),$4,$5,$6,NULL,NULL,FALSE)
+		ON CONFLICT (youtube_id) DO NOTHING RETURNING id`, preview.Title, preview.YouTubeID, preview.ThumbnailURL,
+		preview.DurationSeconds, entity.VideoStatusPublished, languageID).Scan(&id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		created = false
+		err = tx.QueryRow(ctx, `SELECT id FROM videos WHERE youtube_id=$1`, preview.YouTubeID).Scan(&id)
+	}
+	if err != nil {
+		return entity.Video{}, false, mapWriteError("UpsertUserVideo", err)
+	}
+	if _, err = tx.Exec(ctx, `INSERT INTO user_videos(user_id,video_id) VALUES($1,$2)
+		ON CONFLICT(user_id,video_id) DO NOTHING`, userID, id); err != nil {
+		return entity.Video{}, false, mapWriteError("UpsertUserVideo relation", err)
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return entity.Video{}, false, fmt.Errorf("VideoRepo - UpsertUserVideo - commit: %w", err)
+	}
+	video, err := r.GetVideo(ctx, id)
+	return video, !created, err
+}
+
 func (r *Repo) CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error) {
 	tx, err := r.Pool.Begin(ctx)
 	if err != nil {

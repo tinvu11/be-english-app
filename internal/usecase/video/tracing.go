@@ -44,6 +44,13 @@ func (u *tracedUseCase) PreviewYouTubeVideo(ctx context.Context, youtubeURLOrID 
 	endSpan(span, err)
 	return item, err
 }
+
+func (u *tracedUseCase) AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOrID string) (entity.Video, bool, error) {
+	ctx, span := startSpan(ctx, "VideoUseCase.AddUserYouTubeVideo")
+	item, reused, err := u.next.AddUserYouTubeVideo(ctx, userID, youtubeURLOrID)
+	endSpan(span, err)
+	return item, reused, err
+}
 func (u *tracedUseCase) CreateVideo(ctx context.Context, i entity.VideoInput) (entity.Video, error) {
 	ctx, s := startSpan(ctx, "VideoUseCase.CreateVideo")
 	v, e := u.next.CreateVideo(ctx, i)

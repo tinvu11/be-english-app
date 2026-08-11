@@ -18,8 +18,8 @@ import (
 
 const maxSRTFileSize = 10 << 20
 
-// @Summary List creator-provided YouTube subtitle tracks
-// @Description Automatic and auto-translated captions are excluded
+// @Summary List YouTube subtitle tracks
+// @Description Returns creator-provided and automatically generated caption tracks; manual tracks are preferred for duplicate language codes
 // @Tags admin-captions
 // @Produce json
 // @Param videoId path int true "Video ID"
@@ -39,8 +39,8 @@ func (ctrl *controller) listYouTubeSubtitleTracks(ctx *fiber.Ctx) error {
 	return ctx.JSON(tracks)
 }
 
-// @Summary Import creator-provided YouTube captions
-// @Description Downloads manual WebVTT subtitles only; mode is fail_if_exists or replace_all
+// @Summary Import YouTube captions
+// @Description Downloads manual or automatically generated WebVTT subtitles; mode is fail_if_exists or replace_all
 // @Tags admin-captions
 // @Accept json
 // @Produce json

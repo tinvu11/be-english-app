@@ -59,6 +59,7 @@ type YouTubeSubtitleTrack struct {
 	LanguageCode string   `json:"languageCode" example:"en"`
 	Name         string   `json:"name,omitempty" example:"English"`
 	Formats      []string `json:"formats"`
+	IsAutomatic  bool     `json:"isAutomatic" example:"false"`
 }
 
 type YouTubeSubtitleTracks struct {

@@ -16,11 +16,30 @@ const maxPageSize = 100
 
 type UseCase struct {
 	repo    repo.VideoRepo
+	users   repo.UserRepo
 	youtube gateway.YouTubeSubtitleProvider
 }
 
-func New(repository repo.VideoRepo, youtube gateway.YouTubeSubtitleProvider) usecase.Video {
-	return newTraced(&UseCase{repo: repository, youtube: youtube})
+func New(repository repo.VideoRepo, users repo.UserRepo, youtube gateway.YouTubeSubtitleProvider) usecase.Video {
+	return newTraced(&UseCase{repo: repository, users: users, youtube: youtube})
+}
+
+func (uc *UseCase) AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOrID string) (entity.Video, bool, error) {
+	if strings.TrimSpace(userID) == "" {
+		return entity.Video{}, false, entity.ErrInvalidVideo
+	}
+	user, err := uc.users.GetByID(ctx, userID)
+	if err != nil {
+		return entity.Video{}, false, err
+	}
+	if user.TargetLanguageID == nil || *user.TargetLanguageID <= 0 {
+		return entity.Video{}, false, entity.ErrTargetLanguageRequired
+	}
+	preview, err := uc.PreviewYouTubeVideo(ctx, youtubeURLOrID)
+	if err != nil {
+		return entity.Video{}, false, err
+	}
+	return uc.repo.UpsertUserVideo(ctx, userID, preview, *user.TargetLanguageID)
 }
 
 func (uc *UseCase) ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {

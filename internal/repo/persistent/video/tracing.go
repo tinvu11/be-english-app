@@ -43,6 +43,13 @@ func (r *tracedRepo) GetVideo(ctx context.Context, id int64) (entity.Video, erro
 	return result, err
 }
 
+func (r *tracedRepo) UpsertUserVideo(ctx context.Context, userID string, preview entity.YouTubeVideoPreview, languageID int) (entity.Video, bool, error) {
+	ctx, span := startSpan(ctx, "VideoRepo.UpsertUserVideo", attribute.String("video.youtube_id", preview.YouTubeID))
+	result, reused, err := r.next.UpsertUserVideo(ctx, userID, preview, languageID)
+	endSpan(span, err)
+	return result, reused, err
+}
+
 func (r *tracedRepo) CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error) {
 	ctx, span := startSpan(ctx, "VideoRepo.CreateVideo", attribute.String("video.youtube_id", input.YouTubeID))
 	result, err := r.next.CreateVideo(ctx, input)
