@@ -53,6 +53,9 @@ func (stub usersStub) UpdateLanguages(context.Context, string, int, int) (entity
 func (stub usersStub) ListWatchHistory(context.Context, string, int, int) (entity.UserVideoList, error) {
 	return entity.UserVideoList{}, nil
 }
+func (stub usersStub) GetWatchHistory(context.Context, string, int64) (entity.UserVideo, bool, error) {
+	return entity.UserVideo{}, false, nil
+}
 
 func (stub usersStub) ListWatchLater(context.Context, string, int, int) (entity.UserVideoList, error) {
 	return entity.UserVideoList{}, nil

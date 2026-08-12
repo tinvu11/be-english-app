@@ -1140,6 +1140,14 @@ definitions:
           $ref: '#/definitions/response.SavedVideo'
         type: array
     type: object
+  response.WatchStatus:
+    properties:
+      video:
+        $ref: '#/definitions/response.HistoryVideo'
+      watched:
+        example: true
+        type: boolean
+    type: object
   v1.Error:
     properties:
       error:
@@ -3177,6 +3185,40 @@ paths:
       security:
       - BearerAuth: []
       summary: Remove video from watch history
+      tags:
+      - user-videos
+    get:
+      description: Check whether the current user has watched a video and return the
+        latest position for resuming playback
+      operationId: user-watch-status
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WatchStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Check video watch status
       tags:
       - user-videos
     put:

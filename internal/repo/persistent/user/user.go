@@ -85,6 +85,27 @@ func (r *Repo) ListWatchHistory(ctx context.Context, userID string, limit, offse
 	return r.listUserVideos(ctx, `user_watch_history`, "history", userID, limit, offset)
 }
 
+func (r *Repo) GetWatchHistory(ctx context.Context, userID string, videoID int64) (entity.UserVideo, bool, error) {
+	var item entity.UserVideo
+	err := r.Pool.QueryRow(ctx, `SELECT v.id,v.title,v.youtube_id,COALESCE(v.thumbnail_url,''),v.duration_seconds,
+		COALESCE(l.code,''),history.last_position_seconds,history.last_watched_at
+		FROM user_watch_history history
+		JOIN videos v ON v.id=history.video_id
+		LEFT JOIN levels l ON l.id=v.level_id
+		LEFT JOIN channels c ON c.id=v.channel_id
+		WHERE history.user_id=$1 AND history.video_id=$2 AND v.status=$3
+		AND (NOT v.is_system OR c.is_active=TRUE)`, userID, videoID, entity.VideoStatusPublished).
+		Scan(&item.ID, &item.Title, &item.YouTubeID, &item.ThumbnailURL, &item.DurationSeconds,
+			&item.LevelCode, &item.LastPositionSeconds, &item.LastWatchedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return entity.UserVideo{}, false, nil
+	}
+	if err != nil {
+		return entity.UserVideo{}, false, fmt.Errorf("UserRepo - GetWatchHistory: %w", err)
+	}
+	return item, true, nil
+}
+
 func (r *Repo) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
 	return r.listUserVideos(ctx, `user_watch_later`, "saved", userID, limit, offset)
 }

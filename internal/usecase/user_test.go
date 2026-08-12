@@ -155,6 +155,18 @@ func TestUserVideoMutations(t *testing.T) {
 	require.NoError(t, uc.RemoveWatchHistory(context.Background(), "local-123", 10))
 }
 
+func TestGetWatchHistory(t *testing.T) {
+	t.Parallel()
+	uc, users, _ := newUserUseCase(t)
+	expected := entity.UserVideo{ID: 10, LastPositionSeconds: 75}
+	users.EXPECT().GetWatchHistory(gomock.Any(), "local-123", int64(10)).Return(expected, true, nil)
+
+	got, watched, err := uc.GetWatchHistory(context.Background(), "local-123", 10)
+	require.NoError(t, err)
+	assert.True(t, watched)
+	assert.Equal(t, expected, got)
+}
+
 func TestUserVideoMutationsRejectInvalidInput(t *testing.T) {
 	t.Parallel()
 

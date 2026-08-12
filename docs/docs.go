@@ -3092,6 +3092,57 @@ const docTemplate = `{
             }
         },
         "/user/watch-history/{videoId}": {
+            "get": {
+                "description": "Check whether the current user has watched a video and return the latest position for resuming playback",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Check video watch status",
+                "operationId": "user-watch-status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WatchStatus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
             "put": {
                 "description": "Create or update a video's latest watch position and last watched time",
                 "consumes": [
@@ -5426,6 +5477,18 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.SavedVideo"
                     }
+                }
+            }
+        },
+        "response.WatchStatus": {
+            "type": "object",
+            "properties": {
+                "video": {
+                    "$ref": "#/definitions/response.HistoryVideo"
+                },
+                "watched": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

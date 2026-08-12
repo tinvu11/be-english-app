@@ -60,6 +60,11 @@ type HistoryVideo struct {
 	LastWatchedAt       time.Time `json:"last_watched_at" example:"2026-08-11T10:30:00Z"`
 } // @name response.HistoryVideo
 
+type WatchStatus struct {
+	Watched bool          `json:"watched" example:"true"`
+	Video   *HistoryVideo `json:"video,omitempty"`
+} // @name response.WatchStatus
+
 type SavedVideo struct {
 	FeedVideo
 	CreatedAt time.Time `json:"created_at" example:"2026-08-11T10:30:00Z"`

@@ -34,6 +34,28 @@ func (r *V1) watchHistory(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(buildWatchHistory(list, page, limit))
 }
 
+// @Summary Check video watch status
+// @Description Check whether the current user has watched a video and return the latest position for resuming playback
+// @ID user-watch-status
+// @Tags user-videos
+// @Produce json
+// @Param videoId path int true "Video ID"
+// @Success 200 {object} response.WatchStatus
+// @Failure 400,401,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/watch-history/{videoId} [get]
+func (r *V1) watchStatus(ctx *fiber.Ctx) error {
+	userID, videoID, err := userVideoMutation(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	video, watched, err := r.u.GetWatchHistory(ctx.UserContext(), userID, videoID)
+	if err != nil {
+		return r.userVideoMutationError(ctx, err, "get watch status")
+	}
+	return ctx.Status(http.StatusOK).JSON(buildWatchStatus(video, watched))
+}
+
 // @Summary Get saved videos
 // @Description Return the current user's saved published videos
 // @ID user-watch-later
@@ -207,6 +229,15 @@ func buildWatchHistory(list entity.UserVideoList, page, limit int) response.Watc
 			FeedVideo: compactUserVideo(video), LastPositionSeconds: video.LastPositionSeconds,
 			LastWatchedAt: video.LastWatchedAt,
 		})
+	}
+	return result
+}
+
+func buildWatchStatus(video entity.UserVideo, watched bool) response.WatchStatus {
+	result := response.WatchStatus{Watched: watched}
+	if watched {
+		history := response.HistoryVideo{FeedVideo: compactUserVideo(video), LastPositionSeconds: video.LastPositionSeconds, LastWatchedAt: video.LastWatchedAt}
+		result.Video = &history
 	}
 	return result
 }

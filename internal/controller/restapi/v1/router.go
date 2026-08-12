@@ -52,6 +52,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		userGroup.Get("/onboarding", r.onboarding)
 		userGroup.Get("/levels", r.listUserLevels)
 		userGroup.Get("/watch-history", r.watchHistory)
+		userGroup.Get("/watch-history/:videoId", r.watchStatus)
 		userGroup.Put("/watch-history/:videoId", r.upsertWatchHistory)
 		userGroup.Delete("/watch-history/:videoId", r.removeWatchHistory)
 		userGroup.Get("/watch-later", r.watchLater)

@@ -112,6 +112,19 @@ func TestBuildUserVideoLists(t *testing.T) {
 	assert.Equal(t, activityAt, saved.Videos[0].CreatedAt)
 }
 
+func TestWatchStatusResponseData(t *testing.T) {
+	activityAt := time.Date(2026, 8, 12, 10, 30, 0, 0, time.UTC)
+	video := entity.UserVideo{ID: 1, Title: "Lesson", LastPositionSeconds: 42, LastWatchedAt: activityAt}
+	status := buildWatchStatus(video, true)
+
+	assert.True(t, status.Watched)
+	require.NotNil(t, status.Video)
+	assert.Equal(t, int64(1), status.Video.ID)
+	assert.Equal(t, 42, status.Video.LastPositionSeconds)
+	assert.Equal(t, activityAt, status.Video.LastWatchedAt)
+	assert.Nil(t, buildWatchStatus(entity.UserVideo{}, false).Video)
+}
+
 func TestBuildSearchVideosIncludesLanguage(t *testing.T) {
 	list := entity.VideoList{Total: 1, Items: []entity.Video{{
 		ID: 1, Title: "English lesson", YouTubeID: "youtube1", Level: entity.VideoLevel{Code: "A1"},
