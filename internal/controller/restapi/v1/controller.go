@@ -8,12 +8,13 @@ import (
 
 // V1 -.
 type V1 struct {
-	u         usecase.User
-	languages usecase.Language
-	levels    usecase.Level
-	topics    usecase.Topic
-	videos    usecase.Video
-	captions  usecase.Caption
-	l         logger.Interface
-	v         *validator.Validate
+	u          usecase.User
+	languages  usecase.Language
+	levels     usecase.Level
+	topics     usecase.Topic
+	videos     usecase.Video
+	captions   usecase.Caption
+	vocabulary usecase.Vocabulary
+	l          logger.Interface
+	v          *validator.Validate
 }

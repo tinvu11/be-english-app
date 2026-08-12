@@ -3725,6 +3725,91 @@ const docTemplate = `{
                     }
                 ]
             }
+        },
+        "/vocabulary/translate": {
+            "post": {
+                "description": "Uses the user's target language as source and native language as target; an existing dictionary entry is reused before DeepSeek is called",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Translate or reuse a dictionary word",
+                "operationId": "user-translate-vocabulary",
+                "parameters": [
+                    {
+                        "description": "Word to translate",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -4572,6 +4657,19 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary": {
+            "type": "object",
+            "required": [
+                "word"
+            ],
+            "properties": {
+                "word": {
+                    "type": "string",
+                    "maxLength": 150,
+                    "example": "remember"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview": {
             "type": "object",
             "required": [
@@ -4682,6 +4780,47 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.DictionaryEntry": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "example1Sentence": {
+                    "type": "string"
+                },
+                "example1Translation": {
+                    "type": "string"
+                },
+                "example2Sentence": {
+                    "type": "string"
+                },
+                "example2Translation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "meaning": {
+                    "type": "string"
+                },
+                "partOfSpeech": {
+                    "type": "string"
+                },
+                "phoneticOrPinyin": {
+                    "type": "string"
+                },
+                "sourceLanguageId": {
+                    "type": "integer"
+                },
+                "targetLanguageId": {
+                    "type": "integer"
+                },
+                "word": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult": {
             "type": "object",
             "properties": {
@@ -4742,6 +4881,17 @@ const docTemplate = `{
                 },
                 "videoId": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult": {
+            "type": "object",
+            "properties": {
+                "entry": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry"
+                },
+                "reused": {
+                    "type": "boolean"
                 }
             }
         },

@@ -909,3 +909,58 @@ func (mr *MockCaptionRepoMockRecorder) UpsertTranslations(ctx, videoID, language
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertTranslations", reflect.TypeOf((*MockCaptionRepo)(nil).UpsertTranslations), ctx, videoID, languageID, items)
 }
+
+// MockDictionaryRepo is a mock of DictionaryRepo interface.
+type MockDictionaryRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockDictionaryRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockDictionaryRepoMockRecorder is the mock recorder for MockDictionaryRepo.
+type MockDictionaryRepoMockRecorder struct {
+	mock *MockDictionaryRepo
+}
+
+// NewMockDictionaryRepo creates a new mock instance.
+func NewMockDictionaryRepo(ctrl *gomock.Controller) *MockDictionaryRepo {
+	mock := &MockDictionaryRepo{ctrl: ctrl}
+	mock.recorder = &MockDictionaryRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDictionaryRepo) EXPECT() *MockDictionaryRepoMockRecorder {
+	return m.recorder
+}
+
+// FindDictionaryEntry mocks base method.
+func (m *MockDictionaryRepo) FindDictionaryEntry(ctx context.Context, word string, sourceLanguageID, targetLanguageID int) (entity.DictionaryEntry, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDictionaryEntry", ctx, word, sourceLanguageID, targetLanguageID)
+	ret0, _ := ret[0].(entity.DictionaryEntry)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDictionaryEntry indicates an expected call of FindDictionaryEntry.
+func (mr *MockDictionaryRepoMockRecorder) FindDictionaryEntry(ctx, word, sourceLanguageID, targetLanguageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDictionaryEntry", reflect.TypeOf((*MockDictionaryRepo)(nil).FindDictionaryEntry), ctx, word, sourceLanguageID, targetLanguageID)
+}
+
+// UpsertDictionaryEntry mocks base method.
+func (m *MockDictionaryRepo) UpsertDictionaryEntry(ctx context.Context, input entity.DictionaryInput) (entity.DictionaryEntry, bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertDictionaryEntry", ctx, input)
+	ret0, _ := ret[0].(entity.DictionaryEntry)
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// UpsertDictionaryEntry indicates an expected call of UpsertDictionaryEntry.
+func (mr *MockDictionaryRepoMockRecorder) UpsertDictionaryEntry(ctx, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertDictionaryEntry", reflect.TypeOf((*MockDictionaryRepo)(nil).UpsertDictionaryEntry), ctx, input)
+}

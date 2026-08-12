@@ -89,4 +89,8 @@ type (
 		UpdateCaption(ctx context.Context, videoID, captionID int64, input entity.CaptionInput) (entity.Caption, error)
 		DeleteCaption(ctx context.Context, videoID, captionID int64) error
 	}
+
+	Vocabulary interface {
+		TranslateWord(ctx context.Context, userID, word string) (entity.VocabularyLookupResult, error)
+	}
 )

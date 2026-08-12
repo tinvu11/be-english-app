@@ -17,6 +17,7 @@ import (
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
+	persistDictionaryRepo "github.com/evrone/go-clean-template/internal/repo/persistent/dictionary"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
 	persistTopicRepo "github.com/evrone/go-clean-template/internal/repo/persistent/topic"
@@ -31,6 +32,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/topic"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/evrone/go-clean-template/internal/usecase/video"
+	"github.com/evrone/go-clean-template/internal/usecase/vocabulary"
 	"github.com/evrone/go-clean-template/pkg/firebaseauth"
 	"github.com/evrone/go-clean-template/pkg/httpserver"
 	"github.com/evrone/go-clean-template/pkg/logger"
@@ -39,14 +41,15 @@ import (
 )
 
 type useCases struct {
-	user      usecase.User
-	language  usecase.Language
-	level     usecase.Level
-	topic     usecase.Topic
-	channel   usecase.Channel
-	adminUser usecase.AdminUser
-	video     usecase.Video
-	caption   usecase.Caption
+	user       usecase.User
+	language   usecase.Language
+	level      usecase.Level
+	topic      usecase.Topic
+	channel    usecase.Channel
+	adminUser  usecase.AdminUser
+	video      usecase.Video
+	caption    usecase.Caption
+	vocabulary usecase.Vocabulary
 }
 
 type servers struct {
@@ -62,27 +65,29 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	adminUserRepo := persistAdminUserRepo.New(pg)
 	videoRepo := persistVideoRepo.New(pg)
 	captionRepo := persistCaptionRepo.New(pg)
+	dictionaryRepo := persistDictionaryRepo.New(pg)
 	subtitleProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
 	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
 
 	return useCases{
-		user:      user.New(userRepo, languageRepo),
-		language:  language.New(languageRepo),
-		level:     level.New(levelRepo),
-		topic:     topic.New(topicRepo),
-		channel:   channel.New(channelRepo),
-		adminUser: adminuser.New(adminUserRepo),
-		video:     video.New(videoRepo, userRepo, subtitleProvider),
-		caption:   caption.New(captionRepo, videoRepo, languageRepo, userRepo, subtitleProvider, translator, cfg.DeepSeek.MaxBatchItems),
+		user:       user.New(userRepo, languageRepo),
+		language:   language.New(languageRepo),
+		level:      level.New(levelRepo),
+		topic:      topic.New(topicRepo),
+		channel:    channel.New(channelRepo),
+		adminUser:  adminuser.New(adminUserRepo),
+		video:      video.New(videoRepo, userRepo, subtitleProvider),
+		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, subtitleProvider, translator, cfg.DeepSeek.MaxBatchItems),
+		vocabulary: vocabulary.New(dictionaryRepo, userRepo, languageRepo, translator),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, verifier, l)
 
 	return servers{
 		http: httpServer,

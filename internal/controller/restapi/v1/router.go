@@ -10,19 +10,24 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, verifier middleware.TokenVerifier, l logger.Interface) {
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, verifier middleware.TokenVerifier, l logger.Interface) {
 	r := &V1{
-		u:         u,
-		languages: languages,
-		levels:    levels,
-		topics:    topics,
-		videos:    videos,
-		captions:  captions,
-		l:         l,
-		v:         validator.New(validator.WithRequiredStructEnabled()),
+		u:          u,
+		languages:  languages,
+		levels:     levels,
+		topics:     topics,
+		videos:     videos,
+		captions:   captions,
+		vocabulary: vocabulary,
+		l:          l,
+		v:          validator.New(validator.WithRequiredStructEnabled()),
 	}
 	// Protected routes
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
+	vocabularyGroup := protected.Group("/vocabulary")
+	{
+		vocabularyGroup.Post("/translate", r.translateVocabulary)
+	}
 	homeGroup := protected.Group("/home")
 	{
 		homeGroup.Get("/feed", r.homeFeed)

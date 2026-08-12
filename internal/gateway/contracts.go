@@ -18,3 +18,7 @@ type YouTubeSubtitleProvider interface {
 type CaptionTranslator interface {
 	TranslateCaptions(ctx context.Context, input entity.CaptionTranslationRequest) ([]entity.TranslatedCaption, error)
 }
+
+type VocabularyTranslator interface {
+	TranslateVocabulary(ctx context.Context, input entity.VocabularyTranslationRequest) (entity.VocabularyTranslation, error)
+}

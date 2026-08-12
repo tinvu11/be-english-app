@@ -920,3 +920,42 @@ func (mr *MockCaptionMockRecorder) UpdateCaption(ctx, videoID, captionID, input 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCaption", reflect.TypeOf((*MockCaption)(nil).UpdateCaption), ctx, videoID, captionID, input)
 }
+
+// MockVocabulary is a mock of Vocabulary interface.
+type MockVocabulary struct {
+	ctrl     *gomock.Controller
+	recorder *MockVocabularyMockRecorder
+	isgomock struct{}
+}
+
+// MockVocabularyMockRecorder is the mock recorder for MockVocabulary.
+type MockVocabularyMockRecorder struct {
+	mock *MockVocabulary
+}
+
+// NewMockVocabulary creates a new mock instance.
+func NewMockVocabulary(ctrl *gomock.Controller) *MockVocabulary {
+	mock := &MockVocabulary{ctrl: ctrl}
+	mock.recorder = &MockVocabularyMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockVocabulary) EXPECT() *MockVocabularyMockRecorder {
+	return m.recorder
+}
+
+// TranslateWord mocks base method.
+func (m *MockVocabulary) TranslateWord(ctx context.Context, userID, word string) (entity.VocabularyLookupResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TranslateWord", ctx, userID, word)
+	ret0, _ := ret[0].(entity.VocabularyLookupResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TranslateWord indicates an expected call of TranslateWord.
+func (mr *MockVocabularyMockRecorder) TranslateWord(ctx, userID, word any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TranslateWord", reflect.TypeOf((*MockVocabulary)(nil).TranslateWord), ctx, userID, word)
+}

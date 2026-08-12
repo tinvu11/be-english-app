@@ -604,6 +604,15 @@ definitions:
     - captionLanguageCode
     - youtubeUrl
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary:
+    properties:
+      word:
+        example: remember
+        maxLength: 150
+        type: string
+    required:
+    - word
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview:
     properties:
       youtubeUrl:
@@ -680,6 +689,33 @@ definitions:
       videoId:
         type: integer
     type: object
+  github_com_evrone_go-clean-template_internal_entity.DictionaryEntry:
+    properties:
+      createdAt:
+        type: string
+      example1Sentence:
+        type: string
+      example1Translation:
+        type: string
+      example2Sentence:
+        type: string
+      example2Translation:
+        type: string
+      id:
+        type: integer
+      meaning:
+        type: string
+      partOfSpeech:
+        type: string
+      phoneticOrPinyin:
+        type: string
+      sourceLanguageId:
+        type: integer
+      targetLanguageId:
+        type: integer
+      word:
+        type: string
+    type: object
   github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult:
     properties:
       captionImported:
@@ -721,6 +757,13 @@ definitions:
         type: integer
       videoId:
         type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult:
+    properties:
+      entry:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
+      reused:
+        type: boolean
     type: object
   github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult:
     properties:
@@ -3523,6 +3566,62 @@ paths:
       summary: Preview a YouTube video
       tags:
       - user-videos
+  /vocabulary/translate:
+    post:
+      consumes:
+      - application/json
+      description: Uses the user's target language as source and native language as
+        target; an existing dictionary entry is reused before DeepSeek is called
+      operationId: user-translate-vocabulary
+      parameters:
+      - description: Word to translate
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "429":
+          description: Too Many Requests
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Translate or reuse a dictionary word
+      tags:
+      - user-vocabulary
 securityDefinitions:
   BearerAuth:
     in: header

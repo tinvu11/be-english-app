@@ -47,3 +47,21 @@ func TestTranslateCaptionsDisabledWithoutAPIKey(t *testing.T) {
 	_, err := client.TranslateCaptions(context.Background(), entity.CaptionTranslationRequest{})
 	assert.ErrorIs(t, err, entity.ErrTranslationUnavailable)
 }
+
+func TestTranslateVocabulary(t *testing.T) {
+	t.Parallel()
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		assert.Equal(t, "Bearer secret", request.Header.Get("Authorization"))
+		writer.Header().Set("Content-Type", "application/json")
+		_, err := writer.Write([]byte(`{"choices":[{"message":{"content":"{\"phoneticOrPinyin\":\"/rɪˈmembər/\",\"partOfSpeech\":\"verb\",\"meaning\":\"nhớ\",\"example1Sentence\":\"Remember me.\",\"example1Translation\":\"Hãy nhớ tôi.\",\"example2Sentence\":\"\",\"example2Translation\":\"\"}"},"finish_reason":"stop"}]}`))
+		require.NoError(t, err)
+	}))
+	defer server.Close()
+	client := New(Config{BaseURL: server.URL, APIKey: "secret", Model: "test-model"}, server.Client())
+	result, err := client.TranslateVocabulary(t.Context(), entity.VocabularyTranslationRequest{
+		Word: "remember", SourceLanguageCode: "en", TargetLanguageCode: "vi",
+	})
+	require.NoError(t, err)
+	assert.Equal(t, "nhớ", result.Meaning)
+	assert.Equal(t, "verb", result.PartOfSpeech)
+}
