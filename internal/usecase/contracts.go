@@ -24,6 +24,8 @@ type (
 		RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error
 		SaveWatchLater(ctx context.Context, userID string, videoID int64) error
 		RemoveWatchLater(ctx context.Context, userID string, videoID int64) error
+		CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error)
+		ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error)
 	}
 
 	// Language manages the platform language catalog.
@@ -93,5 +95,13 @@ type (
 
 	Vocabulary interface {
 		TranslateWord(ctx context.Context, userID, word string) (entity.VocabularyLookupResult, error)
+		CreateSet(ctx context.Context, userID, title string) (entity.VocabularySet, error)
+		ListSets(ctx context.Context, userID string) ([]entity.VocabularySet, error)
+		UpdateSet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error)
+		DeleteSet(ctx context.Context, userID string, id int64) error
+		CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error)
+		ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error)
+		UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error)
+		DeleteUserVocabulary(ctx context.Context, userID string, id int64) error
 	}
 )

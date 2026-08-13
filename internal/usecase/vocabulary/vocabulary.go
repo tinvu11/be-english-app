@@ -81,3 +81,63 @@ func (uc *UseCase) TranslateWord(ctx context.Context, userID, word string) (enti
 	}
 	return entity.VocabularyLookupResult{Entry: entry, Reused: !created}, nil
 }
+
+func (uc *UseCase) CreateSet(ctx context.Context, userID, title string) (entity.VocabularySet, error) {
+	title = strings.TrimSpace(title)
+	if userID == "" || title == "" || utf8.RuneCountInString(title) > 255 {
+		return entity.VocabularySet{}, entity.ErrInvalidVocabularySet
+	}
+	return uc.dictionary.CreateVocabularySet(ctx, userID, title)
+}
+
+func (uc *UseCase) ListSets(ctx context.Context, userID string) ([]entity.VocabularySet, error) {
+	if userID == "" {
+		return nil, entity.ErrInvalidVocabularySet
+	}
+	return uc.dictionary.ListVocabularySets(ctx, userID)
+}
+
+func (uc *UseCase) UpdateSet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error) {
+	title = strings.TrimSpace(title)
+	if userID == "" || id <= 0 || title == "" || utf8.RuneCountInString(title) > 255 {
+		return entity.VocabularySet{}, entity.ErrInvalidVocabularySet
+	}
+	return uc.dictionary.UpdateVocabularySet(ctx, userID, id, title)
+}
+
+func (uc *UseCase) DeleteSet(ctx context.Context, userID string, id int64) error {
+	if userID == "" || id <= 0 {
+		return entity.ErrInvalidVocabularySet
+	}
+	return uc.dictionary.DeleteVocabularySet(ctx, userID, id)
+}
+
+func (uc *UseCase) CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error) {
+	if userID == "" || input.DictionaryID <= 0 || invalidOptionalID(input.VocabSetID) || invalidOptionalID(input.CaptionID) {
+		return entity.UserVocabulary{}, entity.ErrInvalidVocabulary
+	}
+	return uc.dictionary.CreateUserVocabulary(ctx, userID, input)
+}
+
+func (uc *UseCase) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error) {
+	if userID == "" || invalidOptionalID(vocabSetID) {
+		return nil, entity.ErrInvalidVocabulary
+	}
+	return uc.dictionary.ListUserVocabularies(ctx, userID, vocabSetID)
+}
+
+func (uc *UseCase) UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error) {
+	if userID == "" || id <= 0 || invalidOptionalID(input.VocabSetID) || invalidOptionalID(input.CaptionID) {
+		return entity.UserVocabulary{}, entity.ErrInvalidVocabulary
+	}
+	return uc.dictionary.UpdateUserVocabulary(ctx, userID, id, input)
+}
+
+func (uc *UseCase) DeleteUserVocabulary(ctx context.Context, userID string, id int64) error {
+	if userID == "" || id <= 0 {
+		return entity.ErrInvalidVocabulary
+	}
+	return uc.dictionary.DeleteUserVocabulary(ctx, userID, id)
+}
+
+func invalidOptionalID(id *int64) bool { return id != nil && *id <= 0 }

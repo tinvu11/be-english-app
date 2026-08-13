@@ -52,3 +52,34 @@ type VocabularyLookupResult struct {
 	Entry  DictionaryEntry `json:"entry"`
 	Reused bool            `json:"reused"`
 }
+
+type VocabularySet struct {
+	ID        int64     `json:"id" example:"1"`
+	Title     string    `json:"title" example:"Travel"`
+	WordCount int       `json:"wordCount" example:"20"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type UserVocabulary struct {
+	ID         int64           `json:"id" example:"1"`
+	VocabSetID *int64          `json:"vocabSetId,omitempty"`
+	CaptionID  *int64          `json:"captionId,omitempty"`
+	Entry      DictionaryEntry `json:"entry"`
+	IsLearned  bool            `json:"isLearned" example:"false"`
+	LearnedAt  *time.Time      `json:"learnedAt,omitempty"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	UpdatedAt  time.Time       `json:"updatedAt"`
+}
+
+type UserVocabularyInput struct {
+	DictionaryID int64
+	VocabSetID   *int64
+	CaptionID    *int64
+}
+
+type UserVocabularyUpdate struct {
+	VocabSetID *int64
+	CaptionID  *int64
+	IsLearned  bool
+}

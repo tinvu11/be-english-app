@@ -56,6 +56,21 @@ func (mr *MockUserMockRecorder) Authenticate(ctx, identity any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authenticate", reflect.TypeOf((*MockUser)(nil).Authenticate), ctx, identity)
 }
 
+// CompleteDictation mocks base method.
+func (m *MockUser) CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CompleteDictation", ctx, userID, videoID, captionID)
+	ret0, _ := ret[0].(entity.DictationProgress)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CompleteDictation indicates an expected call of CompleteDictation.
+func (mr *MockUserMockRecorder) CompleteDictation(ctx, userID, videoID, captionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompleteDictation", reflect.TypeOf((*MockUser)(nil).CompleteDictation), ctx, userID, videoID, captionID)
+}
+
 // GetUser mocks base method.
 func (m *MockUser) GetUser(ctx context.Context, userID string) (entity.User, error) {
 	m.ctrl.T.Helper()
@@ -85,6 +100,21 @@ func (m *MockUser) GetWatchHistory(ctx context.Context, userID string, videoID i
 func (mr *MockUserMockRecorder) GetWatchHistory(ctx, userID, videoID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWatchHistory", reflect.TypeOf((*MockUser)(nil).GetWatchHistory), ctx, userID, videoID)
+}
+
+// ListCompletedDictations mocks base method.
+func (m *MockUser) ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCompletedDictations", ctx, userID, videoID)
+	ret0, _ := ret[0].(entity.DictationProgressList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCompletedDictations indicates an expected call of ListCompletedDictations.
+func (mr *MockUserMockRecorder) ListCompletedDictations(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCompletedDictations", reflect.TypeOf((*MockUser)(nil).ListCompletedDictations), ctx, userID, videoID)
 }
 
 // ListWatchHistory mocks base method.
@@ -961,6 +991,94 @@ func (m *MockVocabulary) EXPECT() *MockVocabularyMockRecorder {
 	return m.recorder
 }
 
+// CreateSet mocks base method.
+func (m *MockVocabulary) CreateSet(ctx context.Context, userID, title string) (entity.VocabularySet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSet", ctx, userID, title)
+	ret0, _ := ret[0].(entity.VocabularySet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSet indicates an expected call of CreateSet.
+func (mr *MockVocabularyMockRecorder) CreateSet(ctx, userID, title any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSet", reflect.TypeOf((*MockVocabulary)(nil).CreateSet), ctx, userID, title)
+}
+
+// CreateUserVocabulary mocks base method.
+func (m *MockVocabulary) CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserVocabulary", ctx, userID, input)
+	ret0, _ := ret[0].(entity.UserVocabulary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateUserVocabulary indicates an expected call of CreateUserVocabulary.
+func (mr *MockVocabularyMockRecorder) CreateUserVocabulary(ctx, userID, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserVocabulary", reflect.TypeOf((*MockVocabulary)(nil).CreateUserVocabulary), ctx, userID, input)
+}
+
+// DeleteSet mocks base method.
+func (m *MockVocabulary) DeleteSet(ctx context.Context, userID string, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSet", ctx, userID, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSet indicates an expected call of DeleteSet.
+func (mr *MockVocabularyMockRecorder) DeleteSet(ctx, userID, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSet", reflect.TypeOf((*MockVocabulary)(nil).DeleteSet), ctx, userID, id)
+}
+
+// DeleteUserVocabulary mocks base method.
+func (m *MockVocabulary) DeleteUserVocabulary(ctx context.Context, userID string, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUserVocabulary", ctx, userID, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUserVocabulary indicates an expected call of DeleteUserVocabulary.
+func (mr *MockVocabularyMockRecorder) DeleteUserVocabulary(ctx, userID, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserVocabulary", reflect.TypeOf((*MockVocabulary)(nil).DeleteUserVocabulary), ctx, userID, id)
+}
+
+// ListSets mocks base method.
+func (m *MockVocabulary) ListSets(ctx context.Context, userID string) ([]entity.VocabularySet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListSets", ctx, userID)
+	ret0, _ := ret[0].([]entity.VocabularySet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListSets indicates an expected call of ListSets.
+func (mr *MockVocabularyMockRecorder) ListSets(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSets", reflect.TypeOf((*MockVocabulary)(nil).ListSets), ctx, userID)
+}
+
+// ListUserVocabularies mocks base method.
+func (m *MockVocabulary) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListUserVocabularies", ctx, userID, vocabSetID)
+	ret0, _ := ret[0].([]entity.UserVocabulary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListUserVocabularies indicates an expected call of ListUserVocabularies.
+func (mr *MockVocabularyMockRecorder) ListUserVocabularies(ctx, userID, vocabSetID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUserVocabularies", reflect.TypeOf((*MockVocabulary)(nil).ListUserVocabularies), ctx, userID, vocabSetID)
+}
+
 // TranslateWord mocks base method.
 func (m *MockVocabulary) TranslateWord(ctx context.Context, userID, word string) (entity.VocabularyLookupResult, error) {
 	m.ctrl.T.Helper()
@@ -974,4 +1092,34 @@ func (m *MockVocabulary) TranslateWord(ctx context.Context, userID, word string)
 func (mr *MockVocabularyMockRecorder) TranslateWord(ctx, userID, word any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TranslateWord", reflect.TypeOf((*MockVocabulary)(nil).TranslateWord), ctx, userID, word)
+}
+
+// UpdateSet mocks base method.
+func (m *MockVocabulary) UpdateSet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSet", ctx, userID, id, title)
+	ret0, _ := ret[0].(entity.VocabularySet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateSet indicates an expected call of UpdateSet.
+func (mr *MockVocabularyMockRecorder) UpdateSet(ctx, userID, id, title any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSet", reflect.TypeOf((*MockVocabulary)(nil).UpdateSet), ctx, userID, id, title)
+}
+
+// UpdateUserVocabulary mocks base method.
+func (m *MockVocabulary) UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserVocabulary", ctx, userID, id, input)
+	ret0, _ := ret[0].(entity.UserVocabulary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserVocabulary indicates an expected call of UpdateUserVocabulary.
+func (mr *MockVocabularyMockRecorder) UpdateUserVocabulary(ctx, userID, id, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserVocabulary", reflect.TypeOf((*MockVocabulary)(nil).UpdateUserVocabulary), ctx, userID, id, input)
 }

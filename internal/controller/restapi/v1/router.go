@@ -27,6 +27,14 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	vocabularyGroup := protected.Group("/vocabulary")
 	{
 		vocabularyGroup.Post("/translate", r.translateVocabulary)
+		vocabularyGroup.Post("/sets", r.createVocabularySet)
+		vocabularyGroup.Get("/sets", r.listVocabularySets)
+		vocabularyGroup.Put("/sets/:setId", r.updateVocabularySet)
+		vocabularyGroup.Delete("/sets/:setId", r.deleteVocabularySet)
+		vocabularyGroup.Post("/words", r.createUserVocabulary)
+		vocabularyGroup.Get("/words", r.listUserVocabularies)
+		vocabularyGroup.Put("/words/:wordId", r.updateUserVocabulary)
+		vocabularyGroup.Delete("/words/:wordId", r.deleteUserVocabulary)
 	}
 	homeGroup := protected.Group("/home")
 	{
@@ -43,6 +51,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		videoGroup.Post("/import-youtube", r.importUserYouTubeVideo)
 		videoGroup.Get("/:videoId/captions", r.getOriginalVideoCaptions)
 		videoGroup.Get("/:videoId/captions/translation", r.getTranslatedVideoCaptions)
+		videoGroup.Put("/:videoId/dictation-progress/:captionId", r.completeDictation)
+		videoGroup.Get("/:videoId/dictation-progress", r.listCompletedDictations)
 	}
 
 	userGroup := protected.Group("/user")

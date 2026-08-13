@@ -73,3 +73,32 @@ func TestTranslateWordCallsAIAndStoresMissingEntry(t *testing.T) {
 	assert.False(t, result.Reused)
 	assert.Equal(t, stored, result.Entry)
 }
+
+func TestVocabularySetAndSavedWordOperations(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	dictionary := NewMockDictionaryRepo(ctrl)
+	users := NewMockUserRepo(ctrl)
+	languages := NewMockLanguageRepo(ctrl)
+	uc := vocabulary.New(dictionary, users, languages, vocabularyTranslatorStub{})
+	set := entity.VocabularySet{ID: 2, Title: "Travel"}
+	word := entity.UserVocabulary{ID: 3, VocabSetID: &set.ID}
+	dictionary.EXPECT().CreateVocabularySet(gomock.Any(), "user-1", "Travel").Return(set, nil)
+	dictionary.EXPECT().ListVocabularySets(gomock.Any(), "user-1").Return([]entity.VocabularySet{set}, nil)
+	dictionary.EXPECT().CreateUserVocabulary(gomock.Any(), "user-1", entity.UserVocabularyInput{DictionaryID: 4, VocabSetID: &set.ID}).Return(word, nil)
+	dictionary.EXPECT().UpdateUserVocabulary(gomock.Any(), "user-1", int64(3), entity.UserVocabularyUpdate{VocabSetID: &set.ID, IsLearned: true}).Return(word, nil)
+	dictionary.EXPECT().DeleteUserVocabulary(gomock.Any(), "user-1", int64(3)).Return(nil)
+
+	created, err := uc.CreateSet(t.Context(), "user-1", " Travel ")
+	require.NoError(t, err)
+	assert.Equal(t, set, created)
+	sets, err := uc.ListSets(t.Context(), "user-1")
+	require.NoError(t, err)
+	assert.Len(t, sets, 1)
+	saved, err := uc.CreateUserVocabulary(t.Context(), "user-1", entity.UserVocabularyInput{DictionaryID: 4, VocabSetID: &set.ID})
+	require.NoError(t, err)
+	assert.Equal(t, word, saved)
+	_, err = uc.UpdateUserVocabulary(t.Context(), "user-1", 3, entity.UserVocabularyUpdate{VocabSetID: &set.ID, IsLearned: true})
+	require.NoError(t, err)
+	require.NoError(t, uc.DeleteUserVocabulary(t.Context(), "user-1", 3))
+}

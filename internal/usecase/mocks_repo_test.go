@@ -41,6 +41,21 @@ func (m *MockUserRepo) EXPECT() *MockUserRepoMockRecorder {
 	return m.recorder
 }
 
+// CompleteDictation mocks base method.
+func (m *MockUserRepo) CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CompleteDictation", ctx, userID, videoID, captionID)
+	ret0, _ := ret[0].(entity.DictationProgress)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CompleteDictation indicates an expected call of CompleteDictation.
+func (mr *MockUserRepoMockRecorder) CompleteDictation(ctx, userID, videoID, captionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompleteDictation", reflect.TypeOf((*MockUserRepo)(nil).CompleteDictation), ctx, userID, videoID, captionID)
+}
+
 // GetByEmail mocks base method.
 func (m *MockUserRepo) GetByEmail(ctx context.Context, email string) (entity.User, error) {
 	m.ctrl.T.Helper()
@@ -100,6 +115,21 @@ func (m *MockUserRepo) GetWatchHistory(ctx context.Context, userID string, video
 func (mr *MockUserRepoMockRecorder) GetWatchHistory(ctx, userID, videoID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWatchHistory", reflect.TypeOf((*MockUserRepo)(nil).GetWatchHistory), ctx, userID, videoID)
+}
+
+// ListCompletedDictations mocks base method.
+func (m *MockUserRepo) ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCompletedDictations", ctx, userID, videoID)
+	ret0, _ := ret[0].(entity.DictationProgressList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCompletedDictations indicates an expected call of ListCompletedDictations.
+func (mr *MockUserRepoMockRecorder) ListCompletedDictations(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCompletedDictations", reflect.TypeOf((*MockUserRepo)(nil).ListCompletedDictations), ctx, userID, videoID)
 }
 
 // ListWatchHistory mocks base method.
@@ -950,6 +980,64 @@ func (m *MockDictionaryRepo) EXPECT() *MockDictionaryRepoMockRecorder {
 	return m.recorder
 }
 
+// CreateUserVocabulary mocks base method.
+func (m *MockDictionaryRepo) CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserVocabulary", ctx, userID, input)
+	ret0, _ := ret[0].(entity.UserVocabulary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateUserVocabulary indicates an expected call of CreateUserVocabulary.
+func (mr *MockDictionaryRepoMockRecorder) CreateUserVocabulary(ctx, userID, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserVocabulary", reflect.TypeOf((*MockDictionaryRepo)(nil).CreateUserVocabulary), ctx, userID, input)
+}
+
+// CreateVocabularySet mocks base method.
+func (m *MockDictionaryRepo) CreateVocabularySet(ctx context.Context, userID, title string) (entity.VocabularySet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateVocabularySet", ctx, userID, title)
+	ret0, _ := ret[0].(entity.VocabularySet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateVocabularySet indicates an expected call of CreateVocabularySet.
+func (mr *MockDictionaryRepoMockRecorder) CreateVocabularySet(ctx, userID, title any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateVocabularySet", reflect.TypeOf((*MockDictionaryRepo)(nil).CreateVocabularySet), ctx, userID, title)
+}
+
+// DeleteUserVocabulary mocks base method.
+func (m *MockDictionaryRepo) DeleteUserVocabulary(ctx context.Context, userID string, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUserVocabulary", ctx, userID, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUserVocabulary indicates an expected call of DeleteUserVocabulary.
+func (mr *MockDictionaryRepoMockRecorder) DeleteUserVocabulary(ctx, userID, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserVocabulary", reflect.TypeOf((*MockDictionaryRepo)(nil).DeleteUserVocabulary), ctx, userID, id)
+}
+
+// DeleteVocabularySet mocks base method.
+func (m *MockDictionaryRepo) DeleteVocabularySet(ctx context.Context, userID string, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteVocabularySet", ctx, userID, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteVocabularySet indicates an expected call of DeleteVocabularySet.
+func (mr *MockDictionaryRepoMockRecorder) DeleteVocabularySet(ctx, userID, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteVocabularySet", reflect.TypeOf((*MockDictionaryRepo)(nil).DeleteVocabularySet), ctx, userID, id)
+}
+
 // FindDictionaryEntry mocks base method.
 func (m *MockDictionaryRepo) FindDictionaryEntry(ctx context.Context, word string, sourceLanguageID, targetLanguageID int) (entity.DictionaryEntry, error) {
 	m.ctrl.T.Helper()
@@ -963,6 +1051,66 @@ func (m *MockDictionaryRepo) FindDictionaryEntry(ctx context.Context, word strin
 func (mr *MockDictionaryRepoMockRecorder) FindDictionaryEntry(ctx, word, sourceLanguageID, targetLanguageID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDictionaryEntry", reflect.TypeOf((*MockDictionaryRepo)(nil).FindDictionaryEntry), ctx, word, sourceLanguageID, targetLanguageID)
+}
+
+// ListUserVocabularies mocks base method.
+func (m *MockDictionaryRepo) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListUserVocabularies", ctx, userID, vocabSetID)
+	ret0, _ := ret[0].([]entity.UserVocabulary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListUserVocabularies indicates an expected call of ListUserVocabularies.
+func (mr *MockDictionaryRepoMockRecorder) ListUserVocabularies(ctx, userID, vocabSetID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUserVocabularies", reflect.TypeOf((*MockDictionaryRepo)(nil).ListUserVocabularies), ctx, userID, vocabSetID)
+}
+
+// ListVocabularySets mocks base method.
+func (m *MockDictionaryRepo) ListVocabularySets(ctx context.Context, userID string) ([]entity.VocabularySet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListVocabularySets", ctx, userID)
+	ret0, _ := ret[0].([]entity.VocabularySet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListVocabularySets indicates an expected call of ListVocabularySets.
+func (mr *MockDictionaryRepoMockRecorder) ListVocabularySets(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVocabularySets", reflect.TypeOf((*MockDictionaryRepo)(nil).ListVocabularySets), ctx, userID)
+}
+
+// UpdateUserVocabulary mocks base method.
+func (m *MockDictionaryRepo) UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserVocabulary", ctx, userID, id, input)
+	ret0, _ := ret[0].(entity.UserVocabulary)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserVocabulary indicates an expected call of UpdateUserVocabulary.
+func (mr *MockDictionaryRepoMockRecorder) UpdateUserVocabulary(ctx, userID, id, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserVocabulary", reflect.TypeOf((*MockDictionaryRepo)(nil).UpdateUserVocabulary), ctx, userID, id, input)
+}
+
+// UpdateVocabularySet mocks base method.
+func (m *MockDictionaryRepo) UpdateVocabularySet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateVocabularySet", ctx, userID, id, title)
+	ret0, _ := ret[0].(entity.VocabularySet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateVocabularySet indicates an expected call of UpdateVocabularySet.
+func (mr *MockDictionaryRepoMockRecorder) UpdateVocabularySet(ctx, userID, id, title any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateVocabularySet", reflect.TypeOf((*MockDictionaryRepo)(nil).UpdateVocabularySet), ctx, userID, id, title)
 }
 
 // UpsertDictionaryEntry mocks base method.

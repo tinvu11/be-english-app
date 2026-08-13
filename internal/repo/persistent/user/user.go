@@ -202,6 +202,55 @@ func (r *Repo) RemoveWatchLater(ctx context.Context, userID string, videoID int6
 	return nil
 }
 
+func (r *Repo) CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error) {
+	var item entity.DictationProgress
+	err := r.Pool.QueryRow(ctx, `WITH saved AS (
+		INSERT INTO dictation_progress(user_id,video_id,caption_id,is_completed,completed_at)
+		SELECT $1,c.video_id,c.id,TRUE,CURRENT_TIMESTAMP
+		FROM video_captions c WHERE c.video_id=$2 AND c.id=$3
+		ON CONFLICT(user_id,caption_id) DO UPDATE
+		SET video_id=EXCLUDED.video_id,is_completed=TRUE,completed_at=CURRENT_TIMESTAMP
+		RETURNING video_id,caption_id,completed_at
+	)
+	SELECT saved.video_id,saved.caption_id,c.sentence_order,c.start_time_ms,c.end_time_ms,c.content,saved.completed_at
+	FROM saved JOIN video_captions c ON c.id=saved.caption_id AND c.video_id=saved.video_id`,
+		userID, videoID, captionID).Scan(&item.VideoID, &item.CaptionID, &item.SentenceOrder,
+		&item.StartTimeMS, &item.EndTimeMS, &item.Content, &item.CompletedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return entity.DictationProgress{}, entity.ErrCaptionNotFound
+	}
+	if err != nil {
+		return entity.DictationProgress{}, fmt.Errorf("UserRepo - CompleteDictation: %w", err)
+	}
+	return item, nil
+}
+
+func (r *Repo) ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error) {
+	rows, err := r.Pool.Query(ctx, `SELECT progress.video_id,progress.caption_id,c.sentence_order,c.start_time_ms,
+		c.end_time_ms,c.content,progress.completed_at,COUNT(*) OVER()
+		FROM dictation_progress progress
+		JOIN video_captions c ON c.id=progress.caption_id AND c.video_id=progress.video_id
+		WHERE progress.user_id=$1 AND progress.video_id=$2 AND progress.is_completed=TRUE
+		ORDER BY c.sentence_order ASC,c.id ASC`, userID, videoID)
+	if err != nil {
+		return entity.DictationProgressList{}, fmt.Errorf("UserRepo - ListCompletedDictations: %w", err)
+	}
+	defer rows.Close()
+	result := entity.DictationProgressList{Items: make([]entity.DictationProgress, 0)}
+	for rows.Next() {
+		var item entity.DictationProgress
+		if err = rows.Scan(&item.VideoID, &item.CaptionID, &item.SentenceOrder, &item.StartTimeMS,
+			&item.EndTimeMS, &item.Content, &item.CompletedAt, &result.Total); err != nil {
+			return entity.DictationProgressList{}, fmt.Errorf("UserRepo - ListCompletedDictations - scan: %w", err)
+		}
+		result.Items = append(result.Items, item)
+	}
+	if err = rows.Err(); err != nil {
+		return entity.DictationProgressList{}, fmt.Errorf("UserRepo - ListCompletedDictations - rows: %w", err)
+	}
+	return result, nil
+}
+
 // GetByID -.
 func (r *Repo) GetByID(ctx context.Context, id string) (entity.User, error) {
 	return r.getUser(ctx, "id", id)

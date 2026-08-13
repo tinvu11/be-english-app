@@ -25,6 +25,8 @@ type (
 		RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error
 		SaveWatchLater(ctx context.Context, userID string, videoID int64) error
 		RemoveWatchLater(ctx context.Context, userID string, videoID int64) error
+		CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error)
+		ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error)
 	}
 
 	// LanguageRepo persists languages.
@@ -94,5 +96,13 @@ type (
 	DictionaryRepo interface {
 		FindDictionaryEntry(ctx context.Context, word string, sourceLanguageID, targetLanguageID int) (entity.DictionaryEntry, error)
 		UpsertDictionaryEntry(ctx context.Context, input entity.DictionaryInput) (entity.DictionaryEntry, bool, error)
+		CreateVocabularySet(ctx context.Context, userID, title string) (entity.VocabularySet, error)
+		ListVocabularySets(ctx context.Context, userID string) ([]entity.VocabularySet, error)
+		UpdateVocabularySet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error)
+		DeleteVocabularySet(ctx context.Context, userID string, id int64) error
+		CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error)
+		ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error)
+		UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error)
+		DeleteUserVocabulary(ctx context.Context, userID string, id int64) error
 	}
 )

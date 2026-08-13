@@ -167,6 +167,31 @@ func TestGetWatchHistory(t *testing.T) {
 	assert.Equal(t, expected, got)
 }
 
+func TestDictationProgress(t *testing.T) {
+	t.Parallel()
+	uc, users, _ := newUserUseCase(t)
+	expected := entity.DictationProgress{VideoID: 10, CaptionID: 20, SentenceOrder: 2}
+	list := entity.DictationProgressList{Items: []entity.DictationProgress{expected}, Total: 1}
+	users.EXPECT().CompleteDictation(gomock.Any(), "local-123", int64(10), int64(20)).Return(expected, nil)
+	users.EXPECT().ListCompletedDictations(gomock.Any(), "local-123", int64(10)).Return(list, nil)
+
+	got, err := uc.CompleteDictation(context.Background(), "local-123", 10, 20)
+	require.NoError(t, err)
+	assert.Equal(t, expected, got)
+	gotList, err := uc.ListCompletedDictations(context.Background(), "local-123", 10)
+	require.NoError(t, err)
+	assert.Equal(t, list, gotList)
+}
+
+func TestDictationProgressRejectsInvalidInput(t *testing.T) {
+	t.Parallel()
+	uc, _, _ := newUserUseCase(t)
+	_, err := uc.CompleteDictation(context.Background(), "local-123", 10, 0)
+	require.ErrorIs(t, err, entity.ErrInvalidCaption)
+	_, err = uc.ListCompletedDictations(context.Background(), "", 10)
+	require.ErrorIs(t, err, entity.ErrInvalidCaption)
+}
+
 func TestUserVideoMutationsRejectInvalidInput(t *testing.T) {
 	t.Parallel()
 

@@ -3771,6 +3771,269 @@
                 ]
             }
         },
+        "/videos/{videoId}/dictation-progress": {
+            "get": {
+                "description": "Return all captions completed by the current user for a video",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dictation"
+                ],
+                "summary": "Get completed dictation sentences",
+                "operationId": "list-completed-dictations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.DictationProgressList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/videos/{videoId}/dictation-progress/{captionId}": {
+            "put": {
+                "description": "Save a caption as completed by the current user. Repeating the request refreshes completed_at.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dictation"
+                ],
+                "summary": "Complete a dictation sentence",
+                "operationId": "complete-dictation",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Caption ID",
+                        "name": "captionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.DictationProgress"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vocabulary/sets": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "List vocabulary sets",
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Create vocabulary set",
+                "parameters": [
+                    {
+                        "description": "Vocabulary set",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vocabulary/sets/{setId}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Update vocabulary set",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Set ID",
+                        "name": "setId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Vocabulary set",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Delete vocabulary set and its saved words",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Set ID",
+                        "name": "setId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/vocabulary/translate": {
             "post": {
                 "description": "Uses the user's target language as source and native language as target; an existing dictionary entry is reused before DeepSeek is called",
@@ -3855,6 +4118,138 @@
                     }
                 ]
             }
+        },
+        "/vocabulary/words": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "List current user's vocabulary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by set ID",
+                        "name": "vocabSetId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Save vocabulary for current user",
+                "parameters": [
+                    {
+                        "description": "Saved vocabulary",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vocabulary/words/{wordId}": {
+            "put": {
+                "description": "Move a word to a set, change its source caption, or mark it learned",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Update saved vocabulary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Saved vocabulary ID",
+                        "name": "wordId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Vocabulary update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Delete saved vocabulary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Saved vocabulary ID",
+                        "name": "wordId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -3884,6 +4279,54 @@
                 "isActive": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "entity.DictationProgress": {
+            "type": "object",
+            "properties": {
+                "caption_id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "completed_at": {
+                    "type": "string",
+                    "example": "2026-08-12T10:30:00Z"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "This is a dictation sentence."
+                },
+                "end_time_ms": {
+                    "type": "integer",
+                    "example": 15500
+                },
+                "sentence_order": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "start_time_ms": {
+                    "type": "integer",
+                    "example": 12000
+                },
+                "video_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "entity.DictationProgressList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.DictationProgress"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 12
                 }
             }
         },
@@ -4683,6 +5126,26 @@
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary": {
+            "type": "object",
+            "required": [
+                "dictionaryId"
+            ],
+            "properties": {
+                "captionId": {
+                    "type": "integer",
+                    "example": 35
+                },
+                "dictionaryId": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "vocabSetId": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo": {
             "type": "object",
             "required": [
@@ -4702,6 +5165,19 @@
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "Travel"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary": {
             "type": "object",
             "required": [
@@ -4712,6 +5188,23 @@
                     "type": "string",
                     "maxLength": 150,
                     "example": "remember"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary": {
+            "type": "object",
+            "properties": {
+                "captionId": {
+                    "type": "integer",
+                    "example": 35
+                },
+                "isLearned": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "vocabSetId": {
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -4866,6 +5359,37 @@
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.UserVocabulary": {
+            "type": "object",
+            "properties": {
+                "captionId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "entry": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isLearned": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "learnedAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vocabSetId": {
+                    "type": "integer"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult": {
             "type": "object",
             "properties": {
@@ -4937,6 +5461,29 @@
                 },
                 "reused": {
                     "type": "boolean"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VocabularySet": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Travel"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "wordCount": {
+                    "type": "integer",
+                    "example": 20
                 }
             }
         },

@@ -67,6 +67,20 @@ func (uc *UseCase) ListWatchLater(ctx context.Context, userID string, limit, off
 	return uc.repo.ListWatchLater(ctx, userID, limit, offset)
 }
 
+func (uc *UseCase) CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error) {
+	if userID == "" || videoID <= 0 || captionID <= 0 {
+		return entity.DictationProgress{}, entity.ErrInvalidCaption
+	}
+	return uc.repo.CompleteDictation(ctx, userID, videoID, captionID)
+}
+
+func (uc *UseCase) ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error) {
+	if userID == "" || videoID <= 0 {
+		return entity.DictationProgressList{}, entity.ErrInvalidCaption
+	}
+	return uc.repo.ListCompletedDictations(ctx, userID, videoID)
+}
+
 func validUserVideoPage(userID string, limit, offset int) bool {
 	return userID != "" && limit > 0 && limit <= 100 && offset >= 0
 }

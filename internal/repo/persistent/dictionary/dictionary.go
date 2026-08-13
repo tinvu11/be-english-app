@@ -9,6 +9,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/repo"
 	"github.com/evrone/go-clean-template/pkg/postgres"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Repo struct{ *postgres.Postgres }
@@ -56,4 +57,150 @@ func scan(row scanner) (entity.DictionaryEntry, error) {
 		&entry.PhoneticOrPinyin, &entry.PartOfSpeech, &entry.Meaning, &entry.Example1Sentence,
 		&entry.Example1Translation, &entry.Example2Sentence, &entry.Example2Translation, &entry.CreatedAt)
 	return entry, err
+}
+
+func (r *Repo) CreateVocabularySet(ctx context.Context, userID, title string) (entity.VocabularySet, error) {
+	var item entity.VocabularySet
+	err := r.Pool.QueryRow(ctx, `INSERT INTO vocab_sets(user_id,title) VALUES($1,$2)
+		RETURNING id,title,0,created_at,updated_at`, userID, title).
+		Scan(&item.ID, &item.Title, &item.WordCount, &item.CreatedAt, &item.UpdatedAt)
+	if err != nil {
+		return item, fmt.Errorf("DictionaryRepo - CreateVocabularySet: %w", err)
+	}
+	return item, nil
+}
+
+func (r *Repo) ListVocabularySets(ctx context.Context, userID string) ([]entity.VocabularySet, error) {
+	rows, err := r.Pool.Query(ctx, `SELECT sets.id,sets.title,COUNT(vocab.id),sets.created_at,sets.updated_at
+		FROM vocab_sets sets LEFT JOIN user_vocabularies vocab ON vocab.vocab_set_id=sets.id AND vocab.user_id=sets.user_id
+		WHERE sets.user_id=$1 GROUP BY sets.id ORDER BY sets.created_at DESC,sets.id DESC`, userID)
+	if err != nil {
+		return nil, fmt.Errorf("DictionaryRepo - ListVocabularySets: %w", err)
+	}
+	defer rows.Close()
+	items := make([]entity.VocabularySet, 0)
+	for rows.Next() {
+		var item entity.VocabularySet
+		if err = rows.Scan(&item.ID, &item.Title, &item.WordCount, &item.CreatedAt, &item.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("DictionaryRepo - ListVocabularySets - scan: %w", err)
+		}
+		items = append(items, item)
+	}
+	return items, rows.Err()
+}
+
+func (r *Repo) UpdateVocabularySet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error) {
+	var item entity.VocabularySet
+	err := r.Pool.QueryRow(ctx, `UPDATE vocab_sets SET title=$3,updated_at=CURRENT_TIMESTAMP
+		WHERE id=$1 AND user_id=$2 RETURNING id,title,
+		(SELECT COUNT(*) FROM user_vocabularies WHERE vocab_set_id=$1 AND user_id=$2),created_at,updated_at`, id, userID, title).
+		Scan(&item.ID, &item.Title, &item.WordCount, &item.CreatedAt, &item.UpdatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return item, entity.ErrVocabularySetNotFound
+	}
+	if err != nil {
+		return item, fmt.Errorf("DictionaryRepo - UpdateVocabularySet: %w", err)
+	}
+	return item, nil
+}
+
+func (r *Repo) DeleteVocabularySet(ctx context.Context, userID string, id int64) error {
+	result, err := r.Pool.Exec(ctx, `DELETE FROM vocab_sets WHERE id=$1 AND user_id=$2`, id, userID)
+	if err != nil {
+		return fmt.Errorf("DictionaryRepo - DeleteVocabularySet: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrVocabularySetNotFound
+	}
+	return nil
+}
+
+const userVocabularyColumns = `uv.id,uv.vocab_set_id,uv.caption_id,uv.is_learned,uv.learned_at,uv.created_at,uv.updated_at,
+	d.id,d.word,d.source_language_id,d.target_language_id,COALESCE(d.phonetic_or_pinyin,''),COALESCE(d.part_of_speech,''),
+	d.meaning,COALESCE(d.example_1_sentence,''),COALESCE(d.example_1_translation,''),
+	COALESCE(d.example_2_sentence,''),COALESCE(d.example_2_translation,''),d.created_at`
+
+func (r *Repo) CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error) {
+	var id int64
+	err := r.Pool.QueryRow(ctx, `INSERT INTO user_vocabularies(user_id,vocab_set_id,dictionary_id,caption_id)
+		VALUES($1,$2,$3,$4) RETURNING id`, userID, input.VocabSetID, input.DictionaryID, input.CaptionID).Scan(&id)
+	if err != nil {
+		return entity.UserVocabulary{}, mapUserVocabularyError(err)
+	}
+	return r.getUserVocabulary(ctx, userID, id)
+}
+
+func (r *Repo) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error) {
+	rows, err := r.Pool.Query(ctx, `SELECT `+userVocabularyColumns+` FROM user_vocabularies uv
+		JOIN dictionary d ON d.id=uv.dictionary_id WHERE uv.user_id=$1
+		AND ($2::bigint IS NULL OR uv.vocab_set_id=$2) ORDER BY uv.created_at DESC,uv.id DESC`, userID, vocabSetID)
+	if err != nil {
+		return nil, fmt.Errorf("DictionaryRepo - ListUserVocabularies: %w", err)
+	}
+	defer rows.Close()
+	items := make([]entity.UserVocabulary, 0)
+	for rows.Next() {
+		item, scanErr := scanUserVocabulary(rows)
+		if scanErr != nil {
+			return nil, fmt.Errorf("DictionaryRepo - ListUserVocabularies - scan: %w", scanErr)
+		}
+		items = append(items, item)
+	}
+	return items, rows.Err()
+}
+
+func (r *Repo) UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error) {
+	result, err := r.Pool.Exec(ctx, `UPDATE user_vocabularies SET vocab_set_id=$3,caption_id=$4,is_learned=$5,
+		learned_at=CASE WHEN $5 THEN COALESCE(learned_at,CURRENT_TIMESTAMP) ELSE NULL END,updated_at=CURRENT_TIMESTAMP
+		WHERE id=$1 AND user_id=$2`, id, userID, input.VocabSetID, input.CaptionID, input.IsLearned)
+	if err != nil {
+		return entity.UserVocabulary{}, mapUserVocabularyError(err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.UserVocabulary{}, entity.ErrUserVocabularyNotFound
+	}
+	return r.getUserVocabulary(ctx, userID, id)
+}
+
+func (r *Repo) DeleteUserVocabulary(ctx context.Context, userID string, id int64) error {
+	result, err := r.Pool.Exec(ctx, `DELETE FROM user_vocabularies WHERE id=$1 AND user_id=$2`, id, userID)
+	if err != nil {
+		return fmt.Errorf("DictionaryRepo - DeleteUserVocabulary: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrUserVocabularyNotFound
+	}
+	return nil
+}
+
+func (r *Repo) getUserVocabulary(ctx context.Context, userID string, id int64) (entity.UserVocabulary, error) {
+	item, err := scanUserVocabulary(r.Pool.QueryRow(ctx, `SELECT `+userVocabularyColumns+` FROM user_vocabularies uv
+		JOIN dictionary d ON d.id=uv.dictionary_id WHERE uv.id=$1 AND uv.user_id=$2`, id, userID))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return item, entity.ErrUserVocabularyNotFound
+	}
+	return item, err
+}
+
+func scanUserVocabulary(row scanner) (entity.UserVocabulary, error) {
+	var item entity.UserVocabulary
+	err := row.Scan(&item.ID, &item.VocabSetID, &item.CaptionID, &item.IsLearned, &item.LearnedAt,
+		&item.CreatedAt, &item.UpdatedAt, &item.Entry.ID, &item.Entry.Word, &item.Entry.SourceLanguageID,
+		&item.Entry.TargetLanguageID, &item.Entry.PhoneticOrPinyin, &item.Entry.PartOfSpeech, &item.Entry.Meaning,
+		&item.Entry.Example1Sentence, &item.Entry.Example1Translation, &item.Entry.Example2Sentence,
+		&item.Entry.Example2Translation, &item.Entry.CreatedAt)
+	return item, err
+}
+
+func mapUserVocabularyError(err error) error {
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		switch pgErr.Code {
+		case "23505":
+			return entity.ErrUserVocabularyExists
+		case "23503":
+			return entity.ErrInvalidReference
+		}
+	}
+	return fmt.Errorf("DictionaryRepo - user vocabulary write: %w", err)
 }

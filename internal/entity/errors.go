@@ -49,4 +49,8 @@ var (
 	ErrDictionaryNotFound           = errors.New("dictionary entry not found")
 	ErrInvalidVocabulary            = errors.New("invalid vocabulary")
 	ErrInvalidVocabularyTranslation = errors.New("vocabulary translation response is invalid")
+	ErrVocabularySetNotFound        = errors.New("vocabulary set not found")
+	ErrInvalidVocabularySet         = errors.New("invalid vocabulary set")
+	ErrUserVocabularyNotFound       = errors.New("user vocabulary not found")
+	ErrUserVocabularyExists         = errors.New("vocabulary already saved in this set")
 )

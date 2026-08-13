@@ -21,6 +21,40 @@ definitions:
         example: true
         type: boolean
     type: object
+  entity.DictationProgress:
+    properties:
+      caption_id:
+        example: 10
+        type: integer
+      completed_at:
+        example: "2026-08-12T10:30:00Z"
+        type: string
+      content:
+        example: This is a dictation sentence.
+        type: string
+      end_time_ms:
+        example: 15500
+        type: integer
+      sentence_order:
+        example: 3
+        type: integer
+      start_time_ms:
+        example: 12000
+        type: integer
+      video_id:
+        example: 1
+        type: integer
+    type: object
+  entity.DictationProgressList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.DictationProgress'
+        type: array
+      total:
+        example: 12
+        type: integer
+    type: object
   entity.Language:
     properties:
       code:
@@ -590,6 +624,20 @@ definitions:
       user:
         $ref: '#/definitions/entity.User'
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary:
+    properties:
+      captionId:
+        example: 35
+        type: integer
+      dictionaryId:
+        example: 12
+        type: integer
+      vocabSetId:
+        example: 2
+        type: integer
+    required:
+    - dictionaryId
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo:
     properties:
       captionLanguageCode:
@@ -604,6 +652,15 @@ definitions:
     - captionLanguageCode
     - youtubeUrl
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet:
+    properties:
+      title:
+        example: Travel
+        maxLength: 255
+        type: string
+    required:
+    - title
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary:
     properties:
       word:
@@ -612,6 +669,18 @@ definitions:
         type: string
     required:
     - word
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary:
+    properties:
+      captionId:
+        example: 35
+        type: integer
+      isLearned:
+        example: true
+        type: boolean
+      vocabSetId:
+        example: 2
+        type: integer
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview:
     properties:
@@ -716,6 +785,27 @@ definitions:
       word:
         type: string
     type: object
+  github_com_evrone_go-clean-template_internal_entity.UserVocabulary:
+    properties:
+      captionId:
+        type: integer
+      createdAt:
+        type: string
+      entry:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
+      id:
+        example: 1
+        type: integer
+      isLearned:
+        example: false
+        type: boolean
+      learnedAt:
+        type: string
+      updatedAt:
+        type: string
+      vocabSetId:
+        type: integer
+    type: object
   github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult:
     properties:
       captionImported:
@@ -764,6 +854,22 @@ definitions:
         $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
       reused:
         type: boolean
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VocabularySet:
+    properties:
+      createdAt:
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Travel
+        type: string
+      updatedAt:
+        type: string
+      wordCount:
+        example: 20
+        type: integer
     type: object
   github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult:
     properties:
@@ -3462,6 +3568,98 @@ paths:
       summary: Get translated video captions
       tags:
       - user-videos
+  /videos/{videoId}/dictation-progress:
+    get:
+      description: Return all captions completed by the current user for a video
+      operationId: list-completed-dictations
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.DictationProgressList'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get completed dictation sentences
+      tags:
+      - dictation
+  /videos/{videoId}/dictation-progress/{captionId}:
+    put:
+      description: Save a caption as completed by the current user. Repeating the
+        request refreshes completed_at.
+      operationId: complete-dictation
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption ID
+        in: path
+        name: captionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.DictationProgress'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Complete a dictation sentence
+      tags:
+      - dictation
   /videos/import-youtube:
     post:
       consumes:
@@ -3608,6 +3806,81 @@ paths:
       summary: Preview a YouTube video
       tags:
       - user-videos
+  /vocabulary/sets:
+    get:
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: List vocabulary sets
+      tags:
+      - user-vocabulary
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Vocabulary set
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet'
+      security:
+      - BearerAuth: []
+      summary: Create vocabulary set
+      tags:
+      - user-vocabulary
+  /vocabulary/sets/{setId}:
+    delete:
+      parameters:
+      - description: Set ID
+        in: path
+        name: setId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Delete vocabulary set and its saved words
+      tags:
+      - user-vocabulary
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Set ID
+        in: path
+        name: setId
+        required: true
+        type: integer
+      - description: Vocabulary set
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet'
+      security:
+      - BearerAuth: []
+      summary: Update vocabulary set
+      tags:
+      - user-vocabulary
   /vocabulary/translate:
     post:
       consumes:
@@ -3662,6 +3935,87 @@ paths:
       security:
       - BearerAuth: []
       summary: Translate or reuse a dictionary word
+      tags:
+      - user-vocabulary
+  /vocabulary/words:
+    get:
+      parameters:
+      - description: Filter by set ID
+        in: query
+        name: vocabSetId
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: List current user's vocabulary
+      tags:
+      - user-vocabulary
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Saved vocabulary
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary'
+      security:
+      - BearerAuth: []
+      summary: Save vocabulary for current user
+      tags:
+      - user-vocabulary
+  /vocabulary/words/{wordId}:
+    delete:
+      parameters:
+      - description: Saved vocabulary ID
+        in: path
+        name: wordId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Delete saved vocabulary
+      tags:
+      - user-vocabulary
+    put:
+      consumes:
+      - application/json
+      description: Move a word to a set, change its source caption, or mark it learned
+      parameters:
+      - description: Saved vocabulary ID
+        in: path
+        name: wordId
+        required: true
+        type: integer
+      - description: Vocabulary update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary'
+      security:
+      - BearerAuth: []
+      summary: Update saved vocabulary
       tags:
       - user-vocabulary
 securityDefinitions:

@@ -128,3 +128,18 @@ func (u *tracedUseCase) RemoveWatchLater(ctx context.Context, userID string, vid
 	endSpan(span, err)
 	return err
 }
+
+func (u *tracedUseCase) CompleteDictation(ctx context.Context, userID string, videoID, captionID int64) (entity.DictationProgress, error) {
+	ctx, span := startSpan(ctx, "UserUseCase.CompleteDictation", attribute.String("user.id", userID),
+		attribute.Int64("video.id", videoID), attribute.Int64("caption.id", captionID))
+	result, err := u.next.CompleteDictation(ctx, userID, videoID, captionID)
+	endSpan(span, err)
+	return result, err
+}
+
+func (u *tracedUseCase) ListCompletedDictations(ctx context.Context, userID string, videoID int64) (entity.DictationProgressList, error) {
+	ctx, span := startSpan(ctx, "UserUseCase.ListCompletedDictations", attribute.String("user.id", userID), attribute.Int64("video.id", videoID))
+	result, err := u.next.ListCompletedDictations(ctx, userID, videoID)
+	endSpan(span, err)
+	return result, err
+}
