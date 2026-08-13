@@ -20,6 +20,7 @@ type (
 		UpdateLanguages(ctx context.Context, id string, nativeLanguageID, targetLanguageID int) error
 		ListWatchHistory(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
 		GetWatchHistory(ctx context.Context, userID string, videoID int64) (entity.UserVideo, bool, error)
+		GetVideoState(ctx context.Context, userID string, videoID int64) (entity.VideoState, error)
 		ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error)
 		UpsertWatchHistory(ctx context.Context, userID string, videoID int64, lastPositionSeconds int) error
 		RemoveWatchHistory(ctx context.Context, userID string, videoID int64) error

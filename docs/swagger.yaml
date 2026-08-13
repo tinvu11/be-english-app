@@ -691,6 +691,44 @@ definitions:
     required:
     - youtubeUrl
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem'
+        type: array
+      languageCode:
+        type: string
+      languageId:
+        type: integer
+      total:
+        type: integer
+      video_state:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoState'
+      videoId:
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem:
+    properties:
+      dictation_completed:
+        example: true
+        type: boolean
+      endTimeMs:
+        example: 3500
+        type: integer
+      id:
+        example: 1
+        type: integer
+      sentenceOrder:
+        example: 1
+        type: integer
+      startTimeMs:
+        example: 1000
+        type: integer
+      text:
+        example: Hello
+        type: string
+    type: object
   github_com_evrone_go-clean-template_internal_entity.Caption:
     properties:
       content:
@@ -847,6 +885,18 @@ definitions:
         type: integer
       videoId:
         type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VideoState:
+    properties:
+      last_position_seconds:
+        example: 75
+        type: integer
+      saved:
+        example: false
+        type: boolean
+      watched:
+        example: true
+        type: boolean
     type: object
   github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult:
     properties:
@@ -3485,7 +3535,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions'
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions'
         "400":
           description: Bad Request
           schema:

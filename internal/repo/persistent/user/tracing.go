@@ -101,6 +101,13 @@ func (r *tracedRepo) GetWatchHistory(ctx context.Context, userID string, videoID
 	return result, watched, err
 }
 
+func (r *tracedRepo) GetVideoState(ctx context.Context, userID string, videoID int64) (entity.VideoState, error) {
+	ctx, span := startSpan(ctx, "UserRepo.GetVideoState", attribute.String("user.id", userID), attribute.Int64("video.id", videoID))
+	result, err := r.next.GetVideoState(ctx, userID, videoID)
+	endSpan(span, err)
+	return result, err
+}
+
 func (r *tracedRepo) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
 	ctx, span := startSpan(ctx, "UserRepo.ListWatchLater", attribute.String("user.id", userID))
 	result, err := r.next.ListWatchLater(ctx, userID, limit, offset)

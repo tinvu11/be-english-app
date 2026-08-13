@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/request"
+	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/response"
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gofiber/fiber/v2"
 )
@@ -39,11 +40,15 @@ func (r *V1) previewUserYouTubeVideo(ctx *fiber.Ctx) error {
 // @Tags user-videos
 // @Produce json
 // @Param videoId path int true "Video ID"
-// @Success 200 {object} entity.VideoCaptions
+// @Success 200 {object} response.OriginalVideoCaptions
 // @Failure 400,401,404 {object} map[string]string
 // @Security BearerAuth
 // @Router /videos/{videoId}/captions [get]
 func (r *V1) getOriginalVideoCaptions(ctx *fiber.Ctx) error {
+	userID, ok := ctx.Locals("userID").(string)
+	if !ok || userID == "" {
+		return errorResponse(ctx, http.StatusUnauthorized, "unauthorized")
+	}
 	videoID, err := strconv.ParseInt(ctx.Params("videoId"), 10, 64)
 	if err != nil || videoID <= 0 {
 		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
@@ -52,7 +57,34 @@ func (r *V1) getOriginalVideoCaptions(ctx *fiber.Ctx) error {
 	if err != nil {
 		return r.userCaptionError(ctx, err)
 	}
-	return ctx.JSON(result)
+	state, err := r.u.GetVideoState(ctx.UserContext(), userID, videoID)
+	if err != nil {
+		return r.userCaptionError(ctx, err)
+	}
+	completed, err := r.u.ListCompletedDictations(ctx.UserContext(), userID, videoID)
+	if err != nil {
+		return r.userCaptionError(ctx, err)
+	}
+	return ctx.JSON(buildOriginalVideoCaptions(result, state, completed))
+}
+
+func buildOriginalVideoCaptions(captions entity.VideoCaptions, state entity.VideoState, completed entity.DictationProgressList) response.OriginalVideoCaptions {
+	completedIDs := make(map[int64]struct{}, len(completed.Items))
+	for _, item := range completed.Items {
+		completedIDs[item.CaptionID] = struct{}{}
+	}
+	result := response.OriginalVideoCaptions{
+		VideoID: captions.VideoID, LanguageID: captions.LanguageID, LanguageCode: captions.LanguageCode,
+		VideoState: state, Items: make([]response.VideoCaptionItem, 0, len(captions.Items)), Total: captions.Total,
+	}
+	for _, item := range captions.Items {
+		_, isCompleted := completedIDs[item.ID]
+		result.Items = append(result.Items, response.VideoCaptionItem{
+			ID: item.ID, SentenceOrder: item.SentenceOrder, StartTimeMS: item.StartTimeMS,
+			EndTimeMS: item.EndTimeMS, Text: item.Text, DictationCompleted: isCompleted,
+		})
+	}
+	return result
 }
 
 // @Summary Get translated video captions

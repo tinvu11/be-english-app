@@ -114,6 +114,12 @@ type UserVideoList struct {
 	Total int
 }
 
+type VideoState struct {
+	Watched             bool `json:"watched" example:"true"`
+	Saved               bool `json:"saved" example:"false"`
+	LastPositionSeconds int  `json:"last_position_seconds" example:"75"`
+}
+
 type YouTubeVideoPreview struct {
 	YouTubeID            string                 `json:"youtubeId" example:"dQw4w9WgXcQ"`
 	Title                string                 `json:"title" example:"Video title"`

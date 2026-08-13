@@ -1,6 +1,10 @@
 package response
 
-import "time"
+import (
+	"time"
+
+	"github.com/evrone/go-clean-template/internal/entity"
+)
 
 type FeedChannel struct {
 	ID        int    `json:"id" example:"1"`
@@ -85,3 +89,21 @@ type WatchLater struct {
 	Total      int          `json:"total" example:"42"`
 	TotalPages int          `json:"total_pages" example:"3"`
 } // @name response.WatchLater
+
+type VideoCaptionItem struct {
+	ID                 int64  `json:"id" example:"1"`
+	SentenceOrder      int    `json:"sentenceOrder" example:"1"`
+	StartTimeMS        int64  `json:"startTimeMs" example:"1000"`
+	EndTimeMS          int64  `json:"endTimeMs" example:"3500"`
+	Text               string `json:"text" example:"Hello"`
+	DictationCompleted bool   `json:"dictation_completed" example:"true"`
+}
+
+type OriginalVideoCaptions struct {
+	VideoID      int64              `json:"videoId"`
+	LanguageID   int                `json:"languageId"`
+	LanguageCode string             `json:"languageCode"`
+	VideoState   entity.VideoState  `json:"video_state"`
+	Items        []VideoCaptionItem `json:"items"`
+	Total        int                `json:"total"`
+}

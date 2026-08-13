@@ -60,6 +60,13 @@ func (uc *UseCase) GetWatchHistory(ctx context.Context, userID string, videoID i
 	return uc.repo.GetWatchHistory(ctx, userID, videoID)
 }
 
+func (uc *UseCase) GetVideoState(ctx context.Context, userID string, videoID int64) (entity.VideoState, error) {
+	if userID == "" || videoID <= 0 {
+		return entity.VideoState{}, entity.ErrInvalidVideo
+	}
+	return uc.repo.GetVideoState(ctx, userID, videoID)
+}
+
 func (uc *UseCase) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
 	if !validUserVideoPage(userID, limit, offset) {
 		return entity.UserVideoList{}, entity.ErrInvalidVideo

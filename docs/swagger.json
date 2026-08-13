@@ -3644,7 +3644,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions"
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions"
                         }
                     },
                     "400": {
@@ -5221,6 +5221,61 @@
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem"
+                    }
+                },
+                "languageCode": {
+                    "type": "string"
+                },
+                "languageId": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
+                },
+                "video_state": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoState"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem": {
+            "type": "object",
+            "properties": {
+                "dictation_completed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "endTimeMs": {
+                    "type": "integer",
+                    "example": 3500
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sentenceOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "startTimeMs": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "text": {
+                    "type": "string",
+                    "example": "Hello"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.Caption": {
             "type": "object",
             "properties": {
@@ -5450,6 +5505,23 @@
                 },
                 "videoId": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VideoState": {
+            "type": "object",
+            "properties": {
+                "last_position_seconds": {
+                    "type": "integer",
+                    "example": 75
+                },
+                "saved": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "watched": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

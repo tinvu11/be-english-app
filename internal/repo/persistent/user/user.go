@@ -106,6 +106,22 @@ func (r *Repo) GetWatchHistory(ctx context.Context, userID string, videoID int64
 	return item, true, nil
 }
 
+func (r *Repo) GetVideoState(ctx context.Context, userID string, videoID int64) (entity.VideoState, error) {
+	var state entity.VideoState
+	err := r.Pool.QueryRow(ctx, `SELECT history.video_id IS NOT NULL,later.video_id IS NOT NULL,
+		COALESCE(history.last_position_seconds,0)
+		FROM (SELECT $1::uuid AS user_id,$2::bigint AS video_id) selected
+		LEFT JOIN user_watch_history history
+			ON history.user_id=selected.user_id AND history.video_id=selected.video_id
+		LEFT JOIN user_watch_later later
+			ON later.user_id=selected.user_id AND later.video_id=selected.video_id`,
+		userID, videoID).Scan(&state.Watched, &state.Saved, &state.LastPositionSeconds)
+	if err != nil {
+		return entity.VideoState{}, fmt.Errorf("UserRepo - GetVideoState: %w", err)
+	}
+	return state, nil
+}
+
 func (r *Repo) ListWatchLater(ctx context.Context, userID string, limit, offset int) (entity.UserVideoList, error) {
 	return r.listUserVideos(ctx, `user_watch_later`, "saved", userID, limit, offset)
 }
