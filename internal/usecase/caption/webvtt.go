@@ -9,7 +9,14 @@ import (
 	"github.com/evrone/go-clean-template/internal/entity"
 )
 
-var webVTTTag = regexp.MustCompile(`<[^>]*>`)
+var (
+	webVTTTag = regexp.MustCompile(`<[^>]*>`)
+	// YouTube captions commonly contain non-speech accessibility cues. Keep this
+	// list deliberately narrow so meaningful bracketed text is not discarded.
+	nonSpeechCue  = regexp.MustCompile(`(?i)[\[(]\s*(music|applause|laughter|laughing|cheering|cheers|silence|inaudible|noise|background noise|instrumental)\s*[\])]`)
+	speakerMarker = regexp.MustCompile(`^\s*>>\s*`)
+	captionSpace  = regexp.MustCompile(`[ \t\f\v]+`)
+)
 
 func parseWebVTT(data []byte) ([]entity.CaptionInput, error) {
 	text := strings.TrimPrefix(string(data), "\ufeff")
@@ -65,13 +72,30 @@ func parseWebVTT(data []byte) ([]entity.CaptionInput, error) {
 			contentLines = append(contentLines, strings.TrimSpace(lines[index]))
 			index++
 		}
-		content := strings.TrimSpace(html.UnescapeString(webVTTTag.ReplaceAllString(strings.Join(contentLines, "\n"), "")))
+		content := cleanYouTubeCaption(strings.Join(contentLines, "\n"))
 		if content == "" {
-			return nil, fmt.Errorf("empty cue content")
+			// A cue containing only an accessibility marker such as [Music] has
+			// no translatable speech and should not be persisted.
+			continue
 		}
 		items = append(items, entity.CaptionInput{SentenceOrder: len(items) + 1, StartTimeMS: start, EndTimeMS: end, Content: content})
 	}
 	return items, nil
+}
+
+func cleanYouTubeCaption(raw string) string {
+	content := html.UnescapeString(webVTTTag.ReplaceAllString(raw, ""))
+	lines := strings.Split(content, "\n")
+	cleaned := make([]string, 0, len(lines))
+	for _, line := range lines {
+		line = speakerMarker.ReplaceAllString(line, "")
+		line = nonSpeechCue.ReplaceAllString(line, " ")
+		line = strings.TrimSpace(captionSpace.ReplaceAllString(line, " "))
+		if line != "" {
+			cleaned = append(cleaned, line)
+		}
+	}
+	return strings.Join(cleaned, " ")
 }
 
 func parseVTTTimestamp(raw string) (int64, error) {

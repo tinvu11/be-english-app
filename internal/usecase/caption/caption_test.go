@@ -74,12 +74,24 @@ func TestParseWebVTT(t *testing.T) {
 	assert.Equal(t, int64(5250), items[1].EndTimeMS)
 }
 
+func TestParseWebVTTCleansYouTubeCaptionNoise(t *testing.T) {
+	t.Parallel()
+	data := []byte("WEBVTT\n\n00:01.000 --> 00:02.000\n[Music]\n\n00:02.000 --> 00:03.000\n>>   Hello   everyone\non the next line\n\n00:03.000 --> 00:04.000\n>> JOHN: <i>Welcome</i> [Applause]\n\n00:04.000 --> 00:05.000\n[New York]")
+	items, err := parseWebVTT(data)
+	require.NoError(t, err)
+	require.Len(t, items, 3)
+	assert.Equal(t, "Hello everyone on the next line", items[0].Content)
+	assert.NotContains(t, items[0].Content, "\n")
+	assert.Equal(t, "JOHN: Welcome", items[1].Content)
+	assert.Equal(t, "[New York]", items[2].Content)
+	assert.Equal(t, []int{1, 2, 3}, []int{items[0].SentenceOrder, items[1].SentenceOrder, items[2].SentenceOrder})
+}
+
 func TestParseWebVTTRejectsInvalidData(t *testing.T) {
 	t.Parallel()
 	tests := [][]byte{
 		[]byte("not WebVTT"),
 		[]byte("WEBVTT\n\n00:03.000 --> 00:01.000\nText"),
-		[]byte("WEBVTT\n\n00:01.000 --> 00:02.000\n"),
 	}
 	for _, data := range tests {
 		_, err := parseWebVTT(data)
