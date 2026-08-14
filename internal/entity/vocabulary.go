@@ -54,11 +54,18 @@ type VocabularyLookupResult struct {
 }
 
 type VocabularySet struct {
-	ID        int64     `json:"id" example:"1"`
-	Title     string    `json:"title" example:"Travel"`
-	WordCount int       `json:"wordCount" example:"20"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID               int64     `json:"id" example:"1"`
+	Title            string    `json:"title" example:"Travel"`
+	SourceLanguageID int       `json:"sourceLanguageId" example:"1"`
+	TargetLanguageID int       `json:"targetLanguageId" example:"2"`
+	WordCount        int       `json:"wordCount" example:"20"`
+	CreatedAt        time.Time `json:"createdAt"`
+	UpdatedAt        time.Time `json:"updatedAt"`
+}
+
+type VocabularyLanguages struct {
+	SourceLanguageID int
+	TargetLanguageID int
 }
 
 type UserVocabulary struct {

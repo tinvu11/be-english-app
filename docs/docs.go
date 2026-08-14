@@ -5617,6 +5617,14 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
+                "sourceLanguageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "targetLanguageId": {
+                    "type": "integer",
+                    "example": 2
+                },
                 "title": {
                     "type": "string",
                     "example": "Travel"

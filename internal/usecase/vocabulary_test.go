@@ -81,13 +81,16 @@ func TestVocabularySetAndSavedWordOperations(t *testing.T) {
 	users := NewMockUserRepo(ctrl)
 	languages := NewMockLanguageRepo(ctrl)
 	uc := vocabulary.New(dictionary, users, languages, vocabularyTranslatorStub{})
-	set := entity.VocabularySet{ID: 2, Title: "Travel"}
+	sourceID, targetID := 1, 2
+	pair := entity.VocabularyLanguages{SourceLanguageID: sourceID, TargetLanguageID: targetID}
+	set := entity.VocabularySet{ID: 2, Title: "Travel", SourceLanguageID: sourceID, TargetLanguageID: targetID}
 	word := entity.UserVocabulary{ID: 3, VocabSetID: &set.ID}
-	dictionary.EXPECT().CreateVocabularySet(gomock.Any(), "user-1", "Travel").Return(set, nil)
-	dictionary.EXPECT().ListVocabularySets(gomock.Any(), "user-1").Return([]entity.VocabularySet{set}, nil)
-	dictionary.EXPECT().CreateUserVocabulary(gomock.Any(), "user-1", entity.UserVocabularyInput{DictionaryID: 4, VocabSetID: &set.ID}).Return(word, nil)
-	dictionary.EXPECT().UpdateUserVocabulary(gomock.Any(), "user-1", int64(3), entity.UserVocabularyUpdate{VocabSetID: &set.ID, IsLearned: true}).Return(word, nil)
-	dictionary.EXPECT().DeleteUserVocabulary(gomock.Any(), "user-1", int64(3)).Return(nil)
+	users.EXPECT().GetByID(gomock.Any(), "user-1").Return(entity.User{TargetLanguageID: &sourceID, NativeLanguageID: &targetID}, nil).Times(5)
+	dictionary.EXPECT().CreateVocabularySet(gomock.Any(), "user-1", "Travel", pair).Return(set, nil)
+	dictionary.EXPECT().ListVocabularySets(gomock.Any(), "user-1", pair).Return([]entity.VocabularySet{set}, nil)
+	dictionary.EXPECT().CreateUserVocabulary(gomock.Any(), "user-1", entity.UserVocabularyInput{DictionaryID: 4, VocabSetID: &set.ID}, pair).Return(word, nil)
+	dictionary.EXPECT().UpdateUserVocabulary(gomock.Any(), "user-1", int64(3), entity.UserVocabularyUpdate{VocabSetID: &set.ID, IsLearned: true}, pair).Return(word, nil)
+	dictionary.EXPECT().DeleteUserVocabulary(gomock.Any(), "user-1", int64(3), pair).Return(nil)
 
 	created, err := uc.CreateSet(t.Context(), "user-1", " Travel ")
 	require.NoError(t, err)

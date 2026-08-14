@@ -264,9 +264,11 @@ func (r *V1) vocabularyError(ctx *fiber.Ctx, err error, operation string) error 
 	switch {
 	case errors.Is(err, entity.ErrInvalidVocabulary), errors.Is(err, entity.ErrInvalidVocabularySet):
 		return errorResponse(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, entity.ErrTargetLanguageRequired), errors.Is(err, entity.ErrNativeLanguageRequired):
+		return errorResponse(ctx, http.StatusConflict, err.Error())
 	case errors.Is(err, entity.ErrVocabularySetNotFound), errors.Is(err, entity.ErrUserVocabularyNotFound), errors.Is(err, entity.ErrDictionaryNotFound):
 		return errorResponse(ctx, http.StatusNotFound, err.Error())
-	case errors.Is(err, entity.ErrUserVocabularyExists):
+	case errors.Is(err, entity.ErrUserVocabularyExists), errors.Is(err, entity.ErrVocabularyLanguageMismatch):
 		return errorResponse(ctx, http.StatusConflict, err.Error())
 	case errors.Is(err, entity.ErrInvalidReference):
 		return errorResponse(ctx, http.StatusBadRequest, "invalid dictionary, vocabulary set, or caption reference")

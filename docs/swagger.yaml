@@ -953,6 +953,12 @@ definitions:
       id:
         example: 1
         type: integer
+      sourceLanguageId:
+        example: 1
+        type: integer
+      targetLanguageId:
+        example: 2
+        type: integer
       title:
         example: Travel
         type: string
