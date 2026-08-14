@@ -3912,6 +3912,204 @@
                 ]
             }
         },
+        "/videos/{videoId}/shadowing-attempts": {
+            "get": {
+                "description": "Return the current user's attempts for a video, optionally filtered by caption.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shadowing"
+                ],
+                "summary": "List shadowing attempts",
+                "operationId": "list-shadowing-attempts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Caption ID",
+                        "name": "caption_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/videos/{videoId}/shadowing-attempts/{captionId}": {
+            "post": {
+                "description": "Upload WAV PCM 16 kHz or OGG/Opus audio and assess it against the selected caption.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shadowing"
+                ],
+                "summary": "Assess a shadowing attempt",
+                "operationId": "assess-shadowing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Caption ID",
+                        "name": "captionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Recorded audio (max 5 MB)",
+                        "name": "audio",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Azure BCP-47 locale; defaults from video language",
+                        "name": "locale",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/vocabulary/overview": {
             "get": {
                 "description": "Returns word totals and vocabulary categories for the current user's active language pair",
@@ -5596,6 +5794,111 @@
                 },
                 "order": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt": {
+            "type": "object",
+            "properties": {
+                "accuracy_score": {
+                    "type": "number",
+                    "example": 79
+                },
+                "caption_id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "completeness_score": {
+                    "type": "number",
+                    "example": 100
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "duration_ms": {
+                    "type": "integer",
+                    "example": 2300
+                },
+                "fluency_score": {
+                    "type": "number",
+                    "example": 86
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "locale": {
+                    "type": "string",
+                    "example": "en-US"
+                },
+                "passed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "pronunciation_score": {
+                    "type": "number",
+                    "example": 82
+                },
+                "prosody_score": {
+                    "type": "number",
+                    "example": 75
+                },
+                "provider": {
+                    "type": "string",
+                    "example": "azure"
+                },
+                "reference_text": {
+                    "type": "string",
+                    "example": "Good morning."
+                },
+                "video_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "words": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult"
+                    }
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult": {
+            "type": "object",
+            "properties": {
+                "accuracy_score": {
+                    "type": "number",
+                    "example": 54
+                },
+                "error_type": {
+                    "type": "string",
+                    "example": "Mispronunciation"
+                },
+                "order": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "phonemes": {
+                    "type": "object"
+                },
+                "word": {
+                    "type": "string",
+                    "example": "comfortable"
                 }
             }
         },

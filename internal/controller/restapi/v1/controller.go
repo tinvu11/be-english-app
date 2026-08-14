@@ -16,6 +16,7 @@ type V1 struct {
 	captions   usecase.Caption
 	vocabulary usecase.Vocabulary
 	learning   usecase.LearningContent
+	shadowing  usecase.Shadowing
 	l          logger.Interface
 	v          *validator.Validate
 }

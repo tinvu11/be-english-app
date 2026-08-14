@@ -58,4 +58,8 @@ var (
 	ErrLearningContentNotFound      = errors.New("learning content not found")
 	ErrLearningContentFailed        = errors.New("learning content generation failed")
 	ErrInvalidLearningContent       = errors.New("learning content response is invalid")
+	ErrInvalidShadowingAudio        = errors.New("invalid shadowing audio")
+	ErrPronunciationUnavailable     = errors.New("pronunciation assessment is unavailable")
+	ErrPronunciationFailed          = errors.New("pronunciation assessment provider failed")
+	ErrInvalidPronunciation         = errors.New("pronunciation assessment response is invalid")
 )

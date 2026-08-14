@@ -10,7 +10,7 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, verifier middleware.TokenVerifier, l logger.Interface) {
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, shadowing usecase.Shadowing, verifier middleware.TokenVerifier, l logger.Interface) {
 	r := &V1{
 		u:          u,
 		languages:  languages,
@@ -20,6 +20,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		captions:   captions,
 		vocabulary: vocabulary,
 		learning:   learning,
+		shadowing:  shadowing,
 		l:          l,
 		v:          validator.New(validator.WithRequiredStructEnabled()),
 	}
@@ -57,6 +58,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		videoGroup.Get("/:videoId/learning-content", r.getVideoLearningContent)
 		videoGroup.Put("/:videoId/dictation-progress/:captionId", r.completeDictation)
 		videoGroup.Get("/:videoId/dictation-progress", r.listCompletedDictations)
+		videoGroup.Post("/:videoId/shadowing-attempts/:captionId", r.assessShadowing)
+		videoGroup.Get("/:videoId/shadowing-attempts", r.listShadowingAttempts)
 	}
 
 	userGroup := protected.Group("/user")

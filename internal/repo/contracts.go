@@ -117,4 +117,10 @@ type (
 		GetLocalizedLearningContent(ctx context.Context, videoID int64, languageID int) (entity.VideoSummary, []entity.DictionaryEntry, error)
 		SaveLocalizedLearningContentIfAbsent(ctx context.Context, summary entity.VideoSummary, dictionaryIDs []int64) error
 	}
+
+	ShadowingRepo interface {
+		GetPrompt(ctx context.Context, videoID, captionID int64) (entity.ShadowingPrompt, error)
+		SaveAttempt(ctx context.Context, userID string, prompt entity.ShadowingPrompt, assessment entity.PronunciationAssessment) (entity.ShadowingAttempt, error)
+		ListAttempts(ctx context.Context, userID string, videoID, captionID int64) (entity.ShadowingAttemptList, error)
+	}
 )

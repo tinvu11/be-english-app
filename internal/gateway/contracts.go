@@ -31,3 +31,8 @@ type LearningContentGenerator interface {
 	GenerateQuizzes(ctx context.Context, input entity.QuizGenerationRequest) ([]entity.GeneratedQuiz, error)
 	GenerateLocalizedContent(ctx context.Context, input entity.LocalizedContentGenerationRequest) (entity.GeneratedLocalizedContent, error)
 }
+
+// PronunciationAssessor evaluates scripted speech without exposing provider-specific APIs.
+type PronunciationAssessor interface {
+	Assess(ctx context.Context, input entity.PronunciationAssessmentInput) (entity.PronunciationAssessment, error)
+}

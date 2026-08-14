@@ -110,4 +110,9 @@ type (
 	LearningContent interface {
 		GetForUser(ctx context.Context, userID string, videoID int64) (entity.VideoLearningContent, error)
 	}
+
+	Shadowing interface {
+		Assess(ctx context.Context, userID string, videoID, captionID int64, audio []byte, contentType, locale string) (entity.ShadowingAttempt, error)
+		ListAttempts(ctx context.Context, userID string, videoID, captionID int64) (entity.ShadowingAttemptList, error)
+	}
 )

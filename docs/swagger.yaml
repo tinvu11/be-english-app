@@ -854,6 +854,81 @@ definitions:
       order:
         type: integer
     type: object
+  github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt:
+    properties:
+      accuracy_score:
+        example: 79
+        type: number
+      caption_id:
+        example: 10
+        type: integer
+      completeness_score:
+        example: 100
+        type: number
+      created_at:
+        type: string
+      duration_ms:
+        example: 2300
+        type: integer
+      fluency_score:
+        example: 86
+        type: number
+      id:
+        example: 123
+        type: integer
+      locale:
+        example: en-US
+        type: string
+      passed:
+        example: true
+        type: boolean
+      pronunciation_score:
+        example: 82
+        type: number
+      prosody_score:
+        example: 75
+        type: number
+      provider:
+        example: azure
+        type: string
+      reference_text:
+        example: Good morning.
+        type: string
+      video_id:
+        example: 1
+        type: integer
+      words:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult'
+        type: array
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt'
+        type: array
+      total:
+        example: 3
+        type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult:
+    properties:
+      accuracy_score:
+        example: 54
+        type: number
+      error_type:
+        example: Mispronunciation
+        type: string
+      order:
+        example: 0
+        type: integer
+      phonemes:
+        type: object
+      word:
+        example: comfortable
+        type: string
+    type: object
   github_com_evrone_go-clean-template_internal_entity.UserVocabulary:
     properties:
       captionId:
@@ -3783,6 +3858,138 @@ paths:
       summary: Get AI-generated video learning content
       tags:
       - user-videos
+  /videos/{videoId}/shadowing-attempts:
+    get:
+      description: Return the current user's attempts for a video, optionally filtered
+        by caption.
+      operationId: list-shadowing-attempts
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption ID
+        in: query
+        name: caption_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List shadowing attempts
+      tags:
+      - shadowing
+  /videos/{videoId}/shadowing-attempts/{captionId}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload WAV PCM 16 kHz or OGG/Opus audio and assess it against the
+        selected caption.
+      operationId: assess-shadowing
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      - description: Caption ID
+        in: path
+        name: captionId
+        required: true
+        type: integer
+      - description: Recorded audio (max 5 MB)
+        in: formData
+        name: audio
+        required: true
+        type: file
+      - description: Azure BCP-47 locale; defaults from video language
+        in: formData
+        name: locale
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "413":
+          description: Request Entity Too Large
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Assess a shadowing attempt
+      tags:
+      - shadowing
   /videos/import-youtube:
     post:
       consumes:

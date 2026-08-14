@@ -9,17 +9,18 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App      app
-		HTTP     http
-		Log      log
-		PG       pg
-		Firebase firebase
-		Metrics  metrics
-		Swagger  swagger
-		Tracing  tracing
-		YTDLP    ytdlp
-		DeepSeek deepseek
-		Groq     groq
+		App         app
+		HTTP        http
+		Log         log
+		PG          pg
+		Firebase    firebase
+		Metrics     metrics
+		Swagger     swagger
+		Tracing     tracing
+		YTDLP       ytdlp
+		DeepSeek    deepseek
+		Groq        groq
+		AzureSpeech azureSpeech
 	}
 
 	// App -.
@@ -88,6 +89,12 @@ type (
 		APIKey         string `env:"GROQ_API_KEY"`
 		Model          string `env:"GROQ_WHISPER_MODEL" envDefault:"whisper-large-v3-turbo"`
 		TimeoutSeconds int    `env:"GROQ_TIMEOUT_SECONDS" envDefault:"300"`
+	}
+
+	azureSpeech struct {
+		Endpoint       string `env:"AZURE_SPEECH_ENDPOINT"`
+		APIKey         string `env:"AZURE_SPEECH_KEY"`
+		TimeoutSeconds int    `env:"AZURE_SPEECH_TIMEOUT_SECONDS" envDefault:"30"`
 	}
 )
 

@@ -12,6 +12,7 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	"github.com/evrone/go-clean-template/internal/gateway/azure"
 	"github.com/evrone/go-clean-template/internal/gateway/deepseek"
 	"github.com/evrone/go-clean-template/internal/gateway/groq"
 	"github.com/evrone/go-clean-template/internal/gateway/ytdlp"
@@ -22,6 +23,7 @@ import (
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
 	persistLearningContentRepo "github.com/evrone/go-clean-template/internal/repo/persistent/learningcontent"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
+	persistShadowingRepo "github.com/evrone/go-clean-template/internal/repo/persistent/shadowing"
 	persistTopicRepo "github.com/evrone/go-clean-template/internal/repo/persistent/topic"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
 	persistVideoRepo "github.com/evrone/go-clean-template/internal/repo/persistent/video"
@@ -32,6 +34,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/learningcontent"
 	"github.com/evrone/go-clean-template/internal/usecase/level"
+	"github.com/evrone/go-clean-template/internal/usecase/shadowing"
 	"github.com/evrone/go-clean-template/internal/usecase/topic"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/evrone/go-clean-template/internal/usecase/video"
@@ -54,6 +57,7 @@ type useCases struct {
 	caption    usecase.Caption
 	vocabulary usecase.Vocabulary
 	learning   usecase.LearningContent
+	shadowing  usecase.Shadowing
 }
 
 type servers struct {
@@ -71,12 +75,15 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	captionRepo := persistCaptionRepo.New(pg)
 	dictionaryRepo := persistDictionaryRepo.New(pg)
 	learningContentRepo := persistLearningContentRepo.New(pg)
+	shadowingRepo := persistShadowingRepo.New(pg)
 	youtubeProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
 	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
 	transcriber := groq.New(groq.Config{BaseURL: cfg.Groq.BaseURL, APIKey: cfg.Groq.APIKey, Model: cfg.Groq.Model},
 		&http.Client{Timeout: time.Duration(cfg.Groq.TimeoutSeconds) * time.Second})
+	pronunciationAssessor := azure.New(azure.Config{Endpoint: cfg.AzureSpeech.Endpoint, APIKey: cfg.AzureSpeech.APIKey},
+		&http.Client{Timeout: time.Duration(cfg.AzureSpeech.TimeoutSeconds) * time.Second})
 
 	return useCases{
 		user:       user.New(userRepo, languageRepo),
@@ -89,13 +96,14 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, youtubeProvider, transcriber, translator, cfg.DeepSeek.MaxBatchItems),
 		vocabulary: vocabulary.New(dictionaryRepo, userRepo, languageRepo, translator),
 		learning:   learningcontent.New(learningContentRepo, dictionaryRepo, captionRepo, videoRepo, userRepo, languageRepo, translator),
+		shadowing:  shadowing.New(shadowingRepo, pronunciationAssessor),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, uc.shadowing, verifier, l)
 
 	return servers{
 		http: httpServer,
