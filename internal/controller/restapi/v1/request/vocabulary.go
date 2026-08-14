@@ -5,7 +5,8 @@ type TranslateVocabulary struct {
 }
 
 type SaveVocabularySet struct {
-	Title string `json:"title" validate:"required,max=255" example:"Travel"`
+	Title    string `json:"title" validate:"required,max=255" example:"Travel"`
+	ColorHex string `json:"colorHex" validate:"required,len=7" example:"#3B82F6"`
 }
 
 type CreateUserVocabulary struct {

@@ -9,6 +9,7 @@ type DictionaryEntry struct {
 	TargetLanguageID    int       `json:"targetLanguageId"`
 	PhoneticOrPinyin    string    `json:"phoneticOrPinyin,omitempty"`
 	PartOfSpeech        string    `json:"partOfSpeech,omitempty"`
+	AudioURL            string    `json:"audioUrl,omitempty"`
 	Meaning             string    `json:"meaning"`
 	Example1Sentence    string    `json:"example1Sentence,omitempty"`
 	Example1Translation string    `json:"example1Translation,omitempty"`
@@ -23,6 +24,7 @@ type DictionaryInput struct {
 	TargetLanguageID    int
 	PhoneticOrPinyin    string
 	PartOfSpeech        string
+	AudioURL            string
 	Meaning             string
 	Example1Sentence    string
 	Example1Translation string
@@ -56,6 +58,7 @@ type VocabularyLookupResult struct {
 type VocabularySet struct {
 	ID               int64     `json:"id" example:"1"`
 	Title            string    `json:"title" example:"Travel"`
+	ColorHex         string    `json:"colorHex" example:"#3B82F6"`
 	SourceLanguageID int       `json:"sourceLanguageId" example:"1"`
 	TargetLanguageID int       `json:"targetLanguageId" example:"2"`
 	WordCount        int       `json:"wordCount" example:"20"`
@@ -71,6 +74,7 @@ type VocabularyLanguages struct {
 type VocabularyCategorySummary struct {
 	ID             int64  `json:"id" example:"1"`
 	Title          string `json:"title" example:"Travel"`
+	ColorHex       string `json:"colorHex" example:"#3B82F6"`
 	TotalWords     int    `json:"totalWords" example:"20"`
 	LearnedWords   int    `json:"learnedWords" example:"12"`
 	UnlearnedWords int    `json:"unlearnedWords" example:"8"`
@@ -104,4 +108,14 @@ type UserVocabularyUpdate struct {
 	VocabSetID int64
 	CaptionID  *int64
 	IsLearned  bool
+}
+
+type UserVocabularyFilter struct {
+	VocabSetID *int64
+	Search     string
+}
+
+type UnlearnedVocabularyFilter struct {
+	VocabSetID *int64
+	Limit      *int
 }

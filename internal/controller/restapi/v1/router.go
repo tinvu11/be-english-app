@@ -35,6 +35,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		vocabularyGroup.Delete("/sets/:setId", r.deleteVocabularySet)
 		vocabularyGroup.Post("/words", r.createUserVocabulary)
 		vocabularyGroup.Get("/words", r.listUserVocabularies)
+		vocabularyGroup.Get("/words/unlearned", r.listUnlearnedVocabularies)
 		vocabularyGroup.Put("/words/:wordId", r.updateUserVocabulary)
 		vocabularyGroup.Delete("/words/:wordId", r.deleteUserVocabulary)
 	}

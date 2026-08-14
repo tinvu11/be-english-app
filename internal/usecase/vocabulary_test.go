@@ -83,12 +83,17 @@ func TestVocabularySetAndSavedWordOperations(t *testing.T) {
 	uc := vocabulary.New(dictionary, users, languages, vocabularyTranslatorStub{})
 	sourceID, targetID := 1, 2
 	pair := entity.VocabularyLanguages{SourceLanguageID: sourceID, TargetLanguageID: targetID}
-	set := entity.VocabularySet{ID: 2, Title: "Travel", SourceLanguageID: sourceID, TargetLanguageID: targetID}
+	set := entity.VocabularySet{ID: 2, Title: "Travel", ColorHex: "#3B82F6", SourceLanguageID: sourceID, TargetLanguageID: targetID}
 	word := entity.UserVocabulary{ID: 3, VocabSetID: set.ID}
 	overview := entity.VocabularyOverview{TotalWords: 3, LearnedWords: 1, UnlearnedWords: 2}
-	users.EXPECT().GetByID(gomock.Any(), "user-1").Return(entity.User{TargetLanguageID: &sourceID, NativeLanguageID: &targetID}, nil).Times(6)
+	filter := entity.UserVocabularyFilter{VocabSetID: &set.ID, Search: "remember"}
+	limit := 5
+	unlearnedFilter := entity.UnlearnedVocabularyFilter{VocabSetID: &set.ID, Limit: &limit}
+	users.EXPECT().GetByID(gomock.Any(), "user-1").Return(entity.User{TargetLanguageID: &sourceID, NativeLanguageID: &targetID}, nil).Times(8)
 	dictionary.EXPECT().GetVocabularyOverview(gomock.Any(), "user-1", pair).Return(overview, nil)
-	dictionary.EXPECT().CreateVocabularySet(gomock.Any(), "user-1", "Travel", pair).Return(set, nil)
+	dictionary.EXPECT().ListUserVocabularies(gomock.Any(), "user-1", filter, pair).Return([]entity.UserVocabulary{word}, nil)
+	dictionary.EXPECT().ListUnlearnedVocabularies(gomock.Any(), "user-1", unlearnedFilter, pair).Return([]entity.UserVocabulary{word}, nil)
+	dictionary.EXPECT().CreateVocabularySet(gomock.Any(), "user-1", "Travel", "#3B82F6", pair).Return(set, nil)
 	dictionary.EXPECT().ListVocabularySets(gomock.Any(), "user-1", pair).Return([]entity.VocabularySet{set}, nil)
 	dictionary.EXPECT().CreateUserVocabulary(gomock.Any(), "user-1", entity.UserVocabularyInput{DictionaryID: 4, VocabSetID: set.ID}, pair).Return(word, nil)
 	dictionary.EXPECT().UpdateUserVocabulary(gomock.Any(), "user-1", int64(3), entity.UserVocabularyUpdate{VocabSetID: set.ID, IsLearned: true}, pair).Return(word, nil)
@@ -97,8 +102,14 @@ func TestVocabularySetAndSavedWordOperations(t *testing.T) {
 	result, err := uc.GetOverview(t.Context(), "user-1")
 	require.NoError(t, err)
 	assert.Equal(t, overview, result)
+	words, err := uc.ListUserVocabularies(t.Context(), "user-1", entity.UserVocabularyFilter{VocabSetID: &set.ID, Search: " remember "})
+	require.NoError(t, err)
+	assert.Equal(t, []entity.UserVocabulary{word}, words)
+	words, err = uc.ListUnlearnedVocabularies(t.Context(), "user-1", unlearnedFilter)
+	require.NoError(t, err)
+	assert.Equal(t, []entity.UserVocabulary{word}, words)
 
-	created, err := uc.CreateSet(t.Context(), "user-1", " Travel ")
+	created, err := uc.CreateSet(t.Context(), "user-1", " Travel ", " #3b82f6 ")
 	require.NoError(t, err)
 	assert.Equal(t, set, created)
 	sets, err := uc.ListSets(t.Context(), "user-1")
@@ -115,4 +126,9 @@ func TestVocabularySetAndSavedWordOperations(t *testing.T) {
 	assert.ErrorIs(t, err, entity.ErrInvalidVocabulary)
 	_, err = uc.UpdateUserVocabulary(t.Context(), "user-1", 3, entity.UserVocabularyUpdate{IsLearned: true})
 	assert.ErrorIs(t, err, entity.ErrInvalidVocabulary)
+	invalidLimit := 1001
+	_, err = uc.ListUnlearnedVocabularies(t.Context(), "user-1", entity.UnlearnedVocabularyFilter{Limit: &invalidLimit})
+	assert.ErrorIs(t, err, entity.ErrInvalidVocabulary)
+	_, err = uc.CreateSet(t.Context(), "user-1", "Invalid color", "blue")
+	assert.ErrorIs(t, err, entity.ErrInvalidVocabularySet)
 }

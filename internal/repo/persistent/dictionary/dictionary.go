@@ -17,7 +17,7 @@ type Repo struct{ *postgres.Postgres }
 func New(pg *postgres.Postgres) repo.DictionaryRepo { return &Repo{Postgres: pg} }
 
 const columns = `id,word,source_language_id,target_language_id,COALESCE(phonetic_or_pinyin,''),
-	COALESCE(part_of_speech,''),meaning,COALESCE(example_1_sentence,''),COALESCE(example_1_translation,''),
+	COALESCE(part_of_speech,''),COALESCE(audio_url,''),meaning,COALESCE(example_1_sentence,''),COALESCE(example_1_translation,''),
 	COALESCE(example_2_sentence,''),COALESCE(example_2_translation,''),created_at`
 
 func (r *Repo) FindDictionaryEntry(ctx context.Context, word string, sourceLanguageID, targetLanguageID int) (entity.DictionaryEntry, error) {
@@ -34,10 +34,10 @@ func (r *Repo) FindDictionaryEntry(ctx context.Context, word string, sourceLangu
 
 func (r *Repo) UpsertDictionaryEntry(ctx context.Context, input entity.DictionaryInput) (entity.DictionaryEntry, bool, error) {
 	entry, err := scan(r.Pool.QueryRow(ctx, `INSERT INTO dictionary(word,source_language_id,target_language_id,
-		phonetic_or_pinyin,part_of_speech,meaning,example_1_sentence,example_1_translation,example_2_sentence,example_2_translation)
-		VALUES($1,$2,$3,NULLIF($4,''),NULLIF($5,''),$6,NULLIF($7,''),NULLIF($8,''),NULLIF($9,''),NULLIF($10,''))
+		phonetic_or_pinyin,part_of_speech,audio_url,meaning,example_1_sentence,example_1_translation,example_2_sentence,example_2_translation)
+		VALUES($1,$2,$3,NULLIF($4,''),NULLIF($5,''),NULLIF($6,''),$7,NULLIF($8,''),NULLIF($9,''),NULLIF($10,''),NULLIF($11,''))
 		ON CONFLICT (word,source_language_id,target_language_id) DO NOTHING RETURNING `+columns,
-		input.Word, input.SourceLanguageID, input.TargetLanguageID, input.PhoneticOrPinyin, input.PartOfSpeech,
+		input.Word, input.SourceLanguageID, input.TargetLanguageID, input.PhoneticOrPinyin, input.PartOfSpeech, input.AudioURL,
 		input.Meaning, input.Example1Sentence, input.Example1Translation, input.Example2Sentence, input.Example2Translation))
 	if err == nil {
 		return entry, true, nil
@@ -60,15 +60,15 @@ func (r *Repo) GetVocabularyOverview(ctx context.Context, userID string, languag
 			COUNT(*) FILTER (WHERE is_learned)::int AS learned_words
 		FROM scoped_words
 	), categories AS (
-		SELECT s.id,s.title,COUNT(w.vocab_set_id)::int AS total_words,
+		SELECT s.id,s.title,s.color_hex,COUNT(w.vocab_set_id)::int AS total_words,
 			COUNT(w.vocab_set_id) FILTER (WHERE w.is_learned)::int AS learned_words
 		FROM vocab_sets s
 		LEFT JOIN scoped_words w ON w.vocab_set_id=s.id
 		WHERE s.user_id=$1 AND s.source_language_id=$2 AND s.target_language_id=$3
-		GROUP BY s.id,s.title,s.created_at
+		GROUP BY s.id,s.title,s.color_hex,s.created_at
 		ORDER BY s.created_at DESC,s.id DESC
 	)
-	SELECT t.total_words,t.learned_words,c.id,c.title,c.total_words,c.learned_words
+	SELECT t.total_words,t.learned_words,c.id,c.title,c.color_hex,c.total_words,c.learned_words
 	FROM totals t LEFT JOIN categories c ON TRUE
 	ORDER BY c.id DESC`, userID, languages.SourceLanguageID, languages.TargetLanguageID)
 	if err != nil {
@@ -80,12 +80,13 @@ func (r *Repo) GetVocabularyOverview(ctx context.Context, userID string, languag
 	for rows.Next() {
 		var categoryID *int64
 		var title *string
+		var colorHex *string
 		var categoryTotal, categoryLearned *int
-		if err = rows.Scan(&overview.TotalWords, &overview.LearnedWords, &categoryID, &title, &categoryTotal, &categoryLearned); err != nil {
+		if err = rows.Scan(&overview.TotalWords, &overview.LearnedWords, &categoryID, &title, &colorHex, &categoryTotal, &categoryLearned); err != nil {
 			return entity.VocabularyOverview{}, fmt.Errorf("DictionaryRepo - GetVocabularyOverview - scan: %w", err)
 		}
 		if categoryID != nil {
-			category := entity.VocabularyCategorySummary{ID: *categoryID, Title: *title, TotalWords: *categoryTotal, LearnedWords: *categoryLearned}
+			category := entity.VocabularyCategorySummary{ID: *categoryID, Title: *title, ColorHex: *colorHex, TotalWords: *categoryTotal, LearnedWords: *categoryLearned}
 			category.UnlearnedWords = category.TotalWords - category.LearnedWords
 			overview.Categories = append(overview.Categories, category)
 		}
@@ -102,17 +103,17 @@ type scanner interface{ Scan(...any) error }
 func scan(row scanner) (entity.DictionaryEntry, error) {
 	var entry entity.DictionaryEntry
 	err := row.Scan(&entry.ID, &entry.Word, &entry.SourceLanguageID, &entry.TargetLanguageID,
-		&entry.PhoneticOrPinyin, &entry.PartOfSpeech, &entry.Meaning, &entry.Example1Sentence,
+		&entry.PhoneticOrPinyin, &entry.PartOfSpeech, &entry.AudioURL, &entry.Meaning, &entry.Example1Sentence,
 		&entry.Example1Translation, &entry.Example2Sentence, &entry.Example2Translation, &entry.CreatedAt)
 	return entry, err
 }
 
-func (r *Repo) CreateVocabularySet(ctx context.Context, userID, title string, languages entity.VocabularyLanguages) (entity.VocabularySet, error) {
+func (r *Repo) CreateVocabularySet(ctx context.Context, userID, title, colorHex string, languages entity.VocabularyLanguages) (entity.VocabularySet, error) {
 	var item entity.VocabularySet
-	err := r.Pool.QueryRow(ctx, `INSERT INTO vocab_sets(user_id,title,source_language_id,target_language_id) VALUES($1,$2,$3,$4)
-		RETURNING id,title,source_language_id,target_language_id,0,created_at,updated_at`, userID, title,
+	err := r.Pool.QueryRow(ctx, `INSERT INTO vocab_sets(user_id,title,color_hex,source_language_id,target_language_id) VALUES($1,$2,$3,$4,$5)
+		RETURNING id,title,color_hex,source_language_id,target_language_id,0,created_at,updated_at`, userID, title, colorHex,
 		languages.SourceLanguageID, languages.TargetLanguageID).
-		Scan(&item.ID, &item.Title, &item.SourceLanguageID, &item.TargetLanguageID, &item.WordCount, &item.CreatedAt, &item.UpdatedAt)
+		Scan(&item.ID, &item.Title, &item.ColorHex, &item.SourceLanguageID, &item.TargetLanguageID, &item.WordCount, &item.CreatedAt, &item.UpdatedAt)
 	if err != nil {
 		return item, fmt.Errorf("DictionaryRepo - CreateVocabularySet: %w", err)
 	}
@@ -120,7 +121,7 @@ func (r *Repo) CreateVocabularySet(ctx context.Context, userID, title string, la
 }
 
 func (r *Repo) ListVocabularySets(ctx context.Context, userID string, languages entity.VocabularyLanguages) ([]entity.VocabularySet, error) {
-	rows, err := r.Pool.Query(ctx, `SELECT sets.id,sets.title,sets.source_language_id,sets.target_language_id,COUNT(vocab.id),sets.created_at,sets.updated_at
+	rows, err := r.Pool.Query(ctx, `SELECT sets.id,sets.title,sets.color_hex,sets.source_language_id,sets.target_language_id,COUNT(vocab.id),sets.created_at,sets.updated_at
 		FROM vocab_sets sets LEFT JOIN user_vocabularies vocab ON vocab.vocab_set_id=sets.id AND vocab.user_id=sets.user_id
 		WHERE sets.user_id=$1 AND sets.source_language_id=$2 AND sets.target_language_id=$3
 		GROUP BY sets.id ORDER BY sets.created_at DESC,sets.id DESC`, userID, languages.SourceLanguageID, languages.TargetLanguageID)
@@ -131,7 +132,7 @@ func (r *Repo) ListVocabularySets(ctx context.Context, userID string, languages 
 	items := make([]entity.VocabularySet, 0)
 	for rows.Next() {
 		var item entity.VocabularySet
-		if err = rows.Scan(&item.ID, &item.Title, &item.SourceLanguageID, &item.TargetLanguageID, &item.WordCount, &item.CreatedAt, &item.UpdatedAt); err != nil {
+		if err = rows.Scan(&item.ID, &item.Title, &item.ColorHex, &item.SourceLanguageID, &item.TargetLanguageID, &item.WordCount, &item.CreatedAt, &item.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("DictionaryRepo - ListVocabularySets - scan: %w", err)
 		}
 		items = append(items, item)
@@ -139,12 +140,12 @@ func (r *Repo) ListVocabularySets(ctx context.Context, userID string, languages 
 	return items, rows.Err()
 }
 
-func (r *Repo) UpdateVocabularySet(ctx context.Context, userID string, id int64, title string, languages entity.VocabularyLanguages) (entity.VocabularySet, error) {
+func (r *Repo) UpdateVocabularySet(ctx context.Context, userID string, id int64, title, colorHex string, languages entity.VocabularyLanguages) (entity.VocabularySet, error) {
 	var item entity.VocabularySet
-	err := r.Pool.QueryRow(ctx, `UPDATE vocab_sets SET title=$3,updated_at=CURRENT_TIMESTAMP
-		WHERE id=$1 AND user_id=$2 AND source_language_id=$4 AND target_language_id=$5 RETURNING id,title,source_language_id,target_language_id,
-		(SELECT COUNT(*) FROM user_vocabularies WHERE vocab_set_id=$1 AND user_id=$2),created_at,updated_at`, id, userID, title, languages.SourceLanguageID, languages.TargetLanguageID).
-		Scan(&item.ID, &item.Title, &item.SourceLanguageID, &item.TargetLanguageID, &item.WordCount, &item.CreatedAt, &item.UpdatedAt)
+	err := r.Pool.QueryRow(ctx, `UPDATE vocab_sets SET title=$3,color_hex=$4,updated_at=CURRENT_TIMESTAMP
+		WHERE id=$1 AND user_id=$2 AND source_language_id=$5 AND target_language_id=$6 RETURNING id,title,color_hex,source_language_id,target_language_id,
+		(SELECT COUNT(*) FROM user_vocabularies WHERE vocab_set_id=$1 AND user_id=$2),created_at,updated_at`, id, userID, title, colorHex, languages.SourceLanguageID, languages.TargetLanguageID).
+		Scan(&item.ID, &item.Title, &item.ColorHex, &item.SourceLanguageID, &item.TargetLanguageID, &item.WordCount, &item.CreatedAt, &item.UpdatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return item, entity.ErrVocabularySetNotFound
 	}
@@ -166,7 +167,7 @@ func (r *Repo) DeleteVocabularySet(ctx context.Context, userID string, id int64,
 }
 
 const userVocabularyColumns = `uv.id,uv.vocab_set_id,uv.caption_id,uv.is_learned,uv.learned_at,uv.created_at,uv.updated_at,
-	d.id,d.word,d.source_language_id,d.target_language_id,COALESCE(d.phonetic_or_pinyin,''),COALESCE(d.part_of_speech,''),
+	d.id,d.word,d.source_language_id,d.target_language_id,COALESCE(d.phonetic_or_pinyin,''),COALESCE(d.part_of_speech,''),COALESCE(d.audio_url,''),
 	d.meaning,COALESCE(d.example_1_sentence,''),COALESCE(d.example_1_translation,''),
 	COALESCE(d.example_2_sentence,''),COALESCE(d.example_2_translation,''),d.created_at`
 
@@ -185,11 +186,12 @@ func (r *Repo) CreateUserVocabulary(ctx context.Context, userID string, input en
 	return r.getUserVocabulary(ctx, userID, id)
 }
 
-func (r *Repo) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64, languages entity.VocabularyLanguages) ([]entity.UserVocabulary, error) {
+func (r *Repo) ListUserVocabularies(ctx context.Context, userID string, filter entity.UserVocabularyFilter, languages entity.VocabularyLanguages) ([]entity.UserVocabulary, error) {
 	rows, err := r.Pool.Query(ctx, `SELECT `+userVocabularyColumns+` FROM user_vocabularies uv
 		JOIN dictionary d ON d.id=uv.dictionary_id WHERE uv.user_id=$1
-		AND ($2::bigint IS NULL OR uv.vocab_set_id=$2) AND d.source_language_id=$3 AND d.target_language_id=$4
-		ORDER BY uv.created_at DESC,uv.id DESC`, userID, vocabSetID, languages.SourceLanguageID, languages.TargetLanguageID)
+		AND ($2::bigint IS NULL OR uv.vocab_set_id=$2) AND ($3='' OR strpos(lower(d.word),lower($3))>0)
+		AND d.source_language_id=$4 AND d.target_language_id=$5
+		ORDER BY uv.created_at DESC,uv.id DESC`, userID, filter.VocabSetID, filter.Search, languages.SourceLanguageID, languages.TargetLanguageID)
 	if err != nil {
 		return nil, fmt.Errorf("DictionaryRepo - ListUserVocabularies: %w", err)
 	}
@@ -199,6 +201,33 @@ func (r *Repo) ListUserVocabularies(ctx context.Context, userID string, vocabSet
 		item, scanErr := scanUserVocabulary(rows)
 		if scanErr != nil {
 			return nil, fmt.Errorf("DictionaryRepo - ListUserVocabularies - scan: %w", scanErr)
+		}
+		items = append(items, item)
+	}
+	return items, rows.Err()
+}
+
+func (r *Repo) ListUnlearnedVocabularies(ctx context.Context, userID string, filter entity.UnlearnedVocabularyFilter, languages entity.VocabularyLanguages) ([]entity.UserVocabulary, error) {
+	query := `SELECT ` + userVocabularyColumns + ` FROM user_vocabularies uv
+		JOIN dictionary d ON d.id=uv.dictionary_id WHERE uv.user_id=$1 AND uv.is_learned=FALSE
+		AND ($2::bigint IS NULL OR uv.vocab_set_id=$2) AND d.source_language_id=$3 AND d.target_language_id=$4`
+	args := []any{userID, filter.VocabSetID, languages.SourceLanguageID, languages.TargetLanguageID}
+	if filter.Limit == nil {
+		query += ` ORDER BY uv.created_at DESC,uv.id DESC`
+	} else {
+		query += ` ORDER BY random() LIMIT $5`
+		args = append(args, *filter.Limit)
+	}
+	rows, err := r.Pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("DictionaryRepo - ListUnlearnedVocabularies: %w", err)
+	}
+	defer rows.Close()
+	items := make([]entity.UserVocabulary, 0)
+	for rows.Next() {
+		item, scanErr := scanUserVocabulary(rows)
+		if scanErr != nil {
+			return nil, fmt.Errorf("DictionaryRepo - ListUnlearnedVocabularies - scan: %w", scanErr)
 		}
 		items = append(items, item)
 	}
@@ -243,7 +272,7 @@ func scanUserVocabulary(row scanner) (entity.UserVocabulary, error) {
 	var item entity.UserVocabulary
 	err := row.Scan(&item.ID, &item.VocabSetID, &item.CaptionID, &item.IsLearned, &item.LearnedAt,
 		&item.CreatedAt, &item.UpdatedAt, &item.Entry.ID, &item.Entry.Word, &item.Entry.SourceLanguageID,
-		&item.Entry.TargetLanguageID, &item.Entry.PhoneticOrPinyin, &item.Entry.PartOfSpeech, &item.Entry.Meaning,
+		&item.Entry.TargetLanguageID, &item.Entry.PhoneticOrPinyin, &item.Entry.PartOfSpeech, &item.Entry.AudioURL, &item.Entry.Meaning,
 		&item.Entry.Example1Sentence, &item.Entry.Example1Translation, &item.Entry.Example2Sentence,
 		&item.Entry.Example2Translation, &item.Entry.CreatedAt)
 	return item, err

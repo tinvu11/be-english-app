@@ -93,16 +93,17 @@ func (uc *UseCase) GetOverview(ctx context.Context, userID string) (entity.Vocab
 	return uc.dictionary.GetVocabularyOverview(ctx, userID, languages)
 }
 
-func (uc *UseCase) CreateSet(ctx context.Context, userID, title string) (entity.VocabularySet, error) {
+func (uc *UseCase) CreateSet(ctx context.Context, userID, title, colorHex string) (entity.VocabularySet, error) {
 	title = strings.TrimSpace(title)
-	if userID == "" || title == "" || utf8.RuneCountInString(title) > 255 {
+	colorHex = strings.ToUpper(strings.TrimSpace(colorHex))
+	if userID == "" || title == "" || utf8.RuneCountInString(title) > 255 || !validColorHex(colorHex) {
 		return entity.VocabularySet{}, entity.ErrInvalidVocabularySet
 	}
 	languages, err := uc.currentLanguages(ctx, userID)
 	if err != nil {
 		return entity.VocabularySet{}, err
 	}
-	return uc.dictionary.CreateVocabularySet(ctx, userID, title, languages)
+	return uc.dictionary.CreateVocabularySet(ctx, userID, title, colorHex, languages)
 }
 
 func (uc *UseCase) ListSets(ctx context.Context, userID string) ([]entity.VocabularySet, error) {
@@ -116,16 +117,17 @@ func (uc *UseCase) ListSets(ctx context.Context, userID string) ([]entity.Vocabu
 	return uc.dictionary.ListVocabularySets(ctx, userID, languages)
 }
 
-func (uc *UseCase) UpdateSet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error) {
+func (uc *UseCase) UpdateSet(ctx context.Context, userID string, id int64, title, colorHex string) (entity.VocabularySet, error) {
 	title = strings.TrimSpace(title)
-	if userID == "" || id <= 0 || title == "" || utf8.RuneCountInString(title) > 255 {
+	colorHex = strings.ToUpper(strings.TrimSpace(colorHex))
+	if userID == "" || id <= 0 || title == "" || utf8.RuneCountInString(title) > 255 || !validColorHex(colorHex) {
 		return entity.VocabularySet{}, entity.ErrInvalidVocabularySet
 	}
 	languages, err := uc.currentLanguages(ctx, userID)
 	if err != nil {
 		return entity.VocabularySet{}, err
 	}
-	return uc.dictionary.UpdateVocabularySet(ctx, userID, id, title, languages)
+	return uc.dictionary.UpdateVocabularySet(ctx, userID, id, title, colorHex, languages)
 }
 
 func (uc *UseCase) DeleteSet(ctx context.Context, userID string, id int64) error {
@@ -150,15 +152,27 @@ func (uc *UseCase) CreateUserVocabulary(ctx context.Context, userID string, inpu
 	return uc.dictionary.CreateUserVocabulary(ctx, userID, input, languages)
 }
 
-func (uc *UseCase) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64) ([]entity.UserVocabulary, error) {
-	if userID == "" || invalidOptionalID(vocabSetID) {
+func (uc *UseCase) ListUserVocabularies(ctx context.Context, userID string, filter entity.UserVocabularyFilter) ([]entity.UserVocabulary, error) {
+	filter.Search = strings.TrimSpace(filter.Search)
+	if userID == "" || invalidOptionalID(filter.VocabSetID) || utf8.RuneCountInString(filter.Search) > 150 {
 		return nil, entity.ErrInvalidVocabulary
 	}
 	languages, err := uc.currentLanguages(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	return uc.dictionary.ListUserVocabularies(ctx, userID, vocabSetID, languages)
+	return uc.dictionary.ListUserVocabularies(ctx, userID, filter, languages)
+}
+
+func (uc *UseCase) ListUnlearnedVocabularies(ctx context.Context, userID string, filter entity.UnlearnedVocabularyFilter) ([]entity.UserVocabulary, error) {
+	if userID == "" || invalidOptionalID(filter.VocabSetID) || filter.Limit != nil && (*filter.Limit <= 0 || *filter.Limit > 1000) {
+		return nil, entity.ErrInvalidVocabulary
+	}
+	languages, err := uc.currentLanguages(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return uc.dictionary.ListUnlearnedVocabularies(ctx, userID, filter, languages)
 }
 
 func (uc *UseCase) UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error) {
@@ -201,3 +215,17 @@ func (uc *UseCase) currentLanguages(ctx context.Context, userID string) (entity.
 }
 
 func invalidOptionalID(id *int64) bool { return id != nil && *id <= 0 }
+
+func validColorHex(color string) bool {
+	if len(color) != 7 || color[0] != '#' {
+		return false
+	}
+	for i := 1; i < len(color); i++ {
+		if color[i] < '0' || color[i] > '9' {
+			if color[i] < 'A' || color[i] > 'F' {
+				return false
+			}
+		}
+	}
+	return true
+}

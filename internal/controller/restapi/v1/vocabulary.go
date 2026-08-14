@@ -103,7 +103,7 @@ func (r *V1) createVocabularySet(ctx *fiber.Ctx) error {
 	if err = ctx.BodyParser(&body); err != nil || r.v.Struct(body) != nil {
 		return errorResponse(ctx, http.StatusBadRequest, "invalid vocabulary set")
 	}
-	item, err := r.vocabulary.CreateSet(ctx.UserContext(), userID, body.Title)
+	item, err := r.vocabulary.CreateSet(ctx.UserContext(), userID, body.Title, body.ColorHex)
 	if err != nil {
 		return r.vocabularyError(ctx, err, "create set")
 	}
@@ -149,7 +149,7 @@ func (r *V1) updateVocabularySet(ctx *fiber.Ctx) error {
 	if err = ctx.BodyParser(&body); err != nil || r.v.Struct(body) != nil {
 		return errorResponse(ctx, http.StatusBadRequest, "invalid vocabulary set")
 	}
-	item, err := r.vocabulary.UpdateSet(ctx.UserContext(), userID, id, body.Title)
+	item, err := r.vocabulary.UpdateSet(ctx.UserContext(), userID, id, body.Title, body.ColorHex)
 	if err != nil {
 		return r.vocabularyError(ctx, err, "update set")
 	}
@@ -206,6 +206,7 @@ func (r *V1) createUserVocabulary(ctx *fiber.Ctx) error {
 // @Tags user-vocabulary
 // @Produce json
 // @Param vocabSetId query int false "Filter by set ID"
+// @Param search query string false "Search by word (case-insensitive)" maxlength(150)
 // @Security BearerAuth
 // @Router /vocabulary/words [get]
 func (r *V1) listUserVocabularies(ctx *fiber.Ctx) error {
@@ -221,9 +222,49 @@ func (r *V1) listUserVocabularies(ctx *fiber.Ctx) error {
 		}
 		setID = &id
 	}
-	items, err := r.vocabulary.ListUserVocabularies(ctx.UserContext(), userID, setID)
+	items, err := r.vocabulary.ListUserVocabularies(ctx.UserContext(), userID, entity.UserVocabularyFilter{
+		VocabSetID: setID,
+		Search:     ctx.Query("search"),
+	})
 	if err != nil {
 		return r.vocabularyError(ctx, err, "list words")
+	}
+	return ctx.JSON(fiber.Map{"items": items, "total": len(items)})
+}
+
+// @Summary List unlearned vocabulary
+// @Description Returns all unlearned words when limit is omitted; when limit is present, returns a random selection of up to that size
+// @Tags user-vocabulary
+// @Produce json
+// @Param vocabSetId query int false "Filter by set ID"
+// @Param limit query int false "Random word count (1-1000)" minimum(1) maximum(1000)
+// @Success 200 {object} map[string]interface{}
+// @Failure 400,401,409,500 {object} map[string]string
+// @Security BearerAuth
+// @Router /vocabulary/words/unlearned [get]
+func (r *V1) listUnlearnedVocabularies(ctx *fiber.Ctx) error {
+	userID, err := vocabularyUserID(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusUnauthorized, "unauthorized")
+	}
+	filter := entity.UnlearnedVocabularyFilter{}
+	if raw := ctx.Query("vocabSetId"); raw != "" {
+		id, parseErr := strconv.ParseInt(raw, 10, 64)
+		if parseErr != nil || id <= 0 {
+			return errorResponse(ctx, http.StatusBadRequest, "invalid vocabulary set id")
+		}
+		filter.VocabSetID = &id
+	}
+	if raw := ctx.Query("limit"); raw != "" {
+		limit, parseErr := strconv.Atoi(raw)
+		if parseErr != nil || limit <= 0 || limit > 1000 {
+			return errorResponse(ctx, http.StatusBadRequest, "invalid limit")
+		}
+		filter.Limit = &limit
+	}
+	items, err := r.vocabulary.ListUnlearnedVocabularies(ctx.UserContext(), userID, filter)
+	if err != nil {
+		return r.vocabularyError(ctx, err, "list unlearned words")
 	}
 	return ctx.JSON(fiber.Map{"items": items, "total": len(items)})
 }

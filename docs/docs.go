@@ -4193,6 +4193,13 @@ const docTemplate = `{
                         "description": "Filter by set ID",
                         "name": "vocabSetId",
                         "in": "query"
+                    },
+                    {
+                        "maxLength": 150,
+                        "type": "string",
+                        "description": "Search by word (case-insensitive)",
+                        "name": "search",
+                        "in": "query"
                     }
                 ],
                 "responses": {},
@@ -4229,6 +4236,84 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/vocabulary/words/unlearned": {
+            "get": {
+                "description": "Returns all unlearned words when limit is omitted; when limit is present, returns a random selection of up to that size",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "List unlearned vocabulary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by set ID",
+                        "name": "vocabSetId",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Random word count (1-1000)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 },
@@ -5226,9 +5311,14 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet": {
             "type": "object",
             "required": [
+                "colorHex",
                 "title"
             ],
             "properties": {
+                "colorHex": {
+                    "type": "string",
+                    "example": "#3B82F6"
+                },
                 "title": {
                     "type": "string",
                     "maxLength": 255,
@@ -5437,6 +5527,9 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_entity.DictionaryEntry": {
             "type": "object",
             "properties": {
+                "audioUrl": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -5656,6 +5749,10 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary": {
             "type": "object",
             "properties": {
+                "colorHex": {
+                    "type": "string",
+                    "example": "#3B82F6"
+                },
                 "id": {
                     "type": "integer",
                     "example": 1
@@ -5715,6 +5812,10 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_entity.VocabularySet": {
             "type": "object",
             "properties": {
+                "colorHex": {
+                    "type": "string",
+                    "example": "#3B82F6"
+                },
                 "createdAt": {
                     "type": "string"
                 },

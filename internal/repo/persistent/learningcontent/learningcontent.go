@@ -81,7 +81,7 @@ func (r *Repo) SaveQuizzesIfAbsent(ctx context.Context, videoID int64, quizzes [
 }
 
 const dictionaryColumns = `d.id,d.word,d.source_language_id,d.target_language_id,COALESCE(d.phonetic_or_pinyin,''),
-	COALESCE(d.part_of_speech,''),d.meaning,COALESCE(d.example_1_sentence,''),COALESCE(d.example_1_translation,''),
+	COALESCE(d.part_of_speech,''),COALESCE(d.audio_url,''),d.meaning,COALESCE(d.example_1_sentence,''),COALESCE(d.example_1_translation,''),
 	COALESCE(d.example_2_sentence,''),COALESCE(d.example_2_translation,''),d.created_at`
 
 func (r *Repo) GetLocalizedLearningContent(ctx context.Context, videoID int64, languageID int) (entity.VideoSummary, []entity.DictionaryEntry, error) {
@@ -105,7 +105,7 @@ func (r *Repo) GetLocalizedLearningContent(ctx context.Context, videoID int64, l
 	for rows.Next() {
 		var item entity.DictionaryEntry
 		if err = rows.Scan(&item.ID, &item.Word, &item.SourceLanguageID, &item.TargetLanguageID, &item.PhoneticOrPinyin,
-			&item.PartOfSpeech, &item.Meaning, &item.Example1Sentence, &item.Example1Translation,
+			&item.PartOfSpeech, &item.AudioURL, &item.Meaning, &item.Example1Sentence, &item.Example1Translation,
 			&item.Example2Sentence, &item.Example2Translation, &item.CreatedAt); err != nil {
 			return summary, nil, fmt.Errorf("LearningContentRepo - GetLocalized - scan: %w", err)
 		}

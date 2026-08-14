@@ -653,11 +653,15 @@ definitions:
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet:
     properties:
+      colorHex:
+        example: '#3B82F6'
+        type: string
       title:
         example: Travel
         maxLength: 255
         type: string
     required:
+    - colorHex
     - title
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary:
@@ -799,6 +803,8 @@ definitions:
     type: object
   github_com_evrone_go-clean-template_internal_entity.DictionaryEntry:
     properties:
+      audioUrl:
+        type: string
       createdAt:
         type: string
       example1Sentence:
@@ -945,6 +951,9 @@ definitions:
     type: object
   github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary:
     properties:
+      colorHex:
+        example: '#3B82F6'
+        type: string
       id:
         example: 1
         type: integer
@@ -986,6 +995,9 @@ definitions:
     type: object
   github_com_evrone_go-clean-template_internal_entity.VocabularySet:
     properties:
+      colorHex:
+        example: '#3B82F6'
+        type: string
       createdAt:
         type: string
       id:
@@ -4089,6 +4101,11 @@ paths:
         in: query
         name: vocabSetId
         type: integer
+      - description: Search by word (case-insensitive)
+        in: query
+        maxLength: 150
+        name: search
+        type: string
       produces:
       - application/json
       responses: {}
@@ -4161,6 +4178,58 @@ paths:
       security:
       - BearerAuth: []
       summary: Update saved vocabulary
+      tags:
+      - user-vocabulary
+  /vocabulary/words/unlearned:
+    get:
+      description: Returns all unlearned words when limit is omitted; when limit is
+        present, returns a random selection of up to that size
+      parameters:
+      - description: Filter by set ID
+        in: query
+        name: vocabSetId
+        type: integer
+      - description: Random word count (1-1000)
+        in: query
+        maximum: 1000
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List unlearned vocabulary
       tags:
       - user-vocabulary
 securityDefinitions:
