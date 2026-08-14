@@ -40,7 +40,7 @@ func (ctrl *controller) listYouTubeSubtitleTracks(ctx *fiber.Ctx) error {
 }
 
 // @Summary Import YouTube captions
-// @Description Downloads manual or automatically generated WebVTT subtitles; mode is fail_if_exists or replace_all
+// @Description Downloads normalized YouTube audio and transcribes it with Groq Whisper; languageCode is an optional spoken-language hint and mode is fail_if_exists or replace_all
 // @Tags admin-captions
 // @Accept json
 // @Produce json
@@ -353,11 +353,13 @@ func (ctrl *controller) captionError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusNotFound, "manual YouTube subtitle not found")
 	case errors.Is(err, entity.ErrInvalidWebVTT):
 		return errorResponse(ctx, http.StatusUnprocessableEntity, "invalid YouTube WebVTT subtitle")
-	case errors.Is(err, entity.ErrSubtitleDownloadFailed):
+	case errors.Is(err, entity.ErrSubtitleDownloadFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
 		if errors.Is(err, context.DeadlineExceeded) {
 			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube subtitle request timed out")
 		}
 		return errorResponse(ctx, http.StatusBadGateway, "YouTube subtitle provider failed")
+	case errors.Is(err, entity.ErrTranscriptionFailed), errors.Is(err, entity.ErrInvalidTranscription):
+		return errorResponse(ctx, http.StatusBadGateway, "audio transcription failed")
 	default:
 		ctrl.log.Error(err, "restapi - v1 - admin - caption")
 		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")

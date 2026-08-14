@@ -178,6 +178,17 @@ func (r *Repo) UpsertUserVideo(ctx context.Context, userID string, preview entit
 	return video, !created, err
 }
 
+func (r *Repo) UpdateVideoLanguage(ctx context.Context, id int64, languageID int) error {
+	result, err := r.Pool.Exec(ctx, `UPDATE videos SET language_id=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$1`, id, languageID)
+	if err != nil {
+		return mapWriteError("UpdateVideoLanguage", err)
+	}
+	if result.RowsAffected() == 0 {
+		return entity.ErrVideoNotFound
+	}
+	return nil
+}
+
 func (r *Repo) CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error) {
 	tx, err := r.Pool.Begin(ctx)
 	if err != nil {

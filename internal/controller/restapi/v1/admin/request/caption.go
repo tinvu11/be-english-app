@@ -15,7 +15,7 @@ type SaveCaption struct {
 }
 
 type ImportYouTubeCaptions struct {
-	LanguageCode string `json:"languageCode" validate:"required,max=35" example:"en"`
+	LanguageCode string `json:"languageCode,omitempty" validate:"omitempty,max=35" example:"en"`
 	Mode         string `json:"mode" validate:"required,oneof=fail_if_exists replace_all" example:"replace_all"`
 }
 

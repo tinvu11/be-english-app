@@ -13,7 +13,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/gateway"
 )
 
-const maxRemoteResponseBytes = 10 << 20
+const maxRemoteResponseBytes = 100 << 20
 
 type Client struct {
 	baseURL string
@@ -61,6 +61,31 @@ func (c *Client) DownloadManualSubtitle(ctx context.Context, youtubeID, language
 	data, err := io.ReadAll(io.LimitReader(resp.Body, maxRemoteResponseBytes+1))
 	if err != nil || len(data) > maxRemoteResponseBytes {
 		return nil, fmt.Errorf("%w: invalid service response", entity.ErrSubtitleDownloadFailed)
+	}
+	return data, nil
+}
+
+func (c *Client) DownloadAudio(ctx context.Context, youtubeID string) ([]byte, error) {
+	if !validYouTubeID(youtubeID) {
+		return nil, entity.ErrInvalidVideo
+	}
+	requestURL := c.baseURL + "/v1/videos/" + url.PathEscape(youtubeID) + "/audio"
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("%w: create request: %w", entity.ErrAudioDownloadFailed, err)
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", entity.ErrAudioDownloadFailed, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 64<<10))
+		return nil, fmt.Errorf("%w: service status %d", entity.ErrAudioDownloadFailed, resp.StatusCode)
+	}
+	data, err := io.ReadAll(io.LimitReader(resp.Body, maxRemoteResponseBytes+1))
+	if err != nil || len(data) > maxRemoteResponseBytes {
+		return nil, fmt.Errorf("%w: invalid service response", entity.ErrAudioDownloadFailed)
 	}
 	return data, nil
 }

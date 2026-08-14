@@ -133,7 +133,7 @@ func (r *V1) userCaptionError(ctx *fiber.Ctx, err error) error {
 }
 
 // @Summary Add a YouTube video for the current user
-// @Description Reuses an existing video and captions when available; otherwise creates it using the user's target language and imports manual captions before falling back to automatic captions
+// @Description Reuses an existing video and captions when available; otherwise downloads normalized audio and transcribes it with Groq Whisper. audioLanguageCode is an optional spoken-language hint.
 // @ID user-import-youtube-video
 // @Tags user-videos
 // @Accept json
@@ -160,7 +160,7 @@ func (r *V1) importUserYouTubeVideo(ctx *fiber.Ctx) error {
 	if video.CaptionAvailability.CaptionCount > 0 {
 		return ctx.JSON(result)
 	}
-	imported, importErr := r.captions.ImportFromYouTube(ctx.UserContext(), video.ID, body.CaptionLanguageCode, entity.CaptionImportFailIfExists)
+	imported, importErr := r.captions.ImportFromYouTube(ctx.UserContext(), video.ID, body.AudioLanguageCode, entity.CaptionImportFailIfExists)
 	if importErr != nil && !errors.Is(importErr, entity.ErrCaptionExists) {
 		return r.youtubeVideoError(ctx, importErr, "import captions")
 	}
@@ -183,8 +183,10 @@ func (r *V1) youtubeVideoError(ctx *fiber.Ctx, err error, operation string) erro
 		return errorResponse(ctx, http.StatusConflict, "target language must be selected first")
 	case errors.Is(err, entity.ErrManualSubtitleNotFound):
 		return errorResponse(ctx, http.StatusNotFound, "YouTube subtitle not found")
-	case errors.Is(err, entity.ErrSubtitleDownloadFailed):
+	case errors.Is(err, entity.ErrSubtitleDownloadFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
 		return errorResponse(ctx, http.StatusBadGateway, "YouTube request failed")
+	case errors.Is(err, entity.ErrTranscriptionFailed), errors.Is(err, entity.ErrInvalidTranscription):
+		return errorResponse(ctx, http.StatusBadGateway, "audio transcription failed")
 	default:
 		r.l.Error(err, "restapi - v1 - YouTube video - "+operation)
 		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")

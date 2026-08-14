@@ -27,6 +27,13 @@ func (stub *repoStub) GetLanguage(context.Context, int) (entity.Language, error)
 	return stub.languages[0], stub.err
 }
 
+func (stub *repoStub) GetLanguageByCode(context.Context, string) (entity.Language, error) {
+	if len(stub.languages) == 0 {
+		return entity.Language{}, stub.err
+	}
+	return stub.languages[0], stub.err
+}
+
 func (stub *repoStub) CreateLanguage(_ context.Context, language *entity.Language) error {
 	stub.created = *language
 	language.ID = 1

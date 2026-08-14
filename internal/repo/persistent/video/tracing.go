@@ -77,3 +77,10 @@ func (r *tracedRepo) DeleteVideo(ctx context.Context, id int64) error {
 	endSpan(span, err)
 	return err
 }
+
+func (r *tracedRepo) UpdateVideoLanguage(ctx context.Context, id int64, languageID int) error {
+	ctx, span := startSpan(ctx, "VideoRepo.UpdateVideoLanguage", attribute.Int64("video.id", id), attribute.Int("language.id", languageID))
+	err := r.next.UpdateVideoLanguage(ctx, id, languageID)
+	endSpan(span, err)
+	return err
+}

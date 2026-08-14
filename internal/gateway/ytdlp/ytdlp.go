@@ -85,6 +85,35 @@ func (p *Provider) PreviewVideo(ctx context.Context, youtubeID string) (entity.Y
 		ManualSubtitleTracks: tracks}, nil
 }
 
+// DownloadAudio extracts the first audio track and normalizes it to 16 kHz mono FLAC.
+func (p *Provider) DownloadAudio(ctx context.Context, youtubeID string) ([]byte, error) {
+	if !validYouTubeID(youtubeID) {
+		return nil, entity.ErrInvalidVideo
+	}
+	tempDir, err := os.MkdirTemp("", "youtube-audio-*")
+	if err != nil {
+		return nil, fmt.Errorf("%w: create temporary directory", entity.ErrAudioDownloadFailed)
+	}
+	defer os.RemoveAll(tempDir)
+	_, err = p.run(ctx, "--no-config", "--no-playlist", "--no-warnings", "--extract-audio",
+		"--audio-format", "flac", "--postprocessor-args", "ffmpeg:-ar 16000 -ac 1 -sample_fmt s16",
+		"--paths", tempDir, "--output", "audio.%(ext)s", youtubeURL(youtubeID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: %v", entity.ErrAudioDownloadFailed, err)
+	}
+	path := filepath.Join(tempDir, "audio.flac")
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("%w: open normalized audio", entity.ErrAudioDownloadFailed)
+	}
+	defer file.Close()
+	data, err := io.ReadAll(io.LimitReader(file, p.maxBytes+1))
+	if err != nil || int64(len(data)) > p.maxBytes {
+		return nil, fmt.Errorf("%w: normalized audio exceeds limit", entity.ErrAudioDownloadFailed)
+	}
+	return data, nil
+}
+
 func subtitleTracks(manual, automatic map[string][]subtitleFormat) []entity.YouTubeSubtitleTrack {
 	tracksByLanguage := make(map[string]entity.YouTubeSubtitleTrack, len(manual)+len(automatic))
 	addTracks := func(subtitles map[string][]subtitleFormat, automatic bool) {

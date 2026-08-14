@@ -328,6 +328,21 @@ func (mr *MockLanguageRepoMockRecorder) GetLanguage(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLanguage", reflect.TypeOf((*MockLanguageRepo)(nil).GetLanguage), ctx, id)
 }
 
+// GetLanguageByCode mocks base method.
+func (m *MockLanguageRepo) GetLanguageByCode(ctx context.Context, code string) (entity.Language, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLanguageByCode", ctx, code)
+	ret0, _ := ret[0].(entity.Language)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLanguageByCode indicates an expected call of GetLanguageByCode.
+func (mr *MockLanguageRepoMockRecorder) GetLanguageByCode(ctx, code any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLanguageByCode", reflect.TypeOf((*MockLanguageRepo)(nil).GetLanguageByCode), ctx, code)
+}
+
 // ListLanguages mocks base method.
 func (m *MockLanguageRepo) ListLanguages(ctx context.Context) ([]entity.Language, error) {
 	m.ctrl.T.Helper()
@@ -795,6 +810,20 @@ func (m *MockVideoRepo) UpdateVideo(ctx context.Context, id int64, input entity.
 func (mr *MockVideoRepoMockRecorder) UpdateVideo(ctx, id, input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateVideo", reflect.TypeOf((*MockVideoRepo)(nil).UpdateVideo), ctx, id, input)
+}
+
+// UpdateVideoLanguage mocks base method.
+func (m *MockVideoRepo) UpdateVideoLanguage(ctx context.Context, id int64, languageID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateVideoLanguage", ctx, id, languageID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateVideoLanguage indicates an expected call of UpdateVideoLanguage.
+func (mr *MockVideoRepoMockRecorder) UpdateVideoLanguage(ctx, id, languageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateVideoLanguage", reflect.TypeOf((*MockVideoRepo)(nil).UpdateVideoLanguage), ctx, id, languageID)
 }
 
 // UpsertUserVideo mocks base method.

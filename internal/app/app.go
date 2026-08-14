@@ -13,6 +13,7 @@ import (
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
 	"github.com/evrone/go-clean-template/internal/gateway/deepseek"
+	"github.com/evrone/go-clean-template/internal/gateway/groq"
 	"github.com/evrone/go-clean-template/internal/gateway/ytdlp"
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
@@ -70,6 +71,8 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
+	transcriber := groq.New(groq.Config{BaseURL: cfg.Groq.BaseURL, APIKey: cfg.Groq.APIKey, Model: cfg.Groq.Model},
+		&http.Client{Timeout: time.Duration(cfg.Groq.TimeoutSeconds) * time.Second})
 
 	return useCases{
 		user:       user.New(userRepo, languageRepo),
@@ -79,7 +82,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		channel:    channel.New(channelRepo),
 		adminUser:  adminuser.New(adminUserRepo),
 		video:      video.New(videoRepo, userRepo, subtitleProvider),
-		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, subtitleProvider, translator, cfg.DeepSeek.MaxBatchItems),
+		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, subtitleProvider, transcriber, translator, cfg.DeepSeek.MaxBatchItems),
 		vocabulary: vocabulary.New(dictionaryRepo, userRepo, languageRepo, translator),
 	}
 }

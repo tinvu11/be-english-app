@@ -98,3 +98,16 @@ func TestParseWebVTTRejectsInvalidData(t *testing.T) {
 		assert.Error(t, err)
 	}
 }
+
+func TestTranscriptionInputsConvertsTimestamps(t *testing.T) {
+	t.Parallel()
+	items, err := transcriptionInputs(entity.AudioTranscription{LanguageCode: "en", Segments: []entity.AudioTranscriptionSegment{
+		{StartSeconds: 1.25, EndSeconds: 3.5, Text: " Hello world "},
+	}})
+	require.NoError(t, err)
+	require.Len(t, items, 1)
+	assert.Equal(t, 1, items[0].SentenceOrder)
+	assert.Equal(t, int64(1250), items[0].StartTimeMS)
+	assert.Equal(t, int64(3500), items[0].EndTimeMS)
+	assert.Equal(t, "Hello world", items[0].Content)
+}

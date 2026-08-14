@@ -19,6 +19,7 @@ type (
 		Tracing  tracing
 		YTDLP    ytdlp
 		DeepSeek deepseek
+		Groq     groq
 	}
 
 	// App -.
@@ -80,6 +81,13 @@ type (
 		TimeoutSeconds int    `env:"DEEPSEEK_TIMEOUT_SECONDS" envDefault:"60"`
 		MaxBatchItems  int    `env:"DEEPSEEK_MAX_BATCH_ITEMS" envDefault:"50"`
 		MaxRetries     int    `env:"DEEPSEEK_MAX_RETRIES" envDefault:"2"`
+	}
+
+	groq struct {
+		BaseURL        string `env:"GROQ_BASE_URL" envDefault:"https://api.groq.com"`
+		APIKey         string `env:"GROQ_API_KEY"`
+		Model          string `env:"GROQ_WHISPER_MODEL" envDefault:"whisper-large-v3-turbo"`
+		TimeoutSeconds int    `env:"GROQ_TIMEOUT_SECONDS" envDefault:"300"`
 	}
 )
 

@@ -134,5 +134,5 @@ type UserYouTubeVideoResult struct {
 	Video           Video  `json:"video"`
 	Reused          bool   `json:"reused" example:"false"`
 	CaptionImported bool   `json:"captionImported" example:"true"`
-	CaptionSource   string `json:"captionSource,omitempty" example:"youtube_manual"`
+	CaptionSource   string `json:"captionSource,omitempty" example:"groq_whisper"`
 }

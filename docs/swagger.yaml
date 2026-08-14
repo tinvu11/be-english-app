@@ -359,7 +359,6 @@ definitions:
         example: replace_all
         type: string
     required:
-    - languageCode
     - mode
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation:
@@ -640,7 +639,7 @@ definitions:
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo:
     properties:
-      captionLanguageCode:
+      audioLanguageCode:
         example: en
         maxLength: 35
         type: string
@@ -649,7 +648,6 @@ definitions:
         maxLength: 2048
         type: string
     required:
-    - captionLanguageCode
     - youtubeUrl
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet:
@@ -850,7 +848,7 @@ definitions:
         example: true
         type: boolean
       captionSource:
-        example: youtube_manual
+        example: groq_whisper
         type: string
       reused:
         example: false
@@ -930,7 +928,7 @@ definitions:
         example: en
         type: string
       source:
-        example: youtube_manual
+        example: groq_whisper
         type: string
       videoId:
         example: 10
@@ -2802,8 +2800,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Downloads manual or automatically generated WebVTT subtitles; mode
-        is fail_if_exists or replace_all
+      description: Downloads normalized YouTube audio and transcribes it with Groq
+        Whisper; languageCode is an optional spoken-language hint and mode is fail_if_exists
+        or replace_all
       parameters:
       - description: Video ID
         in: path
@@ -3715,8 +3714,8 @@ paths:
       consumes:
       - application/json
       description: Reuses an existing video and captions when available; otherwise
-        creates it using the user's target language and imports manual captions before
-        falling back to automatic captions
+        downloads normalized audio and transcribes it with Groq Whisper. audioLanguageCode
+        is an optional spoken-language hint.
       operationId: user-import-youtube-video
       parameters:
       - description: YouTube video import

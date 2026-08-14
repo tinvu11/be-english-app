@@ -48,6 +48,13 @@ func (r *tracedRepo) GetLanguage(ctx context.Context, id int) (entity.Language, 
 	return result, err
 }
 
+func (r *tracedRepo) GetLanguageByCode(ctx context.Context, code string) (entity.Language, error) {
+	ctx, span := startSpan(ctx, "LanguageRepo.GetLanguageByCode", attribute.String("language.code", code))
+	result, err := r.next.GetLanguageByCode(ctx, code)
+	endSpan(span, err)
+	return result, err
+}
+
 func (r *tracedRepo) CreateLanguage(ctx context.Context, language *entity.Language) error {
 	ctx, span := startSpan(ctx, "LanguageRepo.CreateLanguage", attribute.String("language.code", language.Code))
 	err := r.next.CreateLanguage(ctx, language)

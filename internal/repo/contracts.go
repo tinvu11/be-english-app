@@ -36,6 +36,7 @@ type (
 		CreateLanguage(ctx context.Context, language *entity.Language) error
 		UpdateLanguage(ctx context.Context, language *entity.Language) error
 		GetLanguage(ctx context.Context, id int) (entity.Language, error)
+		GetLanguageByCode(ctx context.Context, code string) (entity.Language, error)
 	}
 
 	// LevelRepo persists levels and their translations.
@@ -79,6 +80,7 @@ type (
 		UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error)
 		SetVideoStatus(ctx context.Context, id int64, expectedStatus, nextStatus string) (entity.Video, error)
 		DeleteVideo(ctx context.Context, id int64) error
+		UpdateVideoLanguage(ctx context.Context, id int64, languageID int) error
 	}
 
 	// CaptionRepo persists video captions and translations atomically.

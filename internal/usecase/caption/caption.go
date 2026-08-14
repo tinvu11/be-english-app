@@ -21,15 +21,16 @@ type UseCase struct {
 	languages      repo.LanguageRepo
 	users          repo.UserRepo
 	subtitles      gateway.YouTubeSubtitleProvider
+	transcriber    gateway.AudioTranscriber
 	translator     gateway.CaptionTranslator
 	translateBatch int
 }
 
-func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, users repo.UserRepo, subtitles gateway.YouTubeSubtitleProvider, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
+func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, users repo.UserRepo, subtitles gateway.YouTubeSubtitleProvider, transcriber gateway.AudioTranscriber, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
 	if translateBatch <= 0 {
 		translateBatch = 50
 	}
-	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, users: users, subtitles: subtitles,
+	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, users: users, subtitles: subtitles, transcriber: transcriber,
 		translator: translator, translateBatch: translateBatch})
 }
 
@@ -201,7 +202,7 @@ func (uc *UseCase) ListYouTubeSubtitleTracks(ctx context.Context, videoID int64)
 func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languageCode, mode string) (entity.YouTubeCaptionImportResult, error) {
 	languageCode = strings.TrimSpace(languageCode)
 	mode = strings.ToLower(strings.TrimSpace(mode))
-	if videoID <= 0 || languageCode == "" || len(languageCode) > 35 ||
+	if videoID <= 0 || len(languageCode) > 35 ||
 		(mode != entity.CaptionImportFailIfExists && mode != entity.CaptionImportReplaceAll) {
 		return entity.YouTubeCaptionImportResult{}, entity.ErrInvalidCaption
 	}
@@ -209,13 +210,21 @@ func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languag
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}
-	data, err := uc.subtitles.DownloadManualSubtitle(ctx, video.YouTubeID, languageCode)
+	audio, err := uc.subtitles.DownloadAudio(ctx, video.YouTubeID)
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}
-	inputs, err := parseWebVTT(data)
-	if err != nil || len(inputs) == 0 || len(inputs) > maxImportCaptions {
-		return entity.YouTubeCaptionImportResult{}, fmt.Errorf("%w: %v", entity.ErrInvalidWebVTT, err)
+	transcription, err := uc.transcriber.Transcribe(ctx, audio, languageCode)
+	if err != nil {
+		return entity.YouTubeCaptionImportResult{}, err
+	}
+	inputs, err := transcriptionInputs(transcription)
+	if err != nil || len(inputs) > maxImportCaptions {
+		return entity.YouTubeCaptionImportResult{}, fmt.Errorf("%w: %v", entity.ErrInvalidTranscription, err)
+	}
+	detectedLanguage, err := uc.languages.GetLanguageByCode(ctx, transcription.LanguageCode)
+	if err != nil || !detectedLanguage.IsActive {
+		return entity.YouTubeCaptionImportResult{}, entity.ErrInvalidLanguage
 	}
 	if mode == entity.CaptionImportReplaceAll {
 		_, err = uc.repo.ReplaceCaptions(ctx, videoID, inputs)
@@ -225,17 +234,29 @@ func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languag
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}
-	source := "youtube_manual"
-	if tracks, listErr := uc.subtitles.ListManualSubtitles(ctx, video.YouTubeID); listErr == nil {
-		for _, track := range tracks {
-			if track.LanguageCode == languageCode && track.IsAutomatic {
-				source = "youtube_auto"
-				break
-			}
+	if video.Language.ID != detectedLanguage.ID {
+		if err = uc.videos.UpdateVideoLanguage(ctx, videoID, detectedLanguage.ID); err != nil {
+			return entity.YouTubeCaptionImportResult{}, err
 		}
 	}
-	return entity.YouTubeCaptionImportResult{VideoID: videoID, LanguageCode: languageCode,
-		Source: source, ImportedCount: len(inputs)}, nil
+	return entity.YouTubeCaptionImportResult{VideoID: videoID, LanguageCode: detectedLanguage.Code,
+		Source: "groq_whisper", ImportedCount: len(inputs)}, nil
+}
+
+func transcriptionInputs(result entity.AudioTranscription) ([]entity.CaptionInput, error) {
+	if strings.TrimSpace(result.LanguageCode) == "" || len(result.Segments) == 0 {
+		return nil, entity.ErrInvalidTranscription
+	}
+	inputs := make([]entity.CaptionInput, 0, len(result.Segments))
+	for index, segment := range result.Segments {
+		text := strings.TrimSpace(segment.Text)
+		if text == "" || segment.StartSeconds < 0 || segment.EndSeconds < segment.StartSeconds {
+			return nil, entity.ErrInvalidTranscription
+		}
+		inputs = append(inputs, entity.CaptionInput{SentenceOrder: index + 1,
+			StartTimeMS: int64(segment.StartSeconds * 1000), EndTimeMS: int64(segment.EndSeconds * 1000), Content: text})
+	}
+	return inputs, nil
 }
 
 func (uc *UseCase) TranslateCaptions(ctx context.Context, videoID int64, targetLanguageID int, mode string) (entity.CaptionTranslationResult, error) {

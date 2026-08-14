@@ -69,8 +69,19 @@ type YouTubeSubtitleTracks struct {
 type YouTubeCaptionImportResult struct {
 	VideoID       int64  `json:"videoId" example:"10"`
 	LanguageCode  string `json:"languageCode" example:"en"`
-	Source        string `json:"source" example:"youtube_manual"`
+	Source        string `json:"source" example:"groq_whisper"`
 	ImportedCount int    `json:"importedCount" example:"128"`
+}
+
+type AudioTranscriptionSegment struct {
+	StartSeconds float64
+	EndSeconds   float64
+	Text         string
+}
+
+type AudioTranscription struct {
+	LanguageCode string
+	Segments     []AudioTranscriptionSegment
 }
 
 const (

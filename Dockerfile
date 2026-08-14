@@ -32,7 +32,7 @@ CMD ["/app"]
 # Dedicated yt-dlp HTTP service; the backend image does not contain yt-dlp.
 FROM alpine:3.23 AS ytdlp-service
 
-RUN apk add --no-cache ca-certificates yt-dlp
+RUN apk add --no-cache ca-certificates ffmpeg yt-dlp
 
 COPY --from=builder /bin/ytdlp-service /ytdlp-service
 EXPOSE 8081

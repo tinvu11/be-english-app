@@ -12,6 +12,12 @@ type YouTubeSubtitleProvider interface {
 	PreviewVideo(ctx context.Context, youtubeID string) (entity.YouTubeVideoPreview, error)
 	ListManualSubtitles(ctx context.Context, youtubeID string) ([]entity.YouTubeSubtitleTrack, error)
 	DownloadManualSubtitle(ctx context.Context, youtubeID, languageCode string) ([]byte, error)
+	DownloadAudio(ctx context.Context, youtubeID string) ([]byte, error)
+}
+
+// AudioTranscriber converts normalized audio into timestamped captions.
+type AudioTranscriber interface {
+	Transcribe(ctx context.Context, audio []byte, languageHint string) (entity.AudioTranscription, error)
 }
 
 // CaptionTranslator translates caption text without exposing a provider-specific API.

@@ -22,6 +22,7 @@ func (subtitleProviderStub) ListManualSubtitles(context.Context, string) ([]enti
 func (subtitleProviderStub) DownloadManualSubtitle(context.Context, string, string) ([]byte, error) {
 	return nil, nil
 }
+func (subtitleProviderStub) DownloadAudio(context.Context, string) ([]byte, error) { return nil, nil }
 
 func TestAddUserYouTubeVideoUsesTargetLanguage(t *testing.T) {
 	t.Parallel()

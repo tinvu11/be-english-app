@@ -56,6 +56,20 @@ func (r *Repo) GetLanguage(ctx context.Context, id int) (entity.Language, error)
 	return language, nil
 }
 
+func (r *Repo) GetLanguageByCode(ctx context.Context, code string) (entity.Language, error) {
+	var language entity.Language
+	err := r.Pool.QueryRow(ctx, `SELECT id, code, name, flag_emoji, is_learnable, is_active, created_at
+		FROM languages WHERE lower(code)=lower($1)`, code).
+		Scan(&language.ID, &language.Code, &language.Name, &language.FlagEmoji, &language.IsLearnable, &language.IsActive, &language.CreatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return entity.Language{}, entity.ErrLanguageNotFound
+	}
+	if err != nil {
+		return entity.Language{}, fmt.Errorf("LanguageRepo - GetLanguageByCode: %w", err)
+	}
+	return language, nil
+}
+
 func (r *Repo) CreateLanguage(ctx context.Context, language *entity.Language) error {
 	err := r.Pool.QueryRow(ctx,
 		`INSERT INTO languages(code, name, flag_emoji, is_learnable, is_active) VALUES($1, $2, $3, $4, $5)

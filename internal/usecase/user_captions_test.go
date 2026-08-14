@@ -13,6 +13,12 @@ import (
 
 type translatorStub struct{}
 
+type transcriberStub struct{}
+
+func (transcriberStub) Transcribe(context.Context, []byte, string) (entity.AudioTranscription, error) {
+	return entity.AudioTranscription{}, nil
+}
+
 func (translatorStub) TranslateCaptions(_ context.Context, input entity.CaptionTranslationRequest) ([]entity.TranslatedCaption, error) {
 	result := make([]entity.TranslatedCaption, len(input.Items))
 	for index, item := range input.Items {
@@ -46,7 +52,7 @@ func TestGetTranslatedCaptionsTranslatesAndReturnsNativeLanguage(t *testing.T) {
 	captions.EXPECT().ListCaptions(gomock.Any(), int64(10), entity.CaptionFilter{Limit: 10000, Offset: 0}).
 		Return(entity.CaptionList{Items: []entity.Caption{translatedCaption}, Total: 1}, nil)
 
-	result, err := caption.New(captions, videos, languages, users, subtitleProviderStub{}, translatorStub{}, 50).
+	result, err := caption.New(captions, videos, languages, users, subtitleProviderStub{}, transcriberStub{}, translatorStub{}, 50).
 		GetTranslatedCaptions(t.Context(), "user-1", 10)
 	require.NoError(t, err)
 	require.Len(t, result.Items, 1)
@@ -68,7 +74,7 @@ func TestGetOriginalCaptionsDoesNotLoadUserOrTranslate(t *testing.T) {
 	captions.EXPECT().ListCaptions(gomock.Any(), int64(10), entity.CaptionFilter{Limit: 10000, Offset: 0}).
 		Return(entity.CaptionList{Items: []entity.Caption{source}, Total: 1}, nil)
 
-	result, err := caption.New(captions, videos, languages, users, subtitleProviderStub{}, translatorStub{}, 50).
+	result, err := caption.New(captions, videos, languages, users, subtitleProviderStub{}, transcriberStub{}, translatorStub{}, 50).
 		GetOriginalCaptions(t.Context(), 10)
 	require.NoError(t, err)
 	require.Len(t, result.Items, 1)

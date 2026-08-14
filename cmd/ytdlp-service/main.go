@@ -25,9 +25,23 @@ func main() {
 	mux.HandleFunc("GET /health", func(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusOK) })
 	mux.HandleFunc("GET /v1/videos/{youtubeID}", previewHandler(provider))
 	mux.HandleFunc("GET /v1/videos/{youtubeID}/subtitles/{languageCode}", subtitleHandler(provider))
+	mux.HandleFunc("GET /v1/videos/{youtubeID}/audio", audioHandler(provider))
 	server := &http.Server{Addr: ":" + port, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 	log.Printf("yt-dlp service listening on :%s", port)
 	log.Fatal(server.ListenAndServe())
+}
+
+func audioHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		data, err := provider.DownloadAudio(request.Context(), request.PathValue("youtubeID"))
+		if err != nil {
+			writeError(writer, err)
+			return
+		}
+		writer.Header().Set("Content-Type", "audio/flac")
+		writer.Header().Set("Content-Length", strconv.Itoa(len(data)))
+		_, _ = writer.Write(data)
+	}
 }
 
 func previewHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {

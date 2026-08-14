@@ -2233,7 +2233,7 @@ const docTemplate = `{
         },
         "/admin/videos/{videoId}/captions/import-youtube": {
             "post": {
-                "description": "Downloads manual or automatically generated WebVTT subtitles; mode is fail_if_exists or replace_all",
+                "description": "Downloads normalized YouTube audio and transcribes it with Groq Whisper; languageCode is an optional spoken-language hint and mode is fail_if_exists or replace_all",
                 "consumes": [
                     "application/json"
                 ],
@@ -3409,7 +3409,7 @@ const docTemplate = `{
         },
         "/videos/import-youtube": {
             "post": {
-                "description": "Reuses an existing video and captions when available; otherwise creates it using the user's target language and imports manual captions before falling back to automatic captions",
+                "description": "Reuses an existing video and captions when available; otherwise downloads normalized audio and transcribes it with Groq Whisper. audioLanguageCode is an optional spoken-language hint.",
                 "consumes": [
                     "application/json"
                 ],
@@ -4751,7 +4751,6 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions": {
             "type": "object",
             "required": [
-                "languageCode",
                 "mode"
             ],
             "properties": {
@@ -5155,11 +5154,10 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo": {
             "type": "object",
             "required": [
-                "captionLanguageCode",
                 "youtubeUrl"
             ],
             "properties": {
-                "captionLanguageCode": {
+                "audioLanguageCode": {
                     "type": "string",
                     "maxLength": 35,
                     "example": "en"
@@ -5460,7 +5458,7 @@ const docTemplate = `{
                 },
                 "captionSource": {
                     "type": "string",
-                    "example": "youtube_manual"
+                    "example": "groq_whisper"
                 },
                 "reused": {
                     "type": "boolean",
@@ -5578,7 +5576,7 @@ const docTemplate = `{
                 },
                 "source": {
                     "type": "string",
-                    "example": "youtube_manual"
+                    "example": "groq_whisper"
                 },
                 "videoId": {
                     "type": "integer",
