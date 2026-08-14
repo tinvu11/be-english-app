@@ -15,6 +15,7 @@ type V1 struct {
 	videos     usecase.Video
 	captions   usecase.Caption
 	vocabulary usecase.Vocabulary
+	learning   usecase.LearningContent
 	l          logger.Interface
 	v          *validator.Validate
 }

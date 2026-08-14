@@ -20,6 +20,7 @@ import (
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
 	persistDictionaryRepo "github.com/evrone/go-clean-template/internal/repo/persistent/dictionary"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
+	persistLearningContentRepo "github.com/evrone/go-clean-template/internal/repo/persistent/learningcontent"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
 	persistTopicRepo "github.com/evrone/go-clean-template/internal/repo/persistent/topic"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
@@ -29,6 +30,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/caption"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
+	"github.com/evrone/go-clean-template/internal/usecase/learningcontent"
 	"github.com/evrone/go-clean-template/internal/usecase/level"
 	"github.com/evrone/go-clean-template/internal/usecase/topic"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
@@ -51,6 +53,7 @@ type useCases struct {
 	video      usecase.Video
 	caption    usecase.Caption
 	vocabulary usecase.Vocabulary
+	learning   usecase.LearningContent
 }
 
 type servers struct {
@@ -67,6 +70,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	videoRepo := persistVideoRepo.New(pg)
 	captionRepo := persistCaptionRepo.New(pg)
 	dictionaryRepo := persistDictionaryRepo.New(pg)
+	learningContentRepo := persistLearningContentRepo.New(pg)
 	youtubeProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
 	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
@@ -84,13 +88,14 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		video:      video.New(videoRepo, userRepo, youtubeProvider),
 		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, youtubeProvider, transcriber, translator, cfg.DeepSeek.MaxBatchItems),
 		vocabulary: vocabulary.New(dictionaryRepo, userRepo, languageRepo, translator),
+		learning:   learningcontent.New(learningContentRepo, dictionaryRepo, captionRepo, videoRepo, userRepo, languageRepo, translator),
 	}
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, verifier, l)
 
 	return servers{
 		http: httpServer,

@@ -10,7 +10,7 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, verifier middleware.TokenVerifier, l logger.Interface) {
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, verifier middleware.TokenVerifier, l logger.Interface) {
 	r := &V1{
 		u:          u,
 		languages:  languages,
@@ -19,6 +19,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		videos:     videos,
 		captions:   captions,
 		vocabulary: vocabulary,
+		learning:   learning,
 		l:          l,
 		v:          validator.New(validator.WithRequiredStructEnabled()),
 	}
@@ -51,6 +52,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		videoGroup.Post("/import-youtube", r.importUserYouTubeVideo)
 		videoGroup.Get("/:videoId/captions", r.getOriginalVideoCaptions)
 		videoGroup.Get("/:videoId/captions/translation", r.getTranslatedVideoCaptions)
+		videoGroup.Get("/:videoId/learning-content", r.getVideoLearningContent)
 		videoGroup.Put("/:videoId/dictation-progress/:captionId", r.completeDictation)
 		videoGroup.Get("/:videoId/dictation-progress", r.listCompletedDictations)
 	}

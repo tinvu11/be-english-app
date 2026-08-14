@@ -26,3 +26,8 @@ type CaptionTranslator interface {
 type VocabularyTranslator interface {
 	TranslateVocabulary(ctx context.Context, input entity.VocabularyTranslationRequest) (entity.VocabularyTranslation, error)
 }
+
+type LearningContentGenerator interface {
+	GenerateQuizzes(ctx context.Context, input entity.QuizGenerationRequest) ([]entity.GeneratedQuiz, error)
+	GenerateLocalizedContent(ctx context.Context, input entity.LocalizedContentGenerationRequest) (entity.GeneratedLocalizedContent, error)
+}

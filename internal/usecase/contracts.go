@@ -104,4 +104,8 @@ type (
 		UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error)
 		DeleteUserVocabulary(ctx context.Context, userID string, id int64) error
 	}
+
+	LearningContent interface {
+		GetForUser(ctx context.Context, userID string, videoID int64) (entity.VideoLearningContent, error)
+	}
 )

@@ -1123,3 +1123,42 @@ func (mr *MockVocabularyMockRecorder) UpdateUserVocabulary(ctx, userID, id, inpu
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserVocabulary", reflect.TypeOf((*MockVocabulary)(nil).UpdateUserVocabulary), ctx, userID, id, input)
 }
+
+// MockLearningContent is a mock of LearningContent interface.
+type MockLearningContent struct {
+	ctrl     *gomock.Controller
+	recorder *MockLearningContentMockRecorder
+	isgomock struct{}
+}
+
+// MockLearningContentMockRecorder is the mock recorder for MockLearningContent.
+type MockLearningContentMockRecorder struct {
+	mock *MockLearningContent
+}
+
+// NewMockLearningContent creates a new mock instance.
+func NewMockLearningContent(ctrl *gomock.Controller) *MockLearningContent {
+	mock := &MockLearningContent{ctrl: ctrl}
+	mock.recorder = &MockLearningContentMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLearningContent) EXPECT() *MockLearningContentMockRecorder {
+	return m.recorder
+}
+
+// GetForUser mocks base method.
+func (m *MockLearningContent) GetForUser(ctx context.Context, userID string, videoID int64) (entity.VideoLearningContent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetForUser", ctx, userID, videoID)
+	ret0, _ := ret[0].(entity.VideoLearningContent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetForUser indicates an expected call of GetForUser.
+func (mr *MockLearningContentMockRecorder) GetForUser(ctx, userID, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetForUser", reflect.TypeOf((*MockLearningContent)(nil).GetForUser), ctx, userID, videoID)
+}

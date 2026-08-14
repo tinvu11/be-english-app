@@ -1172,3 +1172,86 @@ func (mr *MockDictionaryRepoMockRecorder) UpsertDictionaryEntry(ctx, input any) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertDictionaryEntry", reflect.TypeOf((*MockDictionaryRepo)(nil).UpsertDictionaryEntry), ctx, input)
 }
+
+// MockLearningContentRepo is a mock of LearningContentRepo interface.
+type MockLearningContentRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockLearningContentRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockLearningContentRepoMockRecorder is the mock recorder for MockLearningContentRepo.
+type MockLearningContentRepoMockRecorder struct {
+	mock *MockLearningContentRepo
+}
+
+// NewMockLearningContentRepo creates a new mock instance.
+func NewMockLearningContentRepo(ctrl *gomock.Controller) *MockLearningContentRepo {
+	mock := &MockLearningContentRepo{ctrl: ctrl}
+	mock.recorder = &MockLearningContentRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLearningContentRepo) EXPECT() *MockLearningContentRepoMockRecorder {
+	return m.recorder
+}
+
+// GetLocalizedLearningContent mocks base method.
+func (m *MockLearningContentRepo) GetLocalizedLearningContent(ctx context.Context, videoID int64, languageID int) (entity.VideoSummary, []entity.DictionaryEntry, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLocalizedLearningContent", ctx, videoID, languageID)
+	ret0, _ := ret[0].(entity.VideoSummary)
+	ret1, _ := ret[1].([]entity.DictionaryEntry)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetLocalizedLearningContent indicates an expected call of GetLocalizedLearningContent.
+func (mr *MockLearningContentRepoMockRecorder) GetLocalizedLearningContent(ctx, videoID, languageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLocalizedLearningContent", reflect.TypeOf((*MockLearningContentRepo)(nil).GetLocalizedLearningContent), ctx, videoID, languageID)
+}
+
+// GetQuizzes mocks base method.
+func (m *MockLearningContentRepo) GetQuizzes(ctx context.Context, videoID int64) ([]entity.LearningQuiz, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetQuizzes", ctx, videoID)
+	ret0, _ := ret[0].([]entity.LearningQuiz)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetQuizzes indicates an expected call of GetQuizzes.
+func (mr *MockLearningContentRepoMockRecorder) GetQuizzes(ctx, videoID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQuizzes", reflect.TypeOf((*MockLearningContentRepo)(nil).GetQuizzes), ctx, videoID)
+}
+
+// SaveLocalizedLearningContentIfAbsent mocks base method.
+func (m *MockLearningContentRepo) SaveLocalizedLearningContentIfAbsent(ctx context.Context, summary entity.VideoSummary, dictionaryIDs []int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveLocalizedLearningContentIfAbsent", ctx, summary, dictionaryIDs)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveLocalizedLearningContentIfAbsent indicates an expected call of SaveLocalizedLearningContentIfAbsent.
+func (mr *MockLearningContentRepoMockRecorder) SaveLocalizedLearningContentIfAbsent(ctx, summary, dictionaryIDs any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveLocalizedLearningContentIfAbsent", reflect.TypeOf((*MockLearningContentRepo)(nil).SaveLocalizedLearningContentIfAbsent), ctx, summary, dictionaryIDs)
+}
+
+// SaveQuizzesIfAbsent mocks base method.
+func (m *MockLearningContentRepo) SaveQuizzesIfAbsent(ctx context.Context, videoID int64, quizzes []entity.GeneratedQuiz) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveQuizzesIfAbsent", ctx, videoID, quizzes)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveQuizzesIfAbsent indicates an expected call of SaveQuizzesIfAbsent.
+func (mr *MockLearningContentRepoMockRecorder) SaveQuizzesIfAbsent(ctx, videoID, quizzes any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveQuizzesIfAbsent", reflect.TypeOf((*MockLearningContentRepo)(nil).SaveQuizzesIfAbsent), ctx, videoID, quizzes)
+}

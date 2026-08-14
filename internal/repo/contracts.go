@@ -108,4 +108,11 @@ type (
 		UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error)
 		DeleteUserVocabulary(ctx context.Context, userID string, id int64) error
 	}
+
+	LearningContentRepo interface {
+		GetQuizzes(ctx context.Context, videoID int64) ([]entity.LearningQuiz, error)
+		SaveQuizzesIfAbsent(ctx context.Context, videoID int64, quizzes []entity.GeneratedQuiz) error
+		GetLocalizedLearningContent(ctx context.Context, videoID int64, languageID int) (entity.VideoSummary, []entity.DictionaryEntry, error)
+		SaveLocalizedLearningContentIfAbsent(ctx context.Context, summary entity.VideoSummary, dictionaryIDs []int64) error
+	}
 )

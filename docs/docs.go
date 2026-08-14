@@ -3841,6 +3841,83 @@ const docTemplate = `{
                 ]
             }
         },
+        "/videos/{videoId}/learning-content": {
+            "get": {
+                "description": "Returns shared English quizzes plus a summary and reusable dictionary vocabulary in the current user's native language. Missing parts are generated and persisted.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-videos"
+                ],
+                "summary": "Get AI-generated video learning content",
+                "operationId": "user-video-learning-content",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Video ID",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoLearningContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/vocabulary/sets": {
             "get": {
                 "produces": [
@@ -5342,6 +5419,43 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.LearningQuiz": {
+            "type": "object",
+            "properties": {
+                "correctOption": {
+                    "type": "integer"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuizOption"
+                    }
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "question": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.LearningQuizOption": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.UserVocabulary": {
             "type": "object",
             "properties": {
@@ -5433,6 +5547,35 @@ const docTemplate = `{
                 },
                 "videoId": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VideoLearningContent": {
+            "type": "object",
+            "properties": {
+                "languageCode": {
+                    "type": "string"
+                },
+                "languageId": {
+                    "type": "integer"
+                },
+                "quizzes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuiz"
+                    }
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "videoId": {
+                    "type": "integer"
+                },
+                "vocabulary": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry"
+                    }
                 }
             }
         },

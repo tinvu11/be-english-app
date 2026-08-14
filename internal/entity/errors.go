@@ -54,4 +54,7 @@ var (
 	ErrInvalidVocabularySet         = errors.New("invalid vocabulary set")
 	ErrUserVocabularyNotFound       = errors.New("user vocabulary not found")
 	ErrUserVocabularyExists         = errors.New("vocabulary already saved in this set")
+	ErrLearningContentNotFound      = errors.New("learning content not found")
+	ErrLearningContentFailed        = errors.New("learning content generation failed")
+	ErrInvalidLearningContent       = errors.New("learning content response is invalid")
 )

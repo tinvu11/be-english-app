@@ -821,6 +821,30 @@ definitions:
       word:
         type: string
     type: object
+  github_com_evrone_go-clean-template_internal_entity.LearningQuiz:
+    properties:
+      correctOption:
+        type: integer
+      explanation:
+        type: string
+      id:
+        type: integer
+      options:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuizOption'
+        type: array
+      order:
+        type: integer
+      question:
+        type: string
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.LearningQuizOption:
+    properties:
+      content:
+        type: string
+      order:
+        type: integer
+    type: object
   github_com_evrone_go-clean-template_internal_entity.UserVocabulary:
     properties:
       captionId:
@@ -883,6 +907,25 @@ definitions:
         type: integer
       videoId:
         type: integer
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VideoLearningContent:
+    properties:
+      languageCode:
+        type: string
+      languageId:
+        type: integer
+      quizzes:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuiz'
+        type: array
+      summary:
+        type: string
+      videoId:
+        type: integer
+      vocabulary:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
+        type: array
     type: object
   github_com_evrone_go-clean-template_internal_entity.VideoState:
     properties:
@@ -3632,6 +3675,58 @@ paths:
       summary: Complete a dictation sentence
       tags:
       - dictation
+  /videos/{videoId}/learning-content:
+    get:
+      description: Returns shared English quizzes plus a summary and reusable dictionary
+        vocabulary in the current user's native language. Missing parts are generated
+        and persisted.
+      operationId: user-video-learning-content
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoLearningContent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get AI-generated video learning content
+      tags:
+      - user-videos
   /videos/import-youtube:
     post:
       consumes:
