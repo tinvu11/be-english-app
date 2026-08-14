@@ -13,7 +13,7 @@ import (
 )
 
 // @Summary Preview YouTube video metadata
-// @Description Returns metadata and available manual or automatically generated subtitle tracks without saving the video
+// @Description Returns YouTube metadata without saving the video or downloading audio
 // @Tags admin-videos
 // @Accept json
 // @Produce json
@@ -241,7 +241,7 @@ func (ctrl *controller) videoError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusConflict, "invalid video status transition")
 	case errors.Is(err, entity.ErrConcurrentVideoUpdate):
 		return errorResponse(ctx, http.StatusConflict, "video status changed concurrently")
-	case errors.Is(err, entity.ErrSubtitleDownloadFailed):
+	case errors.Is(err, entity.ErrYouTubeProviderFailed):
 		if errors.Is(err, context.DeadlineExceeded) {
 			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube metadata request timed out")
 		}

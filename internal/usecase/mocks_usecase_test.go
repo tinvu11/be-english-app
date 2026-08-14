@@ -937,21 +937,6 @@ func (mr *MockCaptionMockRecorder) ListCaptions(ctx, videoID, filter any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCaptions", reflect.TypeOf((*MockCaption)(nil).ListCaptions), ctx, videoID, filter)
 }
 
-// ListYouTubeSubtitleTracks mocks base method.
-func (m *MockCaption) ListYouTubeSubtitleTracks(ctx context.Context, videoID int64) (entity.YouTubeSubtitleTracks, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListYouTubeSubtitleTracks", ctx, videoID)
-	ret0, _ := ret[0].(entity.YouTubeSubtitleTracks)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListYouTubeSubtitleTracks indicates an expected call of ListYouTubeSubtitleTracks.
-func (mr *MockCaptionMockRecorder) ListYouTubeSubtitleTracks(ctx, videoID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListYouTubeSubtitleTracks", reflect.TypeOf((*MockCaption)(nil).ListYouTubeSubtitleTracks), ctx, videoID)
-}
-
 // TranslateCaptions mocks base method.
 func (m *MockCaption) TranslateCaptions(ctx context.Context, videoID int64, targetLanguageID int, mode string) (entity.CaptionTranslationResult, error) {
 	m.ctrl.T.Helper()

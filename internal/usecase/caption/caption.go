@@ -20,17 +20,17 @@ type UseCase struct {
 	videos         repo.VideoRepo
 	languages      repo.LanguageRepo
 	users          repo.UserRepo
-	subtitles      gateway.YouTubeSubtitleProvider
+	youtube        gateway.YouTubeProvider
 	transcriber    gateway.AudioTranscriber
 	translator     gateway.CaptionTranslator
 	translateBatch int
 }
 
-func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, users repo.UserRepo, subtitles gateway.YouTubeSubtitleProvider, transcriber gateway.AudioTranscriber, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
+func New(repository repo.CaptionRepo, videos repo.VideoRepo, languages repo.LanguageRepo, users repo.UserRepo, youtube gateway.YouTubeProvider, transcriber gateway.AudioTranscriber, translator gateway.CaptionTranslator, translateBatch int) usecase.Caption {
 	if translateBatch <= 0 {
 		translateBatch = 50
 	}
-	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, users: users, subtitles: subtitles, transcriber: transcriber,
+	return newTraced(&UseCase{repo: repository, videos: videos, languages: languages, users: users, youtube: youtube, transcriber: transcriber,
 		translator: translator, translateBatch: translateBatch})
 }
 
@@ -184,21 +184,6 @@ func (uc *UseCase) ImportSRT(ctx context.Context, videoID int64, original []byte
 	return uc.repo.ImportCaptions(ctx, videoID, inputs)
 }
 
-func (uc *UseCase) ListYouTubeSubtitleTracks(ctx context.Context, videoID int64) (entity.YouTubeSubtitleTracks, error) {
-	if videoID <= 0 {
-		return entity.YouTubeSubtitleTracks{}, entity.ErrInvalidVideo
-	}
-	video, err := uc.videos.GetVideo(ctx, videoID)
-	if err != nil {
-		return entity.YouTubeSubtitleTracks{}, err
-	}
-	tracks, err := uc.subtitles.ListManualSubtitles(ctx, video.YouTubeID)
-	if err != nil {
-		return entity.YouTubeSubtitleTracks{}, err
-	}
-	return entity.YouTubeSubtitleTracks{Tracks: tracks}, nil
-}
-
 func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languageCode, mode string) (entity.YouTubeCaptionImportResult, error) {
 	languageCode = strings.TrimSpace(languageCode)
 	mode = strings.ToLower(strings.TrimSpace(mode))
@@ -210,7 +195,7 @@ func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languag
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}
-	audio, err := uc.subtitles.DownloadAudio(ctx, video.YouTubeID)
+	audio, err := uc.youtube.DownloadAudio(ctx, video.YouTubeID)
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}

@@ -1617,7 +1617,7 @@ const docTemplate = `{
         },
         "/admin/videos/youtube-preview": {
             "post": {
-                "description": "Returns metadata and available manual or automatically generated subtitle tracks without saving the video",
+                "description": "Returns YouTube metadata without saving the video or downloading audio",
                 "consumes": [
                     "application/json"
                 ],
@@ -2425,82 +2425,6 @@ const docTemplate = `{
                     },
                     "503": {
                         "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "504": {
-                        "description": "Gateway Timeout",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/admin/videos/{videoId}/captions/youtube-tracks": {
-            "get": {
-                "description": "Returns creator-provided and automatically generated caption tracks; manual tracks are preferred for duplicate language codes",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin-captions"
-                ],
-                "summary": "List YouTube subtitle tracks",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Video ID",
-                        "name": "videoId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTracks"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
                         "schema": {
                             "$ref": "#/definitions/v1.Error"
                         }
@@ -3561,7 +3485,7 @@ const docTemplate = `{
         },
         "/videos/youtube-preview": {
             "post": {
-                "description": "Returns metadata and available caption tracks without saving the video",
+                "description": "Returns YouTube metadata without saving the video or downloading audio",
                 "consumes": [
                     "application/json"
                 ],
@@ -5584,40 +5508,6 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack": {
-            "type": "object",
-            "properties": {
-                "formats": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "isAutomatic": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "languageCode": {
-                    "type": "string",
-                    "example": "en"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "English"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTracks": {
-            "type": "object",
-            "properties": {
-                "tracks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack"
-                    }
-                }
-            }
-        },
         "github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview": {
             "type": "object",
             "properties": {
@@ -5630,12 +5520,6 @@ const docTemplate = `{
                 "durationSeconds": {
                     "type": "integer",
                     "example": 300
-                },
-                "manualSubtitleTracks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack"
-                    }
                 },
                 "thumbnailUrl": {
                     "type": "string"

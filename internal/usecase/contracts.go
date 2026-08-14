@@ -85,7 +85,6 @@ type (
 		ListCaptions(ctx context.Context, videoID int64, filter entity.CaptionFilter) (entity.CaptionList, error)
 		CreateCaption(ctx context.Context, videoID int64, input entity.CaptionInput) (entity.Caption, error)
 		ImportSRT(ctx context.Context, videoID int64, original []byte, translations []entity.SRTTranslationFile) ([]entity.Caption, error)
-		ListYouTubeSubtitleTracks(ctx context.Context, videoID int64) (entity.YouTubeSubtitleTracks, error)
 		ImportFromYouTube(ctx context.Context, videoID int64, languageCode, mode string) (entity.YouTubeCaptionImportResult, error)
 		GetOriginalCaptions(ctx context.Context, videoID int64) (entity.VideoCaptions, error)
 		GetTranslatedCaptions(ctx context.Context, userID string, videoID int64) (entity.VideoCaptions, error)

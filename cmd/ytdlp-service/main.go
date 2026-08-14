@@ -24,14 +24,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusOK) })
 	mux.HandleFunc("GET /v1/videos/{youtubeID}", previewHandler(provider))
-	mux.HandleFunc("GET /v1/videos/{youtubeID}/subtitles/{languageCode}", subtitleHandler(provider))
 	mux.HandleFunc("GET /v1/videos/{youtubeID}/audio", audioHandler(provider))
 	server := &http.Server{Addr: ":" + port, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 	log.Printf("yt-dlp service listening on :%s", port)
 	log.Fatal(server.ListenAndServe())
 }
 
-func audioHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {
+func audioHandler(provider gateway.YouTubeProvider) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		data, err := provider.DownloadAudio(request.Context(), request.PathValue("youtubeID"))
 		if err != nil {
@@ -44,7 +43,7 @@ func audioHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {
 	}
 }
 
-func previewHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {
+func previewHandler(provider gateway.YouTubeProvider) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		preview, err := provider.PreviewVideo(request.Context(), request.PathValue("youtubeID"))
 		if err != nil {
@@ -58,24 +57,10 @@ func previewHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {
 	}
 }
 
-func subtitleHandler(provider gateway.YouTubeSubtitleProvider) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		data, err := provider.DownloadManualSubtitle(request.Context(), request.PathValue("youtubeID"), request.PathValue("languageCode"))
-		if err != nil {
-			writeError(writer, err)
-			return
-		}
-		writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
-		_, _ = writer.Write(data)
-	}
-}
-
 func writeError(writer http.ResponseWriter, err error) {
 	status := http.StatusBadGateway
 	if errors.Is(err, entity.ErrInvalidVideo) || errors.Is(err, entity.ErrInvalidCaption) {
 		status = http.StatusBadRequest
-	} else if errors.Is(err, entity.ErrManualSubtitleNotFound) {
-		status = http.StatusNotFound
 	}
 	http.Error(writer, http.StatusText(status), status)
 }

@@ -67,7 +67,7 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	videoRepo := persistVideoRepo.New(pg)
 	captionRepo := persistCaptionRepo.New(pg)
 	dictionaryRepo := persistDictionaryRepo.New(pg)
-	subtitleProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
+	youtubeProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
 	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
@@ -81,8 +81,8 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		topic:      topic.New(topicRepo),
 		channel:    channel.New(channelRepo),
 		adminUser:  adminuser.New(adminUserRepo),
-		video:      video.New(videoRepo, userRepo, subtitleProvider),
-		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, subtitleProvider, transcriber, translator, cfg.DeepSeek.MaxBatchItems),
+		video:      video.New(videoRepo, userRepo, youtubeProvider),
+		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, youtubeProvider, transcriber, translator, cfg.DeepSeek.MaxBatchItems),
 		vocabulary: vocabulary.New(dictionaryRepo, userRepo, languageRepo, translator),
 	}
 }

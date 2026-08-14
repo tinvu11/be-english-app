@@ -55,17 +55,6 @@ const (
 	CaptionImportReplaceAll   = "replace_all"
 )
 
-type YouTubeSubtitleTrack struct {
-	LanguageCode string   `json:"languageCode" example:"en"`
-	Name         string   `json:"name,omitempty" example:"English"`
-	Formats      []string `json:"formats"`
-	IsAutomatic  bool     `json:"isAutomatic" example:"false"`
-}
-
-type YouTubeSubtitleTracks struct {
-	Tracks []YouTubeSubtitleTrack `json:"tracks"`
-}
-
 type YouTubeCaptionImportResult struct {
 	VideoID       int64  `json:"videoId" example:"10"`
 	LanguageCode  string `json:"languageCode" example:"en"`

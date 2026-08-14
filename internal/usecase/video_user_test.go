@@ -11,18 +11,12 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type subtitleProviderStub struct{ preview entity.YouTubeVideoPreview }
+type youtubeProviderStub struct{ preview entity.YouTubeVideoPreview }
 
-func (s subtitleProviderStub) PreviewVideo(context.Context, string) (entity.YouTubeVideoPreview, error) {
+func (s youtubeProviderStub) PreviewVideo(context.Context, string) (entity.YouTubeVideoPreview, error) {
 	return s.preview, nil
 }
-func (subtitleProviderStub) ListManualSubtitles(context.Context, string) ([]entity.YouTubeSubtitleTrack, error) {
-	return nil, nil
-}
-func (subtitleProviderStub) DownloadManualSubtitle(context.Context, string, string) ([]byte, error) {
-	return nil, nil
-}
-func (subtitleProviderStub) DownloadAudio(context.Context, string) ([]byte, error) { return nil, nil }
+func (youtubeProviderStub) DownloadAudio(context.Context, string) ([]byte, error) { return nil, nil }
 
 func TestAddUserYouTubeVideoUsesTargetLanguage(t *testing.T) {
 	t.Parallel()
@@ -35,7 +29,7 @@ func TestAddUserYouTubeVideoUsesTargetLanguage(t *testing.T) {
 	users.EXPECT().GetByID(gomock.Any(), "user-1").Return(entity.User{TargetLanguageID: &targetLanguageID}, nil)
 	videos.EXPECT().UpsertUserVideo(gomock.Any(), "user-1", preview, targetLanguageID).Return(expected, false, nil)
 
-	actual, reused, err := video.New(videos, users, subtitleProviderStub{preview: preview}).AddUserYouTubeVideo(
+	actual, reused, err := video.New(videos, users, youtubeProviderStub{preview: preview}).AddUserYouTubeVideo(
 		t.Context(), "user-1", "https://youtu.be/dQw4w9WgXcQ")
 	require.NoError(t, err)
 	assert.False(t, reused)
@@ -49,6 +43,6 @@ func TestAddUserYouTubeVideoRequiresTargetLanguage(t *testing.T) {
 	users := NewMockUserRepo(ctrl)
 	users.EXPECT().GetByID(gomock.Any(), "user-1").Return(entity.User{}, nil)
 
-	_, _, err := video.New(videos, users, subtitleProviderStub{}).AddUserYouTubeVideo(t.Context(), "user-1", "dQw4w9WgXcQ")
+	_, _, err := video.New(videos, users, youtubeProviderStub{}).AddUserYouTubeVideo(t.Context(), "user-1", "dQw4w9WgXcQ")
 	assert.ErrorIs(t, err, entity.ErrTargetLanguageRequired)
 }

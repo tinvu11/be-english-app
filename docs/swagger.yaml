@@ -934,29 +934,6 @@ definitions:
         example: 10
         type: integer
     type: object
-  github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack:
-    properties:
-      formats:
-        items:
-          type: string
-        type: array
-      isAutomatic:
-        example: false
-        type: boolean
-      languageCode:
-        example: en
-        type: string
-      name:
-        example: English
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTracks:
-    properties:
-      tracks:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack'
-        type: array
-    type: object
   github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview:
     properties:
       channelName:
@@ -966,10 +943,6 @@ definitions:
       durationSeconds:
         example: 300
         type: integer
-      manualSubtitleTracks:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTrack'
-        type: array
       thumbnailUrl:
         type: string
       title:
@@ -2936,62 +2909,12 @@ paths:
       summary: Translate video captions with the configured AI provider
       tags:
       - admin-captions
-  /admin/videos/{videoId}/captions/youtube-tracks:
-    get:
-      description: Returns creator-provided and automatically generated caption tracks;
-        manual tracks are preferred for duplicate language codes
-      parameters:
-      - description: Video ID
-        in: path
-        name: videoId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeSubtitleTracks'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "504":
-          description: Gateway Timeout
-          schema:
-            $ref: '#/definitions/v1.Error'
-      security:
-      - BearerAuth: []
-      summary: List YouTube subtitle tracks
-      tags:
-      - admin-captions
   /admin/videos/youtube-preview:
     post:
       consumes:
       - application/json
-      description: Returns metadata and available manual or automatically generated
-        subtitle tracks without saving the video
+      description: Returns YouTube metadata without saving the video or downloading
+        audio
       parameters:
       - description: YouTube URL or ID
         in: body
@@ -3815,8 +3738,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Returns metadata and available caption tracks without saving the
-        video
+      description: Returns YouTube metadata without saving the video or downloading
+        audio
       operationId: user-preview-youtube-video
       parameters:
       - description: YouTube URL or ID

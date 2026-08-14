@@ -32,12 +32,6 @@ func (u *tracedUseCase) ImportSRT(ctx context.Context, videoID int64, original [
 	finishSpan(span, err)
 	return items, err
 }
-func (u *tracedUseCase) ListYouTubeSubtitleTracks(ctx context.Context, videoID int64) (entity.YouTubeSubtitleTracks, error) {
-	ctx, span := otel.Tracer("usecase.caption").Start(ctx, "CaptionUseCase.ListYouTubeSubtitleTracks")
-	items, err := u.next.ListYouTubeSubtitleTracks(ctx, videoID)
-	finishSpan(span, err)
-	return items, err
-}
 func (u *tracedUseCase) ImportFromYouTube(ctx context.Context, videoID int64, languageCode, mode string) (entity.YouTubeCaptionImportResult, error) {
 	ctx, span := otel.Tracer("usecase.caption").Start(ctx, "CaptionUseCase.ImportFromYouTube")
 	item, err := u.next.ImportFromYouTube(ctx, videoID, languageCode, mode)

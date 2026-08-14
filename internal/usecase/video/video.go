@@ -17,10 +17,10 @@ const maxPageSize = 100
 type UseCase struct {
 	repo    repo.VideoRepo
 	users   repo.UserRepo
-	youtube gateway.YouTubeSubtitleProvider
+	youtube gateway.YouTubeProvider
 }
 
-func New(repository repo.VideoRepo, users repo.UserRepo, youtube gateway.YouTubeSubtitleProvider) usecase.Video {
+func New(repository repo.VideoRepo, users repo.UserRepo, youtube gateway.YouTubeProvider) usecase.Video {
 	return newTraced(&UseCase{repo: repository, users: users, youtube: youtube})
 }
 

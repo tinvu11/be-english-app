@@ -18,27 +18,6 @@ import (
 
 const maxSRTFileSize = 10 << 20
 
-// @Summary List YouTube subtitle tracks
-// @Description Returns creator-provided and automatically generated caption tracks; manual tracks are preferred for duplicate language codes
-// @Tags admin-captions
-// @Produce json
-// @Param videoId path int true "Video ID"
-// @Success 200 {object} entity.YouTubeSubtitleTracks
-// @Failure 400,401,403,404,502,504,500 {object} response.Error
-// @Security BearerAuth
-// @Router /admin/videos/{videoId}/captions/youtube-tracks [get]
-func (ctrl *controller) listYouTubeSubtitleTracks(ctx *fiber.Ctx) error {
-	videoID, err := positiveInt64(ctx.Params("videoId"))
-	if err != nil {
-		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
-	}
-	tracks, err := ctrl.captions.ListYouTubeSubtitleTracks(ctx.UserContext(), videoID)
-	if err != nil {
-		return ctrl.captionError(ctx, err)
-	}
-	return ctx.JSON(tracks)
-}
-
 // @Summary Import YouTube captions
 // @Description Downloads normalized YouTube audio and transcribes it with Groq Whisper; languageCode is an optional spoken-language hint and mode is fail_if_exists or replace_all
 // @Tags admin-captions
@@ -349,15 +328,11 @@ func (ctrl *controller) captionError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusNotFound, "caption not found")
 	case errors.Is(err, entity.ErrCaptionExists):
 		return errorResponse(ctx, http.StatusConflict, "caption sentence order already exists")
-	case errors.Is(err, entity.ErrManualSubtitleNotFound):
-		return errorResponse(ctx, http.StatusNotFound, "manual YouTube subtitle not found")
-	case errors.Is(err, entity.ErrInvalidWebVTT):
-		return errorResponse(ctx, http.StatusUnprocessableEntity, "invalid YouTube WebVTT subtitle")
-	case errors.Is(err, entity.ErrSubtitleDownloadFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
+	case errors.Is(err, entity.ErrYouTubeProviderFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
 		if errors.Is(err, context.DeadlineExceeded) {
-			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube subtitle request timed out")
+			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube request timed out")
 		}
-		return errorResponse(ctx, http.StatusBadGateway, "YouTube subtitle provider failed")
+		return errorResponse(ctx, http.StatusBadGateway, "YouTube provider failed")
 	case errors.Is(err, entity.ErrTranscriptionFailed), errors.Is(err, entity.ErrInvalidTranscription):
 		return errorResponse(ctx, http.StatusBadGateway, "audio transcription failed")
 	default:

@@ -12,7 +12,7 @@ import (
 )
 
 // @Summary Preview a YouTube video
-// @Description Returns metadata and available caption tracks without saving the video
+// @Description Returns YouTube metadata without saving the video or downloading audio
 // @ID user-preview-youtube-video
 // @Tags user-videos
 // @Accept json
@@ -181,9 +181,7 @@ func (r *V1) youtubeVideoError(ctx *fiber.Ctx, err error, operation string) erro
 		return errorResponse(ctx, http.StatusBadRequest, err.Error())
 	case errors.Is(err, entity.ErrTargetLanguageRequired):
 		return errorResponse(ctx, http.StatusConflict, "target language must be selected first")
-	case errors.Is(err, entity.ErrManualSubtitleNotFound):
-		return errorResponse(ctx, http.StatusNotFound, "YouTube subtitle not found")
-	case errors.Is(err, entity.ErrSubtitleDownloadFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
+	case errors.Is(err, entity.ErrYouTubeProviderFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
 		return errorResponse(ctx, http.StatusBadGateway, "YouTube request failed")
 	case errors.Is(err, entity.ErrTranscriptionFailed), errors.Is(err, entity.ErrInvalidTranscription):
 		return errorResponse(ctx, http.StatusBadGateway, "audio transcription failed")

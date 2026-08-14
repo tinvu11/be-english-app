@@ -7,11 +7,9 @@ import (
 	"github.com/evrone/go-clean-template/internal/entity"
 )
 
-// YouTubeSubtitleProvider exposes creator-provided and automatically generated YouTube subtitles.
-type YouTubeSubtitleProvider interface {
+// YouTubeProvider exposes metadata preview and normalized audio extraction.
+type YouTubeProvider interface {
 	PreviewVideo(ctx context.Context, youtubeID string) (entity.YouTubeVideoPreview, error)
-	ListManualSubtitles(ctx context.Context, youtubeID string) ([]entity.YouTubeSubtitleTrack, error)
-	DownloadManualSubtitle(ctx context.Context, youtubeID, languageCode string) ([]byte, error)
 	DownloadAudio(ctx context.Context, youtubeID string) ([]byte, error)
 }
 
