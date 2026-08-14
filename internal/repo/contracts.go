@@ -99,6 +99,7 @@ type (
 	DictionaryRepo interface {
 		FindDictionaryEntry(ctx context.Context, word string, sourceLanguageID, targetLanguageID int) (entity.DictionaryEntry, error)
 		UpsertDictionaryEntry(ctx context.Context, input entity.DictionaryInput) (entity.DictionaryEntry, bool, error)
+		GetVocabularyOverview(ctx context.Context, userID string, languages entity.VocabularyLanguages) (entity.VocabularyOverview, error)
 		CreateVocabularySet(ctx context.Context, userID, title string, languages entity.VocabularyLanguages) (entity.VocabularySet, error)
 		ListVocabularySets(ctx context.Context, userID string, languages entity.VocabularyLanguages) ([]entity.VocabularySet, error)
 		UpdateVocabularySet(ctx context.Context, userID string, id int64, title string, languages entity.VocabularyLanguages) (entity.VocabularySet, error)

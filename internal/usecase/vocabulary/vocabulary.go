@@ -82,6 +82,17 @@ func (uc *UseCase) TranslateWord(ctx context.Context, userID, word string) (enti
 	return entity.VocabularyLookupResult{Entry: entry, Reused: !created}, nil
 }
 
+func (uc *UseCase) GetOverview(ctx context.Context, userID string) (entity.VocabularyOverview, error) {
+	if strings.TrimSpace(userID) == "" {
+		return entity.VocabularyOverview{}, entity.ErrInvalidVocabulary
+	}
+	languages, err := uc.currentLanguages(ctx, userID)
+	if err != nil {
+		return entity.VocabularyOverview{}, err
+	}
+	return uc.dictionary.GetVocabularyOverview(ctx, userID, languages)
+}
+
 func (uc *UseCase) CreateSet(ctx context.Context, userID, title string) (entity.VocabularySet, error) {
 	title = strings.TrimSpace(title)
 	if userID == "" || title == "" || utf8.RuneCountInString(title) > 255 {
@@ -129,7 +140,7 @@ func (uc *UseCase) DeleteSet(ctx context.Context, userID string, id int64) error
 }
 
 func (uc *UseCase) CreateUserVocabulary(ctx context.Context, userID string, input entity.UserVocabularyInput) (entity.UserVocabulary, error) {
-	if userID == "" || input.DictionaryID <= 0 || invalidOptionalID(input.VocabSetID) || invalidOptionalID(input.CaptionID) {
+	if userID == "" || input.DictionaryID <= 0 || input.VocabSetID <= 0 || invalidOptionalID(input.CaptionID) {
 		return entity.UserVocabulary{}, entity.ErrInvalidVocabulary
 	}
 	languages, err := uc.currentLanguages(ctx, userID)
@@ -151,7 +162,7 @@ func (uc *UseCase) ListUserVocabularies(ctx context.Context, userID string, voca
 }
 
 func (uc *UseCase) UpdateUserVocabulary(ctx context.Context, userID string, id int64, input entity.UserVocabularyUpdate) (entity.UserVocabulary, error) {
-	if userID == "" || id <= 0 || invalidOptionalID(input.VocabSetID) || invalidOptionalID(input.CaptionID) {
+	if userID == "" || id <= 0 || input.VocabSetID <= 0 || invalidOptionalID(input.CaptionID) {
 		return entity.UserVocabulary{}, entity.ErrInvalidVocabulary
 	}
 	languages, err := uc.currentLanguages(ctx, userID)

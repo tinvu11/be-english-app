@@ -1097,6 +1097,21 @@ func (mr *MockDictionaryRepoMockRecorder) FindDictionaryEntry(ctx, word, sourceL
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDictionaryEntry", reflect.TypeOf((*MockDictionaryRepo)(nil).FindDictionaryEntry), ctx, word, sourceLanguageID, targetLanguageID)
 }
 
+// GetVocabularyOverview mocks base method.
+func (m *MockDictionaryRepo) GetVocabularyOverview(ctx context.Context, userID string, languages entity.VocabularyLanguages) (entity.VocabularyOverview, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVocabularyOverview", ctx, userID, languages)
+	ret0, _ := ret[0].(entity.VocabularyOverview)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVocabularyOverview indicates an expected call of GetVocabularyOverview.
+func (mr *MockDictionaryRepoMockRecorder) GetVocabularyOverview(ctx, userID, languages any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVocabularyOverview", reflect.TypeOf((*MockDictionaryRepo)(nil).GetVocabularyOverview), ctx, userID, languages)
+}
+
 // ListUserVocabularies mocks base method.
 func (m *MockDictionaryRepo) ListUserVocabularies(ctx context.Context, userID string, vocabSetID *int64, languages entity.VocabularyLanguages) ([]entity.UserVocabulary, error) {
 	m.ctrl.T.Helper()

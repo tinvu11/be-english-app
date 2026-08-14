@@ -3918,6 +3918,58 @@ const docTemplate = `{
                 ]
             }
         },
+        "/vocabulary/overview": {
+            "get": {
+                "description": "Returns word totals and vocabulary categories for the current user's active language pair",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-vocabulary"
+                ],
+                "summary": "Get vocabulary screen overview",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyOverview"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/vocabulary/sets": {
             "get": {
                 "produces": [
@@ -5135,7 +5187,8 @@ const docTemplate = `{
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary": {
             "type": "object",
             "required": [
-                "dictionaryId"
+                "dictionaryId",
+                "vocabSetId"
             ],
             "properties": {
                 "captionId": {
@@ -5198,6 +5251,9 @@ const docTemplate = `{
         },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary": {
             "type": "object",
+            "required": [
+                "vocabSetId"
+            ],
             "properties": {
                 "captionId": {
                     "type": "integer",
@@ -5483,7 +5539,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "vocabSetId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -5596,6 +5653,31 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "learnedWords": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Travel"
+                },
+                "totalWords": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "unlearnedWords": {
+                    "type": "integer",
+                    "example": 8
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult": {
             "type": "object",
             "properties": {
@@ -5604,6 +5686,29 @@ const docTemplate = `{
                 },
                 "reused": {
                     "type": "boolean"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VocabularyOverview": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary"
+                    }
+                },
+                "learnedWords": {
+                    "type": "integer",
+                    "example": 30
+                },
+                "totalWords": {
+                    "type": "integer",
+                    "example": 50
+                },
+                "unlearnedWords": {
+                    "type": "integer",
+                    "example": 20
                 }
             }
         },

@@ -49,6 +49,54 @@ func (r *Repo) UpsertDictionaryEntry(ctx context.Context, input entity.Dictionar
 	return entry, false, err
 }
 
+func (r *Repo) GetVocabularyOverview(ctx context.Context, userID string, languages entity.VocabularyLanguages) (entity.VocabularyOverview, error) {
+	rows, err := r.Pool.Query(ctx, `WITH scoped_words AS (
+		SELECT uv.vocab_set_id, uv.is_learned
+		FROM user_vocabularies uv
+		JOIN dictionary d ON d.id=uv.dictionary_id
+		WHERE uv.user_id=$1 AND d.source_language_id=$2 AND d.target_language_id=$3
+	), totals AS (
+		SELECT COUNT(*)::int AS total_words,
+			COUNT(*) FILTER (WHERE is_learned)::int AS learned_words
+		FROM scoped_words
+	), categories AS (
+		SELECT s.id,s.title,COUNT(w.vocab_set_id)::int AS total_words,
+			COUNT(w.vocab_set_id) FILTER (WHERE w.is_learned)::int AS learned_words
+		FROM vocab_sets s
+		LEFT JOIN scoped_words w ON w.vocab_set_id=s.id
+		WHERE s.user_id=$1 AND s.source_language_id=$2 AND s.target_language_id=$3
+		GROUP BY s.id,s.title,s.created_at
+		ORDER BY s.created_at DESC,s.id DESC
+	)
+	SELECT t.total_words,t.learned_words,c.id,c.title,c.total_words,c.learned_words
+	FROM totals t LEFT JOIN categories c ON TRUE
+	ORDER BY c.id DESC`, userID, languages.SourceLanguageID, languages.TargetLanguageID)
+	if err != nil {
+		return entity.VocabularyOverview{}, fmt.Errorf("DictionaryRepo - GetVocabularyOverview: %w", err)
+	}
+	defer rows.Close()
+
+	overview := entity.VocabularyOverview{Categories: make([]entity.VocabularyCategorySummary, 0)}
+	for rows.Next() {
+		var categoryID *int64
+		var title *string
+		var categoryTotal, categoryLearned *int
+		if err = rows.Scan(&overview.TotalWords, &overview.LearnedWords, &categoryID, &title, &categoryTotal, &categoryLearned); err != nil {
+			return entity.VocabularyOverview{}, fmt.Errorf("DictionaryRepo - GetVocabularyOverview - scan: %w", err)
+		}
+		if categoryID != nil {
+			category := entity.VocabularyCategorySummary{ID: *categoryID, Title: *title, TotalWords: *categoryTotal, LearnedWords: *categoryLearned}
+			category.UnlearnedWords = category.TotalWords - category.LearnedWords
+			overview.Categories = append(overview.Categories, category)
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return entity.VocabularyOverview{}, fmt.Errorf("DictionaryRepo - GetVocabularyOverview - rows: %w", err)
+	}
+	overview.UnlearnedWords = overview.TotalWords - overview.LearnedWords
+	return overview, nil
+}
+
 type scanner interface{ Scan(...any) error }
 
 func scan(row scanner) (entity.DictionaryEntry, error) {
@@ -126,7 +174,7 @@ func (r *Repo) CreateUserVocabulary(ctx context.Context, userID string, input en
 	var id int64
 	err := r.Pool.QueryRow(ctx, `INSERT INTO user_vocabularies(user_id,vocab_set_id,dictionary_id,caption_id)
 		SELECT $1,$2,$3,$4 WHERE EXISTS (SELECT 1 FROM dictionary d WHERE d.id=$3 AND d.source_language_id=$5 AND d.target_language_id=$6)
-		AND ($2::bigint IS NULL OR EXISTS (SELECT 1 FROM vocab_sets s WHERE s.id=$2 AND s.user_id=$1 AND s.source_language_id=$5 AND s.target_language_id=$6))
+		AND EXISTS (SELECT 1 FROM vocab_sets s WHERE s.id=$2 AND s.user_id=$1 AND s.source_language_id=$5 AND s.target_language_id=$6)
 		RETURNING id`, userID, input.VocabSetID, input.DictionaryID, input.CaptionID, languages.SourceLanguageID, languages.TargetLanguageID).Scan(&id)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return entity.UserVocabulary{}, entity.ErrVocabularyLanguageMismatch
@@ -161,7 +209,7 @@ func (r *Repo) UpdateUserVocabulary(ctx context.Context, userID string, id int64
 	result, err := r.Pool.Exec(ctx, `UPDATE user_vocabularies uv SET vocab_set_id=$3,caption_id=$4,is_learned=$5,
 		learned_at=CASE WHEN $5 THEN COALESCE(learned_at,CURRENT_TIMESTAMP) ELSE NULL END,updated_at=CURRENT_TIMESTAMP
 		WHERE uv.id=$1 AND uv.user_id=$2 AND EXISTS (SELECT 1 FROM dictionary d WHERE d.id=uv.dictionary_id AND d.source_language_id=$6 AND d.target_language_id=$7)
-		AND ($3::bigint IS NULL OR EXISTS (SELECT 1 FROM vocab_sets s WHERE s.id=$3 AND s.user_id=$2 AND s.source_language_id=$6 AND s.target_language_id=$7))`, id, userID, input.VocabSetID, input.CaptionID, input.IsLearned, languages.SourceLanguageID, languages.TargetLanguageID)
+		AND EXISTS (SELECT 1 FROM vocab_sets s WHERE s.id=$3 AND s.user_id=$2 AND s.source_language_id=$6 AND s.target_language_id=$7)`, id, userID, input.VocabSetID, input.CaptionID, input.IsLearned, languages.SourceLanguageID, languages.TargetLanguageID)
 	if err != nil {
 		return entity.UserVocabulary{}, mapUserVocabularyError(err)
 	}

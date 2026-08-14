@@ -68,9 +68,24 @@ type VocabularyLanguages struct {
 	TargetLanguageID int
 }
 
+type VocabularyCategorySummary struct {
+	ID             int64  `json:"id" example:"1"`
+	Title          string `json:"title" example:"Travel"`
+	TotalWords     int    `json:"totalWords" example:"20"`
+	LearnedWords   int    `json:"learnedWords" example:"12"`
+	UnlearnedWords int    `json:"unlearnedWords" example:"8"`
+}
+
+type VocabularyOverview struct {
+	TotalWords     int                         `json:"totalWords" example:"50"`
+	LearnedWords   int                         `json:"learnedWords" example:"30"`
+	UnlearnedWords int                         `json:"unlearnedWords" example:"20"`
+	Categories     []VocabularyCategorySummary `json:"categories"`
+}
+
 type UserVocabulary struct {
 	ID         int64           `json:"id" example:"1"`
-	VocabSetID *int64          `json:"vocabSetId,omitempty"`
+	VocabSetID int64           `json:"vocabSetId" example:"2"`
 	CaptionID  *int64          `json:"captionId,omitempty"`
 	Entry      DictionaryEntry `json:"entry"`
 	IsLearned  bool            `json:"isLearned" example:"false"`
@@ -81,12 +96,12 @@ type UserVocabulary struct {
 
 type UserVocabularyInput struct {
 	DictionaryID int64
-	VocabSetID   *int64
+	VocabSetID   int64
 	CaptionID    *int64
 }
 
 type UserVocabularyUpdate struct {
-	VocabSetID *int64
+	VocabSetID int64
 	CaptionID  *int64
 	IsLearned  bool
 }

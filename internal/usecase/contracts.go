@@ -95,6 +95,7 @@ type (
 
 	Vocabulary interface {
 		TranslateWord(ctx context.Context, userID, word string) (entity.VocabularyLookupResult, error)
+		GetOverview(ctx context.Context, userID string) (entity.VocabularyOverview, error)
 		CreateSet(ctx context.Context, userID, title string) (entity.VocabularySet, error)
 		ListSets(ctx context.Context, userID string) ([]entity.VocabularySet, error)
 		UpdateSet(ctx context.Context, userID string, id int64, title string) (entity.VocabularySet, error)

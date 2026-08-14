@@ -66,6 +66,26 @@ func positivePathID(ctx *fiber.Ctx, name string) (int64, error) {
 	return id, nil
 }
 
+// @Summary Get vocabulary screen overview
+// @Description Returns word totals and vocabulary categories for the current user's active language pair
+// @Tags user-vocabulary
+// @Produce json
+// @Success 200 {object} entity.VocabularyOverview
+// @Failure 401,409,500 {object} map[string]string
+// @Security BearerAuth
+// @Router /vocabulary/overview [get]
+func (r *V1) getVocabularyOverview(ctx *fiber.Ctx) error {
+	userID, err := vocabularyUserID(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusUnauthorized, "unauthorized")
+	}
+	overview, err := r.vocabulary.GetOverview(ctx.UserContext(), userID)
+	if err != nil {
+		return r.vocabularyError(ctx, err, "get overview")
+	}
+	return ctx.JSON(overview)
+}
+
 // @Summary Create vocabulary set
 // @Tags user-vocabulary
 // @Accept json

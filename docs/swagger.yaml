@@ -636,6 +636,7 @@ definitions:
         type: integer
     required:
     - dictionaryId
+    - vocabSetId
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo:
     properties:
@@ -679,6 +680,8 @@ definitions:
       vocabSetId:
         example: 2
         type: integer
+    required:
+    - vocabSetId
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview:
     properties:
@@ -864,6 +867,7 @@ definitions:
       updatedAt:
         type: string
       vocabSetId:
+        example: 2
         type: integer
     type: object
   github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult:
@@ -939,12 +943,46 @@ definitions:
         example: true
         type: boolean
     type: object
+  github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary:
+    properties:
+      id:
+        example: 1
+        type: integer
+      learnedWords:
+        example: 12
+        type: integer
+      title:
+        example: Travel
+        type: string
+      totalWords:
+        example: 20
+        type: integer
+      unlearnedWords:
+        example: 8
+        type: integer
+    type: object
   github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult:
     properties:
       entry:
         $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
       reused:
         type: boolean
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VocabularyOverview:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary'
+        type: array
+      learnedWords:
+        example: 30
+        type: integer
+      totalWords:
+        example: 50
+        type: integer
+      unlearnedWords:
+        example: 20
+        type: integer
     type: object
   github_com_evrone_go-clean-template_internal_entity.VocabularySet:
     properties:
@@ -3879,6 +3917,40 @@ paths:
       summary: Preview a YouTube video
       tags:
       - user-videos
+  /vocabulary/overview:
+    get:
+      description: Returns word totals and vocabulary categories for the current user's
+        active language pair
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyOverview'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get vocabulary screen overview
+      tags:
+      - user-vocabulary
   /vocabulary/sets:
     get:
       produces:

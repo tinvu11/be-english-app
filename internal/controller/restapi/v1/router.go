@@ -28,6 +28,7 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	vocabularyGroup := protected.Group("/vocabulary")
 	{
 		vocabularyGroup.Post("/translate", r.translateVocabulary)
+		vocabularyGroup.Get("/overview", r.getVocabularyOverview)
 		vocabularyGroup.Post("/sets", r.createVocabularySet)
 		vocabularyGroup.Get("/sets", r.listVocabularySets)
 		vocabularyGroup.Put("/sets/:setId", r.updateVocabularySet)
