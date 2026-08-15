@@ -74,6 +74,8 @@ type (
 		GetVideo(ctx context.Context, id int64) (entity.Video, error)
 		PreviewYouTubeVideo(ctx context.Context, youtubeURLOrID string) (entity.YouTubeVideoPreview, error)
 		AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOrID string) (entity.Video, bool, error)
+		ListUserVideos(ctx context.Context, userID string, limit, offset int) (entity.VideoList, error)
+		RemoveUserVideo(ctx context.Context, userID string, videoID int64) error
 		CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error)
 		UpdateVideo(ctx context.Context, id int64, input entity.VideoInput) (entity.Video, error)
 		TransitionVideoStatus(ctx context.Context, id int64, status string) (entity.Video, error)

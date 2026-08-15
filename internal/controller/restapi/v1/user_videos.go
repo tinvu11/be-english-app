@@ -11,6 +11,49 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// @Summary Get imported videos
+// @Description Return videos added to the current user's personal library
+// @ID user-imported-videos
+// @Tags user-videos
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Videos per page (1-100)" default(20)
+// @Success 200 {object} entity.VideoList
+// @Failure 400,401,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/videos [get]
+func (r *V1) listUserImportedVideos(ctx *fiber.Ctx) error {
+	userID, page, limit, err := userVideoRequest(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid pagination")
+	}
+	result, err := r.videos.ListUserVideos(ctx.UserContext(), userID, limit, (page-1)*limit)
+	if err != nil {
+		return r.userVideoError(ctx, err, "list imported videos")
+	}
+	return ctx.Status(http.StatusOK).JSON(result)
+}
+
+// @Summary Remove an imported video
+// @Description Remove a video from the current user's library without deleting the shared video or captions
+// @ID user-remove-imported-video
+// @Tags user-videos
+// @Param videoId path int true "Video ID"
+// @Success 204
+// @Failure 400,401,500 {object} response.Error
+// @Security BearerAuth
+// @Router /user/videos/{videoId} [delete]
+func (r *V1) removeUserImportedVideo(ctx *fiber.Ctx) error {
+	userID, videoID, err := userVideoMutation(ctx)
+	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video id")
+	}
+	if err = r.videos.RemoveUserVideo(ctx.UserContext(), userID, videoID); err != nil {
+		return r.userVideoMutationError(ctx, err, "remove imported video")
+	}
+	return ctx.SendStatus(http.StatusNoContent)
+}
+
 // @Summary Get watch history
 // @Description Return the current user's recently watched published videos
 // @ID user-watch-history

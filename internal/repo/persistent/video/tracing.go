@@ -50,6 +50,20 @@ func (r *tracedRepo) UpsertUserVideo(ctx context.Context, userID string, preview
 	return result, reused, err
 }
 
+func (r *tracedRepo) ListUserVideos(ctx context.Context, userID string, limit, offset int) (entity.VideoList, error) {
+	ctx, span := startSpan(ctx, "VideoRepo.ListUserVideos")
+	result, err := r.next.ListUserVideos(ctx, userID, limit, offset)
+	endSpan(span, err)
+	return result, err
+}
+
+func (r *tracedRepo) RemoveUserVideo(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "VideoRepo.RemoveUserVideo", attribute.Int64("video.id", videoID))
+	err := r.next.RemoveUserVideo(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}
+
 func (r *tracedRepo) CreateVideo(ctx context.Context, input entity.VideoInput) (entity.Video, error) {
 	ctx, span := startSpan(ctx, "VideoRepo.CreateVideo", attribute.String("video.youtube_id", input.YouTubeID))
 	result, err := r.next.CreateVideo(ctx, input)

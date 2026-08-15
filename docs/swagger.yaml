@@ -3371,6 +3371,76 @@ paths:
       summary: Get profile
       tags:
       - user
+  /user/videos:
+    get:
+      description: Return videos added to the current user's personal library
+      operationId: user-imported-videos
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Videos per page (1-100)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.VideoList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get imported videos
+      tags:
+      - user-videos
+  /user/videos/{videoId}:
+    delete:
+      description: Remove a video from the current user's library without deleting
+        the shared video or captions
+      operationId: user-remove-imported-video
+      parameters:
+      - description: Video ID
+        in: path
+        name: videoId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Remove an imported video
+      tags:
+      - user-videos
   /user/watch-history:
     get:
       description: Return the current user's recently watched published videos

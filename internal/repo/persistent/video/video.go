@@ -178,6 +178,37 @@ func (r *Repo) UpsertUserVideo(ctx context.Context, userID string, preview entit
 	return video, !created, err
 }
 
+func (r *Repo) ListUserVideos(ctx context.Context, userID string, limit, offset int) (entity.VideoList, error) {
+	rows, err := r.Pool.Query(ctx, `SELECT `+videoColumns+`,COUNT(*) OVER()`+videoJoins+`
+		JOIN user_videos uv ON uv.video_id=v.id
+		WHERE uv.user_id=$1
+		ORDER BY uv.created_at DESC,uv.id DESC LIMIT $2 OFFSET $3`, userID, limit, offset)
+	if err != nil {
+		return entity.VideoList{}, fmt.Errorf("VideoRepo - ListUserVideos: %w", err)
+	}
+	defer rows.Close()
+	result := entity.VideoList{Items: make([]entity.Video, 0)}
+	for rows.Next() {
+		item, scanErr := scanVideo(rows, &result.Total)
+		if scanErr != nil {
+			return entity.VideoList{}, fmt.Errorf("VideoRepo - ListUserVideos - scan: %w", scanErr)
+		}
+		result.Items = append(result.Items, item)
+	}
+	if err = rows.Err(); err != nil {
+		return entity.VideoList{}, fmt.Errorf("VideoRepo - ListUserVideos - rows: %w", err)
+	}
+	return result, nil
+}
+
+func (r *Repo) RemoveUserVideo(ctx context.Context, userID string, videoID int64) error {
+	_, err := r.Pool.Exec(ctx, `DELETE FROM user_videos WHERE user_id=$1 AND video_id=$2`, userID, videoID)
+	if err != nil {
+		return fmt.Errorf("VideoRepo - RemoveUserVideo: %w", err)
+	}
+	return nil
+}
+
 func (r *Repo) UpdateVideoLanguage(ctx context.Context, id int64, languageID int) error {
 	result, err := r.Pool.Exec(ctx, `UPDATE videos SET language_id=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$1`, id, languageID)
 	if err != nil {

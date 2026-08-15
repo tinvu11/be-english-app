@@ -51,6 +51,18 @@ func (u *tracedUseCase) AddUserYouTubeVideo(ctx context.Context, userID, youtube
 	endSpan(span, err)
 	return item, reused, err
 }
+func (u *tracedUseCase) ListUserVideos(ctx context.Context, userID string, limit, offset int) (entity.VideoList, error) {
+	ctx, span := startSpan(ctx, "VideoUseCase.ListUserVideos")
+	result, err := u.next.ListUserVideos(ctx, userID, limit, offset)
+	endSpan(span, err)
+	return result, err
+}
+func (u *tracedUseCase) RemoveUserVideo(ctx context.Context, userID string, videoID int64) error {
+	ctx, span := startSpan(ctx, "VideoUseCase.RemoveUserVideo", attribute.Int64("video.id", videoID))
+	err := u.next.RemoveUserVideo(ctx, userID, videoID)
+	endSpan(span, err)
+	return err
+}
 func (u *tracedUseCase) CreateVideo(ctx context.Context, i entity.VideoInput) (entity.Video, error) {
 	ctx, s := startSpan(ctx, "VideoUseCase.CreateVideo")
 	v, e := u.next.CreateVideo(ctx, i)

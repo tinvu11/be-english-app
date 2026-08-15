@@ -46,3 +46,29 @@ func TestAddUserYouTubeVideoRequiresTargetLanguage(t *testing.T) {
 	_, _, err := video.New(videos, users, youtubeProviderStub{}).AddUserYouTubeVideo(t.Context(), "user-1", "dQw4w9WgXcQ")
 	assert.ErrorIs(t, err, entity.ErrTargetLanguageRequired)
 }
+
+func TestListAndRemoveUserVideos(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	videos := NewMockVideoRepo(ctrl)
+	users := NewMockUserRepo(ctrl)
+	expected := entity.VideoList{Items: []entity.Video{{ID: 42}}, Total: 1}
+	videos.EXPECT().ListUserVideos(gomock.Any(), "user-1", 20, 0).Return(expected, nil)
+	videos.EXPECT().RemoveUserVideo(gomock.Any(), "user-1", int64(42)).Return(nil)
+
+	uc := video.New(videos, users, youtubeProviderStub{})
+	actual, err := uc.ListUserVideos(t.Context(), "user-1", 20, 0)
+	require.NoError(t, err)
+	assert.Equal(t, expected, actual)
+	require.NoError(t, uc.RemoveUserVideo(t.Context(), "user-1", 42))
+}
+
+func TestUserVideoLibraryRejectsInvalidInput(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	uc := video.New(NewMockVideoRepo(ctrl), NewMockUserRepo(ctrl), youtubeProviderStub{})
+
+	_, err := uc.ListUserVideos(t.Context(), "", 20, 0)
+	assert.ErrorIs(t, err, entity.ErrInvalidVideo)
+	assert.ErrorIs(t, uc.RemoveUserVideo(t.Context(), "user-1", 0), entity.ErrInvalidVideo)
+}

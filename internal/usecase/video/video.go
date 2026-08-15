@@ -42,6 +42,20 @@ func (uc *UseCase) AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOr
 	return uc.repo.UpsertUserVideo(ctx, userID, preview, *user.TargetLanguageID)
 }
 
+func (uc *UseCase) ListUserVideos(ctx context.Context, userID string, limit, offset int) (entity.VideoList, error) {
+	if strings.TrimSpace(userID) == "" || limit <= 0 || limit > maxPageSize || offset < 0 {
+		return entity.VideoList{}, entity.ErrInvalidVideo
+	}
+	return uc.repo.ListUserVideos(ctx, userID, limit, offset)
+}
+
+func (uc *UseCase) RemoveUserVideo(ctx context.Context, userID string, videoID int64) error {
+	if strings.TrimSpace(userID) == "" || videoID <= 0 {
+		return entity.ErrInvalidVideo
+	}
+	return uc.repo.RemoveUserVideo(ctx, userID, videoID)
+}
+
 func (uc *UseCase) ListVideos(ctx context.Context, filter entity.VideoFilter) (entity.VideoList, error) {
 	filter.Search = strings.TrimSpace(filter.Search)
 	filter.Status = strings.ToLower(strings.TrimSpace(filter.Status))

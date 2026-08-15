@@ -188,6 +188,10 @@ func (videosStub) PreviewYouTubeVideo(context.Context, string) (entity.YouTubeVi
 func (videosStub) AddUserYouTubeVideo(context.Context, string, string) (entity.Video, bool, error) {
 	return entity.Video{}, false, nil
 }
+func (videosStub) ListUserVideos(context.Context, string, int, int) (entity.VideoList, error) {
+	return entity.VideoList{}, nil
+}
+func (videosStub) RemoveUserVideo(context.Context, string, int64) error { return nil }
 func (videosStub) CreateVideo(_ context.Context, input entity.VideoInput) (entity.Video, error) {
 	return entity.Video{ID: 1, Title: input.Title, YouTubeID: input.YouTubeID, Status: input.Status}, nil
 }

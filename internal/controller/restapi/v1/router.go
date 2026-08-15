@@ -64,6 +64,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 
 	userGroup := protected.Group("/user")
 	{
+		userGroup.Get("/videos", r.listUserImportedVideos)
+		userGroup.Delete("/videos/:videoId", r.removeUserImportedVideo)
 		userGroup.Get("/profile", r.profile)
 		userGroup.Put("/languages", r.updateUserLanguages)
 		userGroup.Get("/onboarding", r.onboarding)
