@@ -39,3 +39,26 @@ func TestAssess(t *testing.T) {
 	require.Equal(t, int64(2300), result.DurationMS)
 	require.Len(t, result.Words, 1)
 }
+
+func TestAssessFlatScores(t *testing.T) {
+	t.Parallel()
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, `{"Duration":34300000,"NBest":[{"AccuracyScore":72,"FluencyScore":92,"CompletenessScore":73,"PronScore":76.8,"ProsodyScore":74.9,"Words":[{"Word":"i","AccuracyScore":97,"ErrorType":"None","Phonemes":[{"Phoneme":"ay","AccuracyScore":97}]}]}]}`)
+	}))
+	defer server.Close()
+
+	client := azure.New(azure.Config{Endpoint: server.URL, APIKey: "secret"}, server.Client())
+	result, err := client.Assess(context.Background(), entity.PronunciationAssessmentInput{
+		Audio: []byte("wav"), ContentType: "audio/wav", ReferenceText: "I have", Locale: "en-US",
+	})
+	require.NoError(t, err)
+	require.Equal(t, float64(72), result.AccuracyScore)
+	require.Equal(t, float64(92), result.FluencyScore)
+	require.Equal(t, float64(73), result.CompletenessScore)
+	require.Equal(t, float64(76.8), result.PronunciationScore)
+	require.NotNil(t, result.ProsodyScore)
+	require.Equal(t, float64(74.9), *result.ProsodyScore)
+	require.Equal(t, float64(97), result.Words[0].AccuracyScore)
+	require.Equal(t, "None", result.Words[0].ErrorType)
+	require.Equal(t, int64(3430), result.DurationMS)
+}

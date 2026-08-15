@@ -36,18 +36,25 @@ func New(config Config, httpClient *http.Client) gateway.PronunciationAssessor {
 type response struct {
 	Duration int64 `json:"Duration"`
 	NBest    []struct {
+		AccuracyScore           *float64 `json:"AccuracyScore"`
+		FluencyScore            *float64 `json:"FluencyScore"`
+		CompletenessScore       *float64 `json:"CompletenessScore"`
+		PronScore               *float64 `json:"PronScore"`
+		ProsodyScore            *float64 `json:"ProsodyScore"`
 		PronunciationAssessment struct {
-			AccuracyScore     float64  `json:"AccuracyScore"`
-			FluencyScore      float64  `json:"FluencyScore"`
-			CompletenessScore float64  `json:"CompletenessScore"`
-			PronScore         float64  `json:"PronScore"`
+			AccuracyScore     *float64 `json:"AccuracyScore"`
+			FluencyScore      *float64 `json:"FluencyScore"`
+			CompletenessScore *float64 `json:"CompletenessScore"`
+			PronScore         *float64 `json:"PronScore"`
 			ProsodyScore      *float64 `json:"ProsodyScore"`
 		} `json:"PronunciationAssessment"`
 		Words []struct {
-			Word                    string `json:"Word"`
+			Word                    string   `json:"Word"`
+			AccuracyScore           *float64 `json:"AccuracyScore"`
+			ErrorType               string   `json:"ErrorType"`
 			PronunciationAssessment struct {
-				AccuracyScore float64 `json:"AccuracyScore"`
-				ErrorType     string  `json:"ErrorType"`
+				AccuracyScore *float64 `json:"AccuracyScore"`
+				ErrorType     string   `json:"ErrorType"`
 			} `json:"PronunciationAssessment"`
 			Phonemes json.RawMessage `json:"Phonemes"`
 		} `json:"Words"`
@@ -98,17 +105,44 @@ func (c *Client) Assess(ctx context.Context, input entity.PronunciationAssessmen
 		return entity.PronunciationAssessment{}, fmt.Errorf("%w: decode response", entity.ErrInvalidPronunciation)
 	}
 	best := decoded.NBest[0]
+	accuracyScore := score(best.AccuracyScore, best.PronunciationAssessment.AccuracyScore)
+	fluencyScore := score(best.FluencyScore, best.PronunciationAssessment.FluencyScore)
+	completenessScore := score(best.CompletenessScore, best.PronunciationAssessment.CompletenessScore)
+	pronunciationScore := score(best.PronScore, best.PronunciationAssessment.PronScore)
+	prosodyScore := optionalScore(best.ProsodyScore, best.PronunciationAssessment.ProsodyScore)
 	result := entity.PronunciationAssessment{
-		Provider: entity.ShadowingProviderAzure, AccuracyScore: best.PronunciationAssessment.AccuracyScore,
-		FluencyScore: best.PronunciationAssessment.FluencyScore, CompletenessScore: best.PronunciationAssessment.CompletenessScore,
-		PronunciationScore: best.PronunciationAssessment.PronScore, ProsodyScore: best.PronunciationAssessment.ProsodyScore,
+		Provider: entity.ShadowingProviderAzure, AccuracyScore: accuracyScore,
+		FluencyScore: fluencyScore, CompletenessScore: completenessScore,
+		PronunciationScore: pronunciationScore, ProsodyScore: prosodyScore,
 		DurationMS: decoded.Duration / 10000, ProviderResponse: append(json.RawMessage(nil), raw...),
 		Words: make([]entity.ShadowingWordResult, 0, len(best.Words)),
 	}
 	for index, word := range best.Words {
+		accuracyScore := score(word.AccuracyScore, word.PronunciationAssessment.AccuracyScore)
+		errorType := word.ErrorType
+		if errorType == "" {
+			errorType = word.PronunciationAssessment.ErrorType
+		}
 		result.Words = append(result.Words, entity.ShadowingWordResult{Order: index, Word: word.Word,
-			AccuracyScore: word.PronunciationAssessment.AccuracyScore, ErrorType: word.PronunciationAssessment.ErrorType,
+			AccuracyScore: accuracyScore, ErrorType: errorType,
 			Phonemes: word.Phonemes})
 	}
 	return result, nil
+}
+
+func score(primary, fallback *float64) float64 {
+	if primary != nil {
+		return *primary
+	}
+	if fallback != nil {
+		return *fallback
+	}
+	return 0
+}
+
+func optionalScore(primary, fallback *float64) *float64 {
+	if primary != nil {
+		return primary
+	}
+	return fallback
 }
