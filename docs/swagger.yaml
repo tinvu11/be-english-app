@@ -55,6 +55,23 @@ definitions:
         example: 12
         type: integer
     type: object
+  entity.IAPPlatform:
+    enum:
+    - ios
+    - android
+    type: string
+    x-enum-varnames:
+    - PlatformIOS
+    - PlatformAndroid
+  entity.IAPStatus:
+    properties:
+      isPremium:
+        type: boolean
+      premiumUntil:
+        type: string
+      subscription:
+        $ref: '#/definitions/entity.UserSubscription'
+    type: object
   entity.Language:
     properties:
       code:
@@ -107,6 +124,18 @@ definitions:
         example: Beginner
         type: string
     type: object
+  entity.SubscriptionStatus:
+    enum:
+    - active
+    - expired
+    - in_grace_period
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - SubscriptionActive
+    - SubscriptionExpired
+    - SubscriptionInGracePeriod
+    - SubscriptionCancelled
   entity.Topic:
     properties:
       createdAt:
@@ -156,6 +185,8 @@ definitions:
         type: boolean
       nativeLanguageId:
         type: integer
+      premiumUntil:
+        type: string
       role:
         example: user
         type: string
@@ -177,6 +208,49 @@ definitions:
       total:
         example: 100
         type: integer
+    type: object
+  entity.UserSubscription:
+    properties:
+      autoRenew:
+        type: boolean
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        type: integer
+      lastEventAt:
+        type: string
+      originalTransactionId:
+        type: string
+      platform:
+        $ref: '#/definitions/entity.IAPPlatform'
+      productId:
+        type: string
+      startsAt:
+        type: string
+      status:
+        $ref: '#/definitions/entity.SubscriptionStatus'
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  entity.VerifyPurchaseInput:
+    properties:
+      package_name:
+        type: string
+      platform:
+        $ref: '#/definitions/entity.IAPPlatform'
+      product_id:
+        maxLength: 100
+        type: string
+      purchase_token:
+        type: string
+    required:
+    - platform
+    - product_id
+    - purchase_token
     type: object
   entity.Video:
     properties:
@@ -1131,6 +1205,36 @@ definitions:
       message:
         example: Welcome to the admin dashboard!
         type: string
+    type: object
+  request.AppleIAPWebhook:
+    properties:
+      signedPayload:
+        example: eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19...
+        type: string
+    required:
+    - signedPayload
+    type: object
+  request.GoogleIAPWebhook:
+    properties:
+      message:
+        $ref: '#/definitions/request.GooglePubSubMessage'
+      subscription:
+        example: projects/example/subscriptions/iap-rtdn
+        type: string
+    required:
+    - message
+    type: object
+  request.GooglePubSubMessage:
+    properties:
+      data:
+        example: eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ==
+        type: string
+      messageId:
+        example: "1234567890"
+        type: string
+    required:
+    - data
+    - messageId
     type: object
   request.UpdateUserLanguages:
     properties:
@@ -3231,6 +3335,140 @@ paths:
       summary: Get home feed
       tags:
       - home
+  /iap/status:
+    get:
+      description: Get the current user's latest subscription and premium entitlement
+      operationId: iap-get-status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.IAPStatus'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Get in-app purchase status
+      tags:
+      - iap
+  /iap/verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify an App Store or Google Play purchase and update the current
+        user's subscription
+      operationId: iap-verify-purchase
+      parameters:
+      - description: Purchase details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.VerifyPurchaseInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.IAPStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/v1.Error'
+      security:
+      - BearerAuth: []
+      summary: Verify an in-app purchase
+      tags:
+      - iap
+  /iap/webhooks/apple:
+    post:
+      consumes:
+      - application/json
+      description: Process an App Store Server Notifications V2 signed payload. This
+        public endpoint authenticates the notification by verifying its JWS signature.
+      operationId: iap-apple-webhook
+      parameters:
+      - description: App Store notification
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.AppleIAPWebhook'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: Receive an Apple IAP notification
+      tags:
+      - iap-webhooks
+  /iap/webhooks/google:
+    post:
+      consumes:
+      - application/json
+      description: Process a Google Cloud Pub/Sub push envelope containing a Base64-encoded
+        Real-time Developer Notification. This is a public store callback.
+      operationId: iap-google-webhook
+      parameters:
+      - description: Google Pub/Sub push envelope
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GoogleIAPWebhook'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: Receive a Google Play RTDN notification
+      tags:
+      - iap-webhooks
   /user/languages:
     put:
       consumes:

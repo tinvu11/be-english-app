@@ -10,7 +10,9 @@ import (
 )
 
 // NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, shadowing usecase.Shadowing, verifier middleware.TokenVerifier, l logger.Interface) {
+//
+//nolint:funlen // Keeping the declarative route table together makes auth boundaries auditable.
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, shadowing usecase.Shadowing, iap usecase.IAP, verifier middleware.TokenVerifier, l logger.Interface) {
 	r := &V1{
 		u:          u,
 		languages:  languages,
@@ -21,11 +23,24 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		vocabulary: vocabulary,
 		learning:   learning,
 		shadowing:  shadowing,
+		iap:        iap,
 		l:          l,
 		v:          validator.New(validator.WithRequiredStructEnabled()),
 	}
-	// Protected routes
+	if iap != nil {
+		webhooks := apiV1Group.Group("/iap/webhooks")
+		webhooks.Post("/apple", r.appleIAPWebhook)
+		webhooks.Post("/google", r.googleIAPWebhook)
+	}
+
+	// Protected routes. Public routes must be registered before this prefix
+	// middleware because Fiber evaluates middleware in registration order.
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
+	if iap != nil {
+		iapGroup := protected.Group("/iap")
+		iapGroup.Post("/verify", r.verifyIAPPurchase)
+		iapGroup.Get("/status", r.getIAPStatus)
+	}
 	vocabularyGroup := protected.Group("/vocabulary")
 	{
 		vocabularyGroup.Post("/translate", r.translateVocabulary)

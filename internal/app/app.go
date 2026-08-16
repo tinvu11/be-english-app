@@ -12,14 +12,17 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	appleGateway "github.com/evrone/go-clean-template/internal/gateway/apple"
 	"github.com/evrone/go-clean-template/internal/gateway/azure"
 	"github.com/evrone/go-clean-template/internal/gateway/deepseek"
+	googlePlayGateway "github.com/evrone/go-clean-template/internal/gateway/googleplay"
 	"github.com/evrone/go-clean-template/internal/gateway/groq"
 	"github.com/evrone/go-clean-template/internal/gateway/ytdlp"
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
 	persistDictionaryRepo "github.com/evrone/go-clean-template/internal/repo/persistent/dictionary"
+	persistIAPRepo "github.com/evrone/go-clean-template/internal/repo/persistent/iap"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
 	persistLearningContentRepo "github.com/evrone/go-clean-template/internal/repo/persistent/learningcontent"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
@@ -31,6 +34,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/adminuser"
 	"github.com/evrone/go-clean-template/internal/usecase/caption"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
+	iapUseCase "github.com/evrone/go-clean-template/internal/usecase/iap"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/learningcontent"
 	"github.com/evrone/go-clean-template/internal/usecase/level"
@@ -58,13 +62,14 @@ type useCases struct {
 	vocabulary usecase.Vocabulary
 	learning   usecase.LearningContent
 	shadowing  usecase.Shadowing
+	iap        usecase.IAP
 }
 
 type servers struct {
 	http *httpserver.Server
 }
 
-func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
+func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres) (useCases, error) {
 	userRepo := persistUserRepo.New(pg)
 	languageRepo := persistLanguageRepo.New(pg)
 	levelRepo := persistLevelRepo.New(pg)
@@ -77,15 +82,17 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 	learningContentRepo := persistLearningContentRepo.New(pg)
 	shadowingRepo := persistShadowingRepo.New(pg)
 	youtubeProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
-	translator := deepseek.New(deepseek.Config{BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
-		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries},
+	translator := deepseek.New(deepseek.Config{
+		BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
+		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries,
+	},
 		&http.Client{Timeout: time.Duration(cfg.DeepSeek.TimeoutSeconds) * time.Second})
 	transcriber := groq.New(groq.Config{BaseURL: cfg.Groq.BaseURL, APIKey: cfg.Groq.APIKey, Model: cfg.Groq.Model},
 		&http.Client{Timeout: time.Duration(cfg.Groq.TimeoutSeconds) * time.Second})
 	pronunciationAssessor := azure.New(azure.Config{Endpoint: cfg.AzureSpeech.Endpoint, APIKey: cfg.AzureSpeech.APIKey},
 		&http.Client{Timeout: time.Duration(cfg.AzureSpeech.TimeoutSeconds) * time.Second})
 
-	return useCases{
+	result := useCases{
 		user:       user.New(userRepo, languageRepo),
 		language:   language.New(languageRepo),
 		level:      level.New(levelRepo),
@@ -98,12 +105,32 @@ func initUseCases(cfg *config.Config, pg *postgres.Postgres) useCases {
 		learning:   learningcontent.New(learningContentRepo, dictionaryRepo, captionRepo, videoRepo, userRepo, languageRepo, translator),
 		shadowing:  shadowing.New(shadowingRepo, pronunciationAssessor),
 	}
+	if cfg.IAP.Enabled {
+		httpClient := &http.Client{Timeout: time.Duration(cfg.IAP.TimeoutSeconds) * time.Second}
+		appleClient, err := appleGateway.New(&appleGateway.Config{
+			BaseURL:  cfg.IAP.AppleBaseURL,
+			IssuerID: cfg.IAP.AppleIssuerID, KeyID: cfg.IAP.AppleKeyID, BundleID: cfg.IAP.AppleBundleID,
+			AppAppleID: cfg.IAP.AppleAppID, Environment: cfg.IAP.AppleEnvironment,
+			PrivateKeyPath: cfg.IAP.ApplePrivateKeyPath, RootCAPath: cfg.IAP.AppleRootCAPath,
+		}, httpClient)
+		if err != nil {
+			return useCases{}, fmt.Errorf("initialize Apple IAP: %w", err)
+		}
+		googleClient, err := googlePlayGateway.New(ctx, googlePlayGateway.Config{CredentialsFile: cfg.IAP.GoogleCredentialsFile})
+		if err != nil {
+			return useCases{}, fmt.Errorf("initialize Google Play IAP: %w", err)
+		}
+		iapRepo := persistIAPRepo.New(pg)
+		result.iap = iapUseCase.New(appleClient, googleClient, iapRepo, iapRepo,
+			iapUseCase.Config{GooglePackageName: cfg.IAP.GooglePackageName, RestorePolicy: cfg.IAP.RestorePolicy})
+	}
+	return result, nil
 }
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, uc.shadowing, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, uc.shadowing, uc.iap, verifier, l)
 
 	return servers{
 		http: httpServer,
@@ -173,7 +200,10 @@ func Run(cfg *config.Config) {
 		l.Fatal(fmt.Errorf("app - Run - firebaseauth.New: %w", err))
 	}
 
-	uc := initUseCases(cfg, pg)
+	uc, err := initUseCases(ctx, cfg, pg)
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - initUseCases: %w", err))
+	}
 	s := initServers(cfg, uc, firebaseVerifier, l)
 	s.startServers()
 	s.waitForShutdown(l)

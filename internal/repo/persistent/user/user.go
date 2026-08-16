@@ -284,7 +284,7 @@ func (r *Repo) GetByFirebaseUID(ctx context.Context, firebaseUID string) (entity
 
 func (r *Repo) getUser(ctx context.Context, column, value string) (entity.User, error) {
 	sql, args, err := r.Builder.
-		Select("id, COALESCE(firebase_uid, ''), username, email, role, COALESCE(avatar_url, ''), native_language_id, target_language_id, is_active, created_at, updated_at").
+		Select("id, COALESCE(firebase_uid, ''), username, email, role, COALESCE(avatar_url, ''), native_language_id, target_language_id, is_active, premium_until, created_at, updated_at").
 		From("users").
 		Where(sq.Eq{column: value}).
 		ToSql()
@@ -296,7 +296,7 @@ func (r *Repo) getUser(ctx context.Context, column, value string) (entity.User, 
 
 	err = r.Pool.QueryRow(ctx, sql, args...).
 		Scan(&user.ID, &user.FirebaseUID, &user.Username, &user.Email, &user.Role, &user.AvatarURL,
-			&user.NativeLanguageID, &user.TargetLanguageID, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
+			&user.NativeLanguageID, &user.TargetLanguageID, &user.IsActive, &user.PremiumUntil, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.User{}, entity.ErrUserNotFound
