@@ -117,4 +117,11 @@ type (
 		Assess(ctx context.Context, userID string, videoID, captionID int64, audio []byte, contentType, locale string) (entity.ShadowingAttempt, error)
 		ListAttempts(ctx context.Context, userID string, videoID, captionID int64) (entity.ShadowingAttemptList, error)
 	}
+
+	IAP interface {
+		VerifyPurchase(ctx context.Context, userID string, input entity.VerifyPurchaseInput) (entity.IAPStatus, error)
+		GetStatus(ctx context.Context, userID string) (entity.IAPStatus, error)
+		HandleAppleWebhook(ctx context.Context, signedPayload string) error
+		HandleGoogleWebhook(ctx context.Context, body []byte) error
+	}
 )

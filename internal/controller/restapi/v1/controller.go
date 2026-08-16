@@ -17,6 +17,7 @@ type V1 struct {
 	vocabulary usecase.Vocabulary
 	learning   usecase.LearningContent
 	shadowing  usecase.Shadowing
+	iap        usecase.IAP
 	l          logger.Interface
 	v          *validator.Validate
 }

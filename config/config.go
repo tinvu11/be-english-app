@@ -1,9 +1,17 @@
 package config
 
 import (
+	"errors"
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/caarlos0/env/v11"
+)
+
+var (
+	errMissingIAPConfig = errors.New("IAP is enabled but required configuration is missing")
+	errRestorePolicy    = errors.New("IAP_RESTORE_POLICY must be block or transfer")
 )
 
 type (
@@ -21,6 +29,7 @@ type (
 		DeepSeek    deepseek
 		Groq        groq
 		AzureSpeech azureSpeech
+		IAP         iap
 	}
 
 	// App -.
@@ -96,6 +105,22 @@ type (
 		APIKey         string `env:"AZURE_SPEECH_KEY"`
 		TimeoutSeconds int    `env:"AZURE_SPEECH_TIMEOUT_SECONDS" envDefault:"30"`
 	}
+
+	iap struct {
+		Enabled               bool   `env:"IAP_ENABLED" envDefault:"false"`
+		RestorePolicy         string `env:"IAP_RESTORE_POLICY" envDefault:"block"`
+		TimeoutSeconds        int    `env:"IAP_TIMEOUT_SECONDS" envDefault:"15"`
+		AppleBaseURL          string `env:"APPLE_IAP_BASE_URL" envDefault:"https://api.storekit.apple.com"`
+		AppleIssuerID         string `env:"APPLE_IAP_ISSUER_ID"`
+		AppleKeyID            string `env:"APPLE_IAP_KEY_ID"`
+		AppleBundleID         string `env:"APPLE_IAP_BUNDLE_ID"`
+		AppleAppID            int64  `env:"APPLE_IAP_APP_ID"`
+		AppleEnvironment      string `env:"APPLE_IAP_ENVIRONMENT" envDefault:"Production"`
+		ApplePrivateKeyPath   string `env:"APPLE_IAP_PRIVATE_KEY_PATH"`
+		AppleRootCAPath       string `env:"APPLE_IAP_ROOT_CA_PATH"`
+		GooglePackageName     string `env:"GOOGLE_PLAY_PACKAGE_NAME"`
+		GoogleCredentialsFile string `env:"GOOGLE_PLAY_CREDENTIALS_FILE"`
+	}
 )
 
 // NewConfig returns app config.
@@ -105,5 +130,50 @@ func NewConfig() (*Config, error) {
 		return nil, fmt.Errorf("config error: %w", err)
 	}
 
+	if err := validateIAP(cfg); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
+}
+
+//nolint:gocyclo,cyclop // Startup validation reports each credential invariant precisely.
+func validateIAP(cfg *Config) error {
+	if !cfg.IAP.Enabled {
+		return nil
+	}
+
+	missing := make([]string, 0)
+
+	values := map[string]string{
+		"APPLE_IAP_ISSUER_ID": cfg.IAP.AppleIssuerID, "APPLE_IAP_KEY_ID": cfg.IAP.AppleKeyID,
+		"APPLE_IAP_BUNDLE_ID": cfg.IAP.AppleBundleID, "APPLE_IAP_PRIVATE_KEY_PATH": cfg.IAP.ApplePrivateKeyPath,
+		"APPLE_IAP_ROOT_CA_PATH":   cfg.IAP.AppleRootCAPath,
+		"GOOGLE_PLAY_PACKAGE_NAME": cfg.IAP.GooglePackageName, "GOOGLE_PLAY_CREDENTIALS_FILE": cfg.IAP.GoogleCredentialsFile,
+	}
+	for name, value := range values {
+		if strings.TrimSpace(value) == "" {
+			missing = append(missing, name)
+		}
+	}
+
+	sort.Strings(missing)
+
+	if len(missing) > 0 {
+		return fmt.Errorf("config error: %w: %s", errMissingIAPConfig, strings.Join(missing, ", "))
+	}
+
+	if cfg.IAP.RestorePolicy != "block" && cfg.IAP.RestorePolicy != "transfer" {
+		return fmt.Errorf("config error: %w", errRestorePolicy)
+	}
+
+	if cfg.IAP.AppleEnvironment != "Production" && cfg.IAP.AppleEnvironment != "Sandbox" {
+		return fmt.Errorf("config error: %w: APPLE_IAP_ENVIRONMENT", errMissingIAPConfig)
+	}
+
+	if cfg.IAP.AppleEnvironment == "Production" && cfg.IAP.AppleAppID <= 0 {
+		return fmt.Errorf("config error: %w: APPLE_IAP_APP_ID", errMissingIAPConfig)
+	}
+
+	return nil
 }
