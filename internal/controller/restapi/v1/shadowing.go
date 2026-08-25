@@ -25,7 +25,7 @@ const maxShadowingUploadBytes = 5 << 20
 // @Param locale formData string false "Azure BCP-47 locale; defaults from video language"
 // @Success 201 {object} entity.ShadowingAttempt
 // @Failure 400,401,404,413,422,502,503,500 {object} map[string]string
-// @Failure 429 {object} response.QuotaError
+// @Failure 429 {object} quotaErrorDoc
 // @Security BearerAuth
 // @Router /videos/{videoId}/shadowing-attempts/{captionId} [post]
 func (r *V1) assessShadowing(ctx *fiber.Ctx) error {

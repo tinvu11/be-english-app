@@ -14,7 +14,7 @@ import (
 // @Tags admin-channels
 // @Produce json
 // @Success 200 {array} entity.Channel
-// @Failure 401,403,500 {object} response.Error
+// @Failure 401,403,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/channels [get]
 func (ctrl *controller) listChannels(ctx *fiber.Ctx) error {
@@ -31,7 +31,7 @@ func (ctrl *controller) listChannels(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param request body adminrequest.SaveChannel true "Channel"
 // @Success 201 {object} entity.Channel
-// @Failure 400,401,403,409,500 {object} response.Error
+// @Failure 400,401,403,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/channels [post]
 func (ctrl *controller) createChannel(ctx *fiber.Ctx) error {
@@ -53,7 +53,7 @@ func (ctrl *controller) createChannel(ctx *fiber.Ctx) error {
 // @Param id path int true "Channel ID"
 // @Param request body adminrequest.SaveChannel true "Channel"
 // @Success 200 {object} entity.Channel
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/channels/{id} [put]
 func (ctrl *controller) updateChannel(ctx *fiber.Ctx) error {
@@ -77,7 +77,7 @@ func (ctrl *controller) updateChannel(ctx *fiber.Ctx) error {
 // @Tags admin-channels
 // @Param id path int true "Channel ID"
 // @Success 204
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/channels/{id} [delete]
 func (ctrl *controller) deleteChannel(ctx *fiber.Ctx) error {

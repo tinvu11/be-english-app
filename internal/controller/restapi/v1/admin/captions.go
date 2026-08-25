@@ -26,7 +26,7 @@ const maxSRTFileSize = 10 << 20
 // @Param videoId path int true "Video ID"
 // @Param request body adminrequest.ImportYouTubeCaptions true "YouTube caption import"
 // @Success 201 {object} entity.YouTubeCaptionImportResult
-// @Failure 400,401,403,404,409,422,502,504,500 {object} response.Error
+// @Failure 400,401,403,404,409,422,502,504,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions/import-youtube [post]
 func (ctrl *controller) importYouTubeCaptions(ctx *fiber.Ctx) error {
@@ -53,7 +53,7 @@ func (ctrl *controller) importYouTubeCaptions(ctx *fiber.Ctx) error {
 // @Param videoId path int true "Video ID"
 // @Param request body adminrequest.TranslateCaptions true "Caption translation"
 // @Success 200 {object} entity.CaptionTranslationResult
-// @Failure 400,401,403,404,409,422,429,502,503,504,500 {object} response.Error
+// @Failure 400,401,403,404,409,422,429,502,503,504,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions/translate [post]
 func (ctrl *controller) translateCaptions(ctx *fiber.Ctx) error {
@@ -84,7 +84,7 @@ func (ctrl *controller) translateCaptions(ctx *fiber.Ctx) error {
 // @Param limit query int false "Page size (1-200)" default(50)
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {object} entity.CaptionList
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions [get]
 func (ctrl *controller) listCaptions(ctx *fiber.Ctx) error {
@@ -122,7 +122,7 @@ func (ctrl *controller) listCaptions(ctx *fiber.Ctx) error {
 // @Param translation_files formData file false "Translated SRT files"
 // @Param translation_language_ids formData []int false "Language IDs matching translation files"
 // @Success 201 {array} entity.Caption
-// @Failure 400,401,403,404,409,413,500 {object} response.Error
+// @Failure 400,401,403,404,409,413,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions/import [post]
 func (ctrl *controller) importCaptions(ctx *fiber.Ctx) error {
@@ -175,7 +175,7 @@ func (ctrl *controller) importCaptions(ctx *fiber.Ctx) error {
 // @Param videoId path int true "Video ID"
 // @Param request body adminrequest.SaveCaption true "Caption"
 // @Success 201 {object} entity.Caption
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions [post]
 func (ctrl *controller) createCaption(ctx *fiber.Ctx) error {
@@ -202,7 +202,7 @@ func (ctrl *controller) createCaption(ctx *fiber.Ctx) error {
 // @Param captionId path int true "Caption ID"
 // @Param request body adminrequest.SaveCaption true "Caption"
 // @Success 200 {object} entity.Caption
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions/{captionId} [put]
 func (ctrl *controller) updateCaption(ctx *fiber.Ctx) error {
@@ -226,7 +226,7 @@ func (ctrl *controller) updateCaption(ctx *fiber.Ctx) error {
 // @Param videoId path int true "Video ID"
 // @Param captionId path int true "Caption ID"
 // @Success 204
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{videoId}/captions/{captionId} [delete]
 func (ctrl *controller) deleteCaption(ctx *fiber.Ctx) error {

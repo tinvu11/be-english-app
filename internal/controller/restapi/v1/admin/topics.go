@@ -14,7 +14,7 @@ import (
 // @Tags admin-topics
 // @Produce json
 // @Success 200 {array} entity.Topic
-// @Failure 401,403,500 {object} response.Error
+// @Failure 401,403,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/topics [get]
 func (ctrl *controller) listTopics(ctx *fiber.Ctx) error {
@@ -31,7 +31,7 @@ func (ctrl *controller) listTopics(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param request body adminrequest.SaveTopic true "Topic"
 // @Success 201 {object} entity.Topic
-// @Failure 400,401,403,409,500 {object} response.Error
+// @Failure 400,401,403,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/topics [post]
 func (ctrl *controller) createTopic(ctx *fiber.Ctx) error {
@@ -53,7 +53,7 @@ func (ctrl *controller) createTopic(ctx *fiber.Ctx) error {
 // @Param id path int true "Topic ID"
 // @Param request body adminrequest.SaveTopic true "Topic"
 // @Success 200 {object} entity.Topic
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/topics/{id} [put]
 func (ctrl *controller) updateTopic(ctx *fiber.Ctx) error {
@@ -79,7 +79,7 @@ func (ctrl *controller) updateTopic(ctx *fiber.Ctx) error {
 // @Param id path int true "Topic ID"
 // @Param request body adminrequest.TopicStatus true "Visibility"
 // @Success 200 {object} entity.Topic
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/topics/{id}/status [patch]
 func (ctrl *controller) setTopicActive(ctx *fiber.Ctx) error {
@@ -103,7 +103,7 @@ func (ctrl *controller) setTopicActive(ctx *fiber.Ctx) error {
 // @Tags admin-topics
 // @Param id path int true "Topic ID"
 // @Success 204
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/topics/{id} [delete]
 func (ctrl *controller) deleteTopic(ctx *fiber.Ctx) error {

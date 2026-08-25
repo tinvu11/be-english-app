@@ -18,10 +18,10 @@ import (
 // @Produce     json
 // @Param       language_id query int false "Source language ID"
 // @Success     200 {array} entity.Level
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/levels [get]
 func (ctrl *controller) listLevels(ctx *fiber.Ctx) error {
@@ -50,11 +50,11 @@ func (ctrl *controller) listLevels(ctx *fiber.Ctx) error {
 // @Produce     json
 // @Param       request body adminrequest.SaveLevel true "Level and translations"
 // @Success     201 {object} entity.Level
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     409 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     409 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/levels [post]
 func (ctrl *controller) createLevel(ctx *fiber.Ctx) error {
@@ -80,12 +80,12 @@ func (ctrl *controller) createLevel(ctx *fiber.Ctx) error {
 // @Param       id path int true "Level ID"
 // @Param       request body adminrequest.SaveLevel true "Level and translations"
 // @Success     200 {object} entity.Level
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     404 {object} response.Error
-// @Failure     409 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     404 {object} errorDoc
+// @Failure     409 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/levels/{id} [put]
 func (ctrl *controller) updateLevel(ctx *fiber.Ctx) error {
@@ -112,12 +112,12 @@ func (ctrl *controller) updateLevel(ctx *fiber.Ctx) error {
 // @Tags        admin-levels
 // @Param       id path int true "Level ID"
 // @Success     204
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     404 {object} response.Error
-// @Failure     409 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     404 {object} errorDoc
+// @Failure     409 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/levels/{id} [delete]
 func (ctrl *controller) deleteLevel(ctx *fiber.Ctx) error {

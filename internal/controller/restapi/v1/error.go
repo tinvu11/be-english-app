@@ -9,6 +9,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// quotaErrorDoc keeps the Swagger response type discoverable across v1 handlers.
+type quotaErrorDoc = response.QuotaError
+
 func errorResponse(ctx *fiber.Ctx, code int, msg string) error {
 	return ctx.Status(code).JSON(response.Error{Error: msg})
 }

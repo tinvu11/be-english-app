@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param request body adminrequest.YouTubePreview true "YouTube URL or ID"
 // @Success 200 {object} entity.YouTubeVideoPreview
-// @Failure 400,401,403,502,504,500 {object} response.Error
+// @Failure 400,401,403,502,504,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/youtube-preview [post]
 func (ctrl *controller) previewYouTubeVideo(ctx *fiber.Ctx) error {
@@ -46,7 +46,7 @@ func (ctrl *controller) previewYouTubeVideo(ctx *fiber.Ctx) error {
 // @Param limit query int false "Page size (1-100)" default(20)
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {object} entity.VideoList
-// @Failure 400,401,403,500 {object} response.Error
+// @Failure 400,401,403,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos [get]
 func (ctrl *controller) listVideos(ctx *fiber.Ctx) error {
@@ -85,7 +85,7 @@ func (ctrl *controller) listVideos(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Video ID"
 // @Success 200 {object} entity.Video
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{id} [get]
 func (ctrl *controller) getVideo(ctx *fiber.Ctx) error {
@@ -106,7 +106,7 @@ func (ctrl *controller) getVideo(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param request body adminrequest.SaveVideo true "Video"
 // @Success 201 {object} entity.Video
-// @Failure 400,401,403,409,500 {object} response.Error
+// @Failure 400,401,403,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos [post]
 func (ctrl *controller) createVideo(ctx *fiber.Ctx) error {
@@ -128,7 +128,7 @@ func (ctrl *controller) createVideo(ctx *fiber.Ctx) error {
 // @Param id path int true "Video ID"
 // @Param request body adminrequest.SaveVideo true "Video"
 // @Success 200 {object} entity.Video
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{id} [put]
 func (ctrl *controller) updateVideo(ctx *fiber.Ctx) error {
@@ -155,7 +155,7 @@ func (ctrl *controller) updateVideo(ctx *fiber.Ctx) error {
 // @Param id path int true "Video ID"
 // @Param request body adminrequest.VideoStatus true "Next status"
 // @Success 200 {object} entity.Video
-// @Failure 400,401,403,404,409,500 {object} response.Error
+// @Failure 400,401,403,404,409,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{id}/status [patch]
 func (ctrl *controller) setVideoStatus(ctx *fiber.Ctx) error {
@@ -181,7 +181,7 @@ func (ctrl *controller) setVideoStatus(ctx *fiber.Ctx) error {
 // @Tags admin-videos
 // @Param id path int true "Video ID"
 // @Success 204
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos/{id} [delete]
 func (ctrl *controller) deleteVideo(ctx *fiber.Ctx) error {

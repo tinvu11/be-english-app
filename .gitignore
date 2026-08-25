@@ -32,3 +32,4 @@ firebase-*.json
 
 .tmp-gocache
 .tmp-lintcache
+google-play-service-account.json

@@ -15,208 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/iap/status": {
-            "get": {
-                "description": "Get the current user's latest subscription and premium entitlement",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "iap"
-                ],
-                "summary": "Get in-app purchase status",
-                "operationId": "iap-get-status",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entity.IAPStatus"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/iap/verify": {
-            "post": {
-                "description": "Verify an App Store or Google Play purchase and update the current user's subscription",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "iap"
-                ],
-                "summary": "Verify an in-app purchase",
-                "operationId": "iap-verify-purchase",
-                "parameters": [
-                    {
-                        "description": "Purchase details",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entity.VerifyPurchaseInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entity.IAPStatus"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/iap/webhooks/apple": {
-            "post": {
-                "description": "Process an App Store Server Notifications V2 signed payload. This public endpoint authenticates the notification by verifying its JWS signature.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "iap-webhooks"
-                ],
-                "summary": "Receive an Apple IAP notification",
-                "operationId": "iap-apple-webhook",
-                "parameters": [
-                    {
-                        "description": "App Store notification",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AppleIAPWebhook"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/iap/webhooks/google": {
-            "post": {
-                "description": "Process a Google Cloud Pub/Sub push envelope containing a Base64-encoded Real-time Developer Notification. This is a public store callback.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "iap-webhooks"
-                ],
-                "summary": "Receive a Google Play RTDN notification",
-                "operationId": "iap-google-webhook",
-                "parameters": [
-                    {
-                        "description": "Google Pub/Sub push envelope",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.GoogleIAPWebhook"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/auth/login": {
             "post": {
                 "description": "Verify a Firebase ID token and require the local user to have the admin role",
@@ -252,25 +50,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 }
@@ -298,19 +96,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -352,31 +150,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -427,37 +225,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -489,37 +287,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -551,13 +349,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -592,19 +390,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -648,31 +446,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -725,31 +523,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -792,25 +590,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -854,31 +652,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -931,37 +729,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -994,37 +792,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1056,25 +854,25 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1107,19 +905,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1161,31 +959,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1236,37 +1034,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1298,37 +1096,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1379,31 +1177,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1472,25 +1270,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1541,31 +1339,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1616,31 +1414,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1722,25 +1520,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1782,31 +1580,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1851,37 +1649,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "504": {
                         "description": "Gateway Timeout",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1920,31 +1718,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -1993,37 +1791,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2054,31 +1852,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2130,37 +1928,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2214,31 +2012,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2287,37 +2085,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2386,43 +2184,43 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "413": {
                         "description": "Request Entity Too Large",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2474,55 +2272,55 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "504": {
                         "description": "Gateway Timeout",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2574,67 +2372,67 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "504": {
                         "description": "Gateway Timeout",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2692,37 +2490,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2760,31 +2558,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.Error"
+                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
                         }
                     }
                 },
@@ -2942,6 +2740,208 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ]
+            }
+        },
+        "/iap/status": {
+            "get": {
+                "description": "Get the current user's latest subscription and premium entitlement",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "iap"
+                ],
+                "summary": "Get in-app purchase status",
+                "operationId": "iap-get-status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/iap/verify": {
+            "post": {
+                "description": "Verify an App Store or Google Play purchase and update the current user's subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "iap"
+                ],
+                "summary": "Verify an in-app purchase",
+                "operationId": "iap-verify-purchase",
+                "parameters": [
+                    {
+                        "description": "Purchase details",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/iap/webhooks/apple": {
+            "post": {
+                "description": "Process an App Store Server Notifications V2 signed payload. This public endpoint authenticates the notification by verifying its JWS signature.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "iap-webhooks"
+                ],
+                "summary": "Receive an Apple IAP notification",
+                "operationId": "iap-apple-webhook",
+                "parameters": [
+                    {
+                        "description": "App Store notification",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/iap/webhooks/google": {
+            "post": {
+                "description": "Process a Google Cloud Pub/Sub push envelope containing a Base64-encoded Real-time Developer Notification. This is a public store callback.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "iap-webhooks"
+                ],
+                "summary": "Receive a Google Play RTDN notification",
+                "operationId": "iap-google-webhook",
+                "parameters": [
+                    {
+                        "description": "Google Pub/Sub push envelope",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
             }
         },
         "/user/languages": {
@@ -3708,6 +3708,15 @@ const docTemplate = `{
                             }
                         }
                     },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
@@ -3987,10 +3996,7 @@ const docTemplate = `{
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/internal_controller_restapi_v1.quotaErrorDoc"
                         }
                     },
                     "502": {
@@ -4388,6 +4394,12 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller_restapi_v1.quotaErrorDoc"
                         }
                     },
                     "500": {
@@ -4904,163 +4916,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entity.IAPPlatform": {
-            "type": "string",
-            "enum": [
-                "ios",
-                "android"
-            ],
-            "x-enum-varnames": [
-                "PlatformIOS",
-                "PlatformAndroid"
-            ]
-        },
-        "entity.IAPStatus": {
-            "type": "object",
-            "properties": {
-                "isPremium": {
-                    "type": "boolean"
-                },
-                "premiumUntil": {
-                    "type": "string"
-                },
-                "subscription": {
-                    "$ref": "#/definitions/entity.UserSubscription"
-                }
-            }
-        },
-        "entity.SubscriptionStatus": {
-            "type": "string",
-            "enum": [
-                "active",
-                "expired",
-                "in_grace_period",
-                "cancelled"
-            ],
-            "x-enum-varnames": [
-                "SubscriptionActive",
-                "SubscriptionExpired",
-                "SubscriptionInGracePeriod",
-                "SubscriptionCancelled"
-            ]
-        },
-        "entity.UserSubscription": {
-            "type": "object",
-            "properties": {
-                "autoRenew": {
-                    "type": "boolean"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "expiresAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lastEventAt": {
-                    "type": "string"
-                },
-                "originalTransactionId": {
-                    "type": "string"
-                },
-                "platform": {
-                    "$ref": "#/definitions/entity.IAPPlatform"
-                },
-                "productId": {
-                    "type": "string"
-                },
-                "startsAt": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/entity.SubscriptionStatus"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                }
-            }
-        },
-        "entity.VerifyPurchaseInput": {
-            "type": "object",
-            "required": [
-                "platform",
-                "product_id",
-                "purchase_token"
-            ],
-            "properties": {
-                "package_name": {
-                    "type": "string"
-                },
-                "platform": {
-                    "$ref": "#/definitions/entity.IAPPlatform"
-                },
-                "product_id": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "purchase_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.AppleIAPWebhook": {
-            "type": "object",
-            "required": [
-                "signedPayload"
-            ],
-            "properties": {
-                "signedPayload": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19..."
-                }
-            }
-        },
-        "request.GoogleIAPWebhook": {
-            "type": "object",
-            "required": [
-                "message"
-            ],
-            "properties": {
-                "message": {
-                    "$ref": "#/definitions/request.GooglePubSubMessage"
-                },
-                "subscription": {
-                    "type": "string",
-                    "example": "projects/example/subscriptions/iap-rtdn"
-                }
-            }
-        },
-        "request.GooglePubSubMessage": {
-            "type": "object",
-            "required": [
-                "data",
-                "messageId"
-            ],
-            "properties": {
-                "data": {
-                    "type": "string",
-                    "example": "eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ=="
-                },
-                "messageId": {
-                    "type": "string",
-                    "example": "1234567890"
-                }
-            }
-        },
-        "v1.Error": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "message"
-                }
-            }
-        },
         "entity.Channel": {
             "type": "object",
             "properties": {
@@ -5936,6 +5791,18 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook": {
+            "type": "object",
+            "required": [
+                "signedPayload"
+            ],
+            "properties": {
+                "signedPayload": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19..."
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary": {
             "type": "object",
             "required": [
@@ -5954,6 +5821,38 @@ const docTemplate = `{
                 "vocabSetId": {
                     "type": "integer",
                     "example": 2
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage"
+                },
+                "subscription": {
+                    "type": "string",
+                    "example": "projects/example/subscriptions/iap-rtdn"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage": {
+            "type": "object",
+            "required": [
+                "data",
+                "messageId"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "example": "eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ=="
+                },
+                "messageId": {
+                    "type": "string",
+                    "example": "1234567890"
                 }
             }
         },
@@ -6235,6 +6134,42 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.FeatureKey": {
+            "type": "string",
+            "enum": [
+                "youtube_import",
+                "shadowing_assessment"
+            ],
+            "x-enum-varnames": [
+                "FeatureYouTubeImport",
+                "FeatureShadowingAssessment"
+            ]
+        },
+        "github_com_evrone_go-clean-template_internal_entity.IAPPlatform": {
+            "type": "string",
+            "enum": [
+                "ios",
+                "android"
+            ],
+            "x-enum-varnames": [
+                "PlatformIOS",
+                "PlatformAndroid"
+            ]
+        },
+        "github_com_evrone_go-clean-template_internal_entity.IAPStatus": {
+            "type": "object",
+            "properties": {
+                "isPremium": {
+                    "type": "boolean"
+                },
+                "premiumUntil": {
+                    "type": "string"
+                },
+                "subscription": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserSubscription"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.LearningQuiz": {
             "type": "object",
             "properties": {
@@ -6377,6 +6312,62 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus": {
+            "type": "string",
+            "enum": [
+                "active",
+                "expired",
+                "in_grace_period",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "SubscriptionActive",
+                "SubscriptionExpired",
+                "SubscriptionInGracePeriod",
+                "SubscriptionCancelled"
+            ]
+        },
+        "github_com_evrone_go-clean-template_internal_entity.UserSubscription": {
+            "type": "object",
+            "properties": {
+                "autoRenew": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "expiresAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastEventAt": {
+                    "type": "string"
+                },
+                "originalTransactionId": {
+                    "type": "string"
+                },
+                "platform": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "startsAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_evrone_go-clean-template_internal_entity.UserVocabulary": {
             "type": "object",
             "properties": {
@@ -6426,6 +6417,29 @@ const docTemplate = `{
                 },
                 "video": {
                     "$ref": "#/definitions/entity.Video"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput": {
+            "type": "object",
+            "required": [
+                "platform",
+                "product_id",
+                "purchase_token"
+            ],
+            "properties": {
+                "package_name": {
+                    "type": "string"
+                },
+                "platform": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform"
+                },
+                "product_id": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "purchase_token": {
+                    "type": "string"
                 }
             }
         },
@@ -6663,12 +6677,50 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_controller_restapi_v1.quotaErrorDoc": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "feature": {
+                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.FeatureKey"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "remaining": {
+                    "type": "integer"
+                },
+                "resetAt": {
+                    "type": "string"
+                },
+                "upgradeRequired": {
+                    "type": "boolean"
+                },
+                "used": {
+                    "type": "integer"
+                }
+            }
+        },
         "internal_controller_restapi_v1_admin.dashboardResponse": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string",
                     "example": "Welcome to the admin dashboard!"
+                }
+            }
+        },
+        "internal_controller_restapi_v1_admin.errorDoc": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "message"
                 }
             }
         },

@@ -55,23 +55,6 @@ definitions:
         example: 12
         type: integer
     type: object
-  entity.IAPPlatform:
-    enum:
-    - ios
-    - android
-    type: string
-    x-enum-varnames:
-    - PlatformIOS
-    - PlatformAndroid
-  entity.IAPStatus:
-    properties:
-      isPremium:
-        type: boolean
-      premiumUntil:
-        type: string
-      subscription:
-        $ref: '#/definitions/entity.UserSubscription'
-    type: object
   entity.Language:
     properties:
       code:
@@ -124,18 +107,6 @@ definitions:
         example: Beginner
         type: string
     type: object
-  entity.SubscriptionStatus:
-    enum:
-    - active
-    - expired
-    - in_grace_period
-    - cancelled
-    type: string
-    x-enum-varnames:
-    - SubscriptionActive
-    - SubscriptionExpired
-    - SubscriptionInGracePeriod
-    - SubscriptionCancelled
   entity.Topic:
     properties:
       createdAt:
@@ -208,49 +179,6 @@ definitions:
       total:
         example: 100
         type: integer
-    type: object
-  entity.UserSubscription:
-    properties:
-      autoRenew:
-        type: boolean
-      createdAt:
-        type: string
-      expiresAt:
-        type: string
-      id:
-        type: integer
-      lastEventAt:
-        type: string
-      originalTransactionId:
-        type: string
-      platform:
-        $ref: '#/definitions/entity.IAPPlatform'
-      productId:
-        type: string
-      startsAt:
-        type: string
-      status:
-        $ref: '#/definitions/entity.SubscriptionStatus'
-      updatedAt:
-        type: string
-      userId:
-        type: string
-    type: object
-  entity.VerifyPurchaseInput:
-    properties:
-      package_name:
-        type: string
-      platform:
-        $ref: '#/definitions/entity.IAPPlatform'
-      product_id:
-        maxLength: 100
-        type: string
-      purchase_token:
-        type: string
-    required:
-    - platform
-    - product_id
-    - purchase_token
     type: object
   entity.Video:
     properties:
@@ -697,6 +625,14 @@ definitions:
       user:
         $ref: '#/definitions/entity.User'
     type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook:
+    properties:
+      signedPayload:
+        example: eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19...
+        type: string
+    required:
+    - signedPayload
+    type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary:
     properties:
       captionId:
@@ -711,6 +647,28 @@ definitions:
     required:
     - dictionaryId
     - vocabSetId
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook:
+    properties:
+      message:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage'
+      subscription:
+        example: projects/example/subscriptions/iap-rtdn
+        type: string
+    required:
+    - message
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage:
+    properties:
+      data:
+        example: eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ==
+        type: string
+      messageId:
+        example: "1234567890"
+        type: string
+    required:
+    - data
+    - messageId
     type: object
   github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo:
     properties:
@@ -904,6 +862,31 @@ definitions:
       word:
         type: string
     type: object
+  github_com_evrone_go-clean-template_internal_entity.FeatureKey:
+    enum:
+    - youtube_import
+    - shadowing_assessment
+    type: string
+    x-enum-varnames:
+    - FeatureYouTubeImport
+    - FeatureShadowingAssessment
+  github_com_evrone_go-clean-template_internal_entity.IAPPlatform:
+    enum:
+    - ios
+    - android
+    type: string
+    x-enum-varnames:
+    - PlatformIOS
+    - PlatformAndroid
+  github_com_evrone_go-clean-template_internal_entity.IAPStatus:
+    properties:
+      isPremium:
+        type: boolean
+      premiumUntil:
+        type: string
+      subscription:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserSubscription'
+    type: object
   github_com_evrone_go-clean-template_internal_entity.LearningQuiz:
     properties:
       correctOption:
@@ -1003,6 +986,45 @@ definitions:
         example: comfortable
         type: string
     type: object
+  github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus:
+    enum:
+    - active
+    - expired
+    - in_grace_period
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - SubscriptionActive
+    - SubscriptionExpired
+    - SubscriptionInGracePeriod
+    - SubscriptionCancelled
+  github_com_evrone_go-clean-template_internal_entity.UserSubscription:
+    properties:
+      autoRenew:
+        type: boolean
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        type: integer
+      lastEventAt:
+        type: string
+      originalTransactionId:
+        type: string
+      platform:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform'
+      productId:
+        type: string
+      startsAt:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus'
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
   github_com_evrone_go-clean-template_internal_entity.UserVocabulary:
     properties:
       captionId:
@@ -1038,6 +1060,22 @@ definitions:
         type: boolean
       video:
         $ref: '#/definitions/entity.Video'
+    type: object
+  github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput:
+    properties:
+      package_name:
+        type: string
+      platform:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform'
+      product_id:
+        maxLength: 100
+        type: string
+      purchase_token:
+        type: string
+    required:
+    - platform
+    - product_id
+    - purchase_token
     type: object
   github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem:
     properties:
@@ -1200,41 +1238,36 @@ definitions:
         example: dQw4w9WgXcQ
         type: string
     type: object
+  internal_controller_restapi_v1.quotaErrorDoc:
+    properties:
+      code:
+        type: string
+      error:
+        type: string
+      feature:
+        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.FeatureKey'
+      limit:
+        type: integer
+      remaining:
+        type: integer
+      resetAt:
+        type: string
+      upgradeRequired:
+        type: boolean
+      used:
+        type: integer
+    type: object
   internal_controller_restapi_v1_admin.dashboardResponse:
     properties:
       message:
         example: Welcome to the admin dashboard!
         type: string
     type: object
-  request.AppleIAPWebhook:
+  internal_controller_restapi_v1_admin.errorDoc:
     properties:
-      signedPayload:
-        example: eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19...
+      error:
+        example: message
         type: string
-    required:
-    - signedPayload
-    type: object
-  request.GoogleIAPWebhook:
-    properties:
-      message:
-        $ref: '#/definitions/request.GooglePubSubMessage'
-      subscription:
-        example: projects/example/subscriptions/iap-rtdn
-        type: string
-    required:
-    - message
-    type: object
-  request.GooglePubSubMessage:
-    properties:
-      data:
-        example: eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ==
-        type: string
-      messageId:
-        example: "1234567890"
-        type: string
-    required:
-    - data
-    - messageId
     type: object
   request.UpdateUserLanguages:
     properties:
@@ -1590,19 +1623,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       summary: Admin login
       tags:
       - admin
@@ -1620,15 +1653,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List YouTube channels
@@ -1654,23 +1687,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create YouTube channel
@@ -1691,27 +1724,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete YouTube channel
@@ -1742,27 +1775,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update YouTube channel
@@ -1782,11 +1815,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Admin dashboard
@@ -1808,15 +1841,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List languages
@@ -1844,23 +1877,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create language
@@ -1894,23 +1927,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update language
@@ -1937,19 +1970,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List levels
@@ -1977,23 +2010,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create level
@@ -2015,27 +2048,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete level
@@ -2068,27 +2101,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update level
@@ -2108,19 +2141,19 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Get current admin
@@ -2140,15 +2173,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List topics
@@ -2174,23 +2207,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create topic with translations
@@ -2212,27 +2245,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete topic
@@ -2263,27 +2296,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update topic and translations
@@ -2315,23 +2348,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Enable or disable topic visibility
@@ -2376,19 +2409,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List application users
@@ -2420,23 +2453,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Promote or demote user
@@ -2468,23 +2501,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Lock or unlock user
@@ -2538,19 +2571,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List videos
@@ -2576,23 +2609,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create video
@@ -2612,23 +2645,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete video
@@ -2651,23 +2684,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Get video details
@@ -2698,27 +2731,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update video
@@ -2752,27 +2785,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Transition video status
@@ -2807,23 +2840,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List all captions of a video
@@ -2854,27 +2887,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Add one caption manually
@@ -2899,23 +2932,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete one caption
@@ -2951,27 +2984,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update a caption and all translations
@@ -3017,31 +3050,31 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "413":
           description: Request Entity Too Large
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Import original and translated SRT files
@@ -3076,39 +3109,39 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "504":
           description: Gateway Timeout
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Import YouTube captions
@@ -3141,47 +3174,47 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "429":
           description: Too Many Requests
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "504":
           description: Gateway Timeout
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Translate video captions with the configured AI provider
@@ -3210,27 +3243,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
         "504":
           description: Gateway Timeout
           schema:
-            $ref: '#/definitions/v1.Error'
+            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Preview YouTube video metadata
@@ -3345,7 +3378,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.IAPStatus'
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus'
         "401":
           description: Unauthorized
           schema:
@@ -3372,14 +3405,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/entity.VerifyPurchaseInput'
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.IAPStatus'
+            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus'
         "400":
           description: Bad Request
           schema:
@@ -3418,7 +3451,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/request.AppleIAPWebhook'
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook'
       produces:
       - application/json
       responses:
@@ -3450,7 +3483,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/request.GoogleIAPWebhook'
+          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook'
       produces:
       - application/json
       responses:
@@ -4008,9 +4041,7 @@ paths:
         "429":
           description: Too Many Requests
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/internal_controller_restapi_v1.quotaErrorDoc'
         "502":
           description: Bad Gateway
           schema:
@@ -4275,6 +4306,10 @@ paths:
             additionalProperties:
               type: string
             type: object
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/internal_controller_restapi_v1.quotaErrorDoc'
         "500":
           description: Internal Server Error
           schema:
@@ -4340,6 +4375,12 @@ paths:
             type: object
         "409":
           description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "429":
+          description: Too Many Requests
           schema:
             additionalProperties:
               type: string

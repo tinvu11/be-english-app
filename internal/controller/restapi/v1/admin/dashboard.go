@@ -17,8 +17,8 @@ type dashboardResponse struct {
 // @Tags        admin
 // @Produce     json
 // @Success     200 {object} dashboardResponse
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/dashboard [get]
 func (ctrl *controller) dashboard(ctx *fiber.Ctx) error {

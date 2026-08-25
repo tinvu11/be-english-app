@@ -21,7 +21,7 @@ import (
 // @Param limit query int false "Page size" default(20) maximum(100)
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {object} entity.UserList
-// @Failure 400,401,403,500 {object} response.Error
+// @Failure 400,401,403,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/users [get]
 func (ctrl *controller) listUsers(ctx *fiber.Ctx) error {
@@ -60,7 +60,7 @@ func (ctrl *controller) listUsers(ctx *fiber.Ctx) error {
 // @Param id path string true "User UUID"
 // @Param request body adminrequest.UserStatus true "Account status"
 // @Success 200 {object} entity.User
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/users/{id}/status [patch]
 func (ctrl *controller) setUserActive(ctx *fiber.Ctx) error {
@@ -86,7 +86,7 @@ func (ctrl *controller) setUserActive(ctx *fiber.Ctx) error {
 // @Param id path string true "User UUID"
 // @Param request body adminrequest.UserRole true "User role"
 // @Success 200 {object} entity.User
-// @Failure 400,401,403,404,500 {object} response.Error
+// @Failure 400,401,403,404,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/users/{id}/role [patch]
 func (ctrl *controller) setUserRole(ctx *fiber.Ctx) error {

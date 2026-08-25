@@ -19,10 +19,10 @@ import (
 // @Produce     json
 // @Param       request body adminrequest.Login true "Firebase credentials"
 // @Success     200 {object} adminresponse.Login
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Router      /admin/auth/login [post]
 func (ctrl *controller) login(ctx *fiber.Ctx) error {
 	var body adminrequest.Login
@@ -57,10 +57,10 @@ func (ctrl *controller) login(ctx *fiber.Ctx) error {
 // @Tags        admin
 // @Produce     json
 // @Success     200 {object} entity.User
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     404 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     404 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/me [get]
 func (ctrl *controller) me(ctx *fiber.Ctx) error {

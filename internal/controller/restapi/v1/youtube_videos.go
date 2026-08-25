@@ -95,7 +95,7 @@ func buildOriginalVideoCaptions(captions entity.VideoCaptions, state entity.Vide
 // @Param videoId path int true "Video ID"
 // @Success 200 {object} entity.VideoCaptions
 // @Failure 400,401,404,409,502 {object} map[string]string
-// @Failure 429 {object} response.QuotaError
+// @Failure 429 {object} quotaErrorDoc
 // @Security BearerAuth
 // @Router /videos/{videoId}/captions/translation [get]
 func (r *V1) getTranslatedVideoCaptions(ctx *fiber.Ctx) error {

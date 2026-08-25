@@ -17,9 +17,9 @@ import (
 // @Tags        admin-languages
 // @Produce     json
 // @Success     200 {array} entity.Language
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/languages [get]
 func (ctrl *controller) listLanguages(ctx *fiber.Ctx) error {
@@ -41,11 +41,11 @@ func (ctrl *controller) listLanguages(ctx *fiber.Ctx) error {
 // @Produce     json
 // @Param       request body adminrequest.CreateLanguage true "Language"
 // @Success     201 {object} entity.Language
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     409 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     409 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/languages [post]
 func (ctrl *controller) createLanguage(ctx *fiber.Ctx) error {
@@ -74,11 +74,11 @@ func (ctrl *controller) createLanguage(ctx *fiber.Ctx) error {
 // @Param       id path int true "Language ID"
 // @Param       request body adminrequest.UpdateLanguage true "Language changes"
 // @Success     200 {object} entity.Language
-// @Failure     400 {object} response.Error
-// @Failure     401 {object} response.Error
-// @Failure     403 {object} response.Error
-// @Failure     404 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     400 {object} errorDoc
+// @Failure     401 {object} errorDoc
+// @Failure     403 {object} errorDoc
+// @Failure     404 {object} errorDoc
+// @Failure     500 {object} errorDoc
 // @Security    BearerAuth
 // @Router      /admin/languages/{id} [put]
 func (ctrl *controller) updateLanguage(ctx *fiber.Ctx) error {
