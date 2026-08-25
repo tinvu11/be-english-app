@@ -26,6 +26,7 @@ import (
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
 	persistLearningContentRepo "github.com/evrone/go-clean-template/internal/repo/persistent/learningcontent"
 	persistLevelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/level"
+	persistQuotaRepo "github.com/evrone/go-clean-template/internal/repo/persistent/quota"
 	persistShadowingRepo "github.com/evrone/go-clean-template/internal/repo/persistent/shadowing"
 	persistTopicRepo "github.com/evrone/go-clean-template/internal/repo/persistent/topic"
 	persistUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/user"
@@ -38,6 +39,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/learningcontent"
 	"github.com/evrone/go-clean-template/internal/usecase/level"
+	quotaUseCase "github.com/evrone/go-clean-template/internal/usecase/quota"
 	"github.com/evrone/go-clean-template/internal/usecase/shadowing"
 	"github.com/evrone/go-clean-template/internal/usecase/topic"
 	"github.com/evrone/go-clean-template/internal/usecase/user"
@@ -81,6 +83,11 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 	dictionaryRepo := persistDictionaryRepo.New(pg)
 	learningContentRepo := persistLearningContentRepo.New(pg)
 	shadowingRepo := persistShadowingRepo.New(pg)
+	quotaRepo := persistQuotaRepo.New(pg)
+	quota := quotaUseCase.New(quotaRepo, userRepo, quotaUseCase.Config{
+		YouTubeImportDailyLimit:       cfg.Quota.YouTubeImportDailyLimit,
+		ShadowingAssessmentDailyLimit: cfg.Quota.ShadowingAssessmentDailyLimit,
+	})
 	youtubeProvider := ytdlp.New(cfg.YTDLP.BaseURL, &http.Client{Timeout: time.Duration(cfg.YTDLP.TimeoutSeconds) * time.Second})
 	translator := deepseek.New(deepseek.Config{
 		BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
@@ -99,11 +106,11 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 		topic:      topic.New(topicRepo),
 		channel:    channel.New(channelRepo),
 		adminUser:  adminuser.New(adminUserRepo),
-		video:      video.New(videoRepo, userRepo, youtubeProvider),
+		video:      video.New(videoRepo, userRepo, youtubeProvider, quota),
 		caption:    caption.New(captionRepo, videoRepo, languageRepo, userRepo, youtubeProvider, transcriber, translator, cfg.DeepSeek.MaxBatchItems),
 		vocabulary: vocabulary.New(dictionaryRepo, userRepo, languageRepo, translator),
 		learning:   learningcontent.New(learningContentRepo, dictionaryRepo, captionRepo, videoRepo, userRepo, languageRepo, translator),
-		shadowing:  shadowing.New(shadowingRepo, pronunciationAssessor),
+		shadowing:  shadowing.New(shadowingRepo, pronunciationAssessor, quota),
 	}
 	if cfg.IAP.Enabled {
 		httpClient := &http.Client{Timeout: time.Duration(cfg.IAP.TimeoutSeconds) * time.Second}

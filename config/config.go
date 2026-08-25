@@ -12,6 +12,7 @@ import (
 var (
 	errMissingIAPConfig = errors.New("IAP is enabled but required configuration is missing")
 	errRestorePolicy    = errors.New("IAP_RESTORE_POLICY must be block or transfer")
+	errInvalidQuota     = errors.New("feature quota limits must not be negative")
 )
 
 type (
@@ -29,6 +30,7 @@ type (
 		DeepSeek    deepseek
 		Groq        groq
 		AzureSpeech azureSpeech
+		Quota       quota
 		IAP         iap
 	}
 
@@ -106,6 +108,11 @@ type (
 		TimeoutSeconds int    `env:"AZURE_SPEECH_TIMEOUT_SECONDS" envDefault:"30"`
 	}
 
+	quota struct {
+		YouTubeImportDailyLimit       int `env:"QUOTA_YOUTUBE_IMPORT_DAILY" envDefault:"3"`
+		ShadowingAssessmentDailyLimit int `env:"QUOTA_SHADOWING_ASSESSMENT_DAILY" envDefault:"5"`
+	}
+
 	iap struct {
 		Enabled               bool   `env:"IAP_ENABLED" envDefault:"false"`
 		RestorePolicy         string `env:"IAP_RESTORE_POLICY" envDefault:"block"`
@@ -132,6 +139,10 @@ func NewConfig() (*Config, error) {
 
 	if err := validateIAP(cfg); err != nil {
 		return nil, err
+	}
+
+	if cfg.Quota.YouTubeImportDailyLimit < 0 || cfg.Quota.ShadowingAssessmentDailyLimit < 0 {
+		return nil, fmt.Errorf("config error: %w", errInvalidQuota)
 	}
 
 	return cfg, nil

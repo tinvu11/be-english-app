@@ -18,15 +18,21 @@ type UseCase struct {
 	repo    repo.VideoRepo
 	users   repo.UserRepo
 	youtube gateway.YouTubeProvider
+	quota   usecase.Quota
 }
 
-func New(repository repo.VideoRepo, users repo.UserRepo, youtube gateway.YouTubeProvider) usecase.Video {
-	return newTraced(&UseCase{repo: repository, users: users, youtube: youtube})
+func New(repository repo.VideoRepo, users repo.UserRepo, youtube gateway.YouTubeProvider, quota usecase.Quota) usecase.Video {
+	return newTraced(&UseCase{repo: repository, users: users, youtube: youtube, quota: quota})
 }
 
 func (uc *UseCase) AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOrID string) (entity.Video, bool, error) {
 	if strings.TrimSpace(userID) == "" {
 		return entity.Video{}, false, entity.ErrInvalidVideo
+	}
+
+	youtubeID, err := parseYouTubeID(youtubeURLOrID)
+	if err != nil {
+		return entity.Video{}, false, err
 	}
 	user, err := uc.users.GetByID(ctx, userID)
 	if err != nil {
@@ -35,7 +41,12 @@ func (uc *UseCase) AddUserYouTubeVideo(ctx context.Context, userID, youtubeURLOr
 	if user.TargetLanguageID == nil || *user.TargetLanguageID <= 0 {
 		return entity.Video{}, false, entity.ErrTargetLanguageRequired
 	}
-	preview, err := uc.PreviewYouTubeVideo(ctx, youtubeURLOrID)
+
+	if _, err = uc.quota.Consume(ctx, userID, entity.FeatureYouTubeImport); err != nil {
+		return entity.Video{}, false, err
+	}
+
+	preview, err := uc.youtube.PreviewVideo(ctx, youtubeID)
 	if err != nil {
 		return entity.Video{}, false, err
 	}

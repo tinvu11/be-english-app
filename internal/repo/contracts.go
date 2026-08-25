@@ -3,6 +3,7 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/evrone/go-clean-template/internal/entity"
 )
@@ -124,5 +125,9 @@ type (
 		GetPrompt(ctx context.Context, videoID, captionID int64) (entity.ShadowingPrompt, error)
 		SaveAttempt(ctx context.Context, userID string, prompt entity.ShadowingPrompt, assessment entity.PronunciationAssessment) (entity.ShadowingAttempt, error)
 		ListAttempts(ctx context.Context, userID string, videoID, captionID int64) (entity.ShadowingAttemptList, error)
+	}
+
+	QuotaRepo interface {
+		Consume(ctx context.Context, userID string, feature entity.FeatureKey, windowStart time.Time, limit int) (int, bool, error)
 	}
 )

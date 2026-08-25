@@ -62,6 +62,8 @@ var (
 	ErrPronunciationUnavailable     = errors.New("pronunciation assessment is unavailable")
 	ErrPronunciationFailed          = errors.New("pronunciation assessment provider failed")
 	ErrInvalidPronunciation         = errors.New("pronunciation assessment response is invalid")
+	ErrInvalidQuota                 = errors.New("invalid feature quota")
+	ErrQuotaExceeded                = errors.New("feature quota exceeded")
 	ErrInvalidIAPPurchase           = errors.New("invalid in-app purchase")
 	ErrIAPVerificationFailed        = errors.New("store verification failed")
 	ErrIAPProductMismatch           = errors.New("purchase product does not match request")

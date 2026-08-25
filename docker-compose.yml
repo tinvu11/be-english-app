@@ -36,6 +36,8 @@ x-backend-app-environment: &x-backend-app-environment
   # yt-dlp service
   YTDLP_BASE_URL: "http://ytdlp:8081"
   YTDLP_TIMEOUT_SECONDS: "300"
+  QUOTA_YOUTUBE_IMPORT_DAILY: "3"
+  QUOTA_SHADOWING_ASSESSMENT_DAILY: "5"
   GROQ_BASE_URL: "https://api.groq.com"
   GROQ_API_KEY: "${GROQ_API_KEY}"
   GROQ_WHISPER_MODEL: "whisper-large-v3-turbo"

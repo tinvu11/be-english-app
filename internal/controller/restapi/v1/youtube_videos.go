@@ -94,7 +94,8 @@ func buildOriginalVideoCaptions(captions entity.VideoCaptions, state entity.Vide
 // @Produce json
 // @Param videoId path int true "Video ID"
 // @Success 200 {object} entity.VideoCaptions
-// @Failure 400,401,404,409,429,502 {object} map[string]string
+// @Failure 400,401,404,409,502 {object} map[string]string
+// @Failure 429 {object} response.QuotaError
 // @Security BearerAuth
 // @Router /videos/{videoId}/captions/translation [get]
 func (r *V1) getTranslatedVideoCaptions(ctx *fiber.Ctx) error {
@@ -140,7 +141,7 @@ func (r *V1) userCaptionError(ctx *fiber.Ctx, err error) error {
 // @Produce json
 // @Param request body request.ImportYouTubeVideo true "YouTube video import"
 // @Success 200 {object} entity.UserYouTubeVideoResult
-// @Failure 400,401,404,409,502 {object} map[string]string
+// @Failure 400,401,404,409,429,502 {object} map[string]string
 // @Security BearerAuth
 // @Router /videos/import-youtube [post]
 func (r *V1) importUserYouTubeVideo(ctx *fiber.Ctx) error {
@@ -177,6 +178,8 @@ func (r *V1) importUserYouTubeVideo(ctx *fiber.Ctx) error {
 
 func (r *V1) youtubeVideoError(ctx *fiber.Ctx, err error, operation string) error {
 	switch {
+	case errors.Is(err, entity.ErrQuotaExceeded):
+		return quotaErrorResponse(ctx, err)
 	case errors.Is(err, entity.ErrInvalidVideo), errors.Is(err, entity.ErrInvalidCaption):
 		return errorResponse(ctx, http.StatusBadRequest, err.Error())
 	case errors.Is(err, entity.ErrTargetLanguageRequired):

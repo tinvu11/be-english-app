@@ -118,6 +118,10 @@ type (
 		ListAttempts(ctx context.Context, userID string, videoID, captionID int64) (entity.ShadowingAttemptList, error)
 	}
 
+	Quota interface {
+		Consume(ctx context.Context, userID string, feature entity.FeatureKey) (entity.QuotaStatus, error)
+	}
+
 	IAP interface {
 		VerifyPurchase(ctx context.Context, userID string, input entity.VerifyPurchaseInput) (entity.IAPStatus, error)
 		GetStatus(ctx context.Context, userID string) (entity.IAPStatus, error)

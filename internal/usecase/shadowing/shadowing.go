@@ -19,10 +19,11 @@ const (
 type UseCase struct {
 	repo     repo.ShadowingRepo
 	assessor gateway.PronunciationAssessor
+	quota    usecase.Quota
 }
 
-func New(repository repo.ShadowingRepo, assessor gateway.PronunciationAssessor) usecase.Shadowing {
-	return &UseCase{repo: repository, assessor: assessor}
+func New(repository repo.ShadowingRepo, assessor gateway.PronunciationAssessor, quota usecase.Quota) usecase.Shadowing {
+	return &UseCase{repo: repository, assessor: assessor, quota: quota}
 }
 
 func (u *UseCase) Assess(ctx context.Context, userID string, videoID, captionID int64, audio []byte, contentType, locale string) (entity.ShadowingAttempt, error) {
@@ -35,6 +36,10 @@ func (u *UseCase) Assess(ctx context.Context, userID string, videoID, captionID 
 	}
 	prompt.LanguageCode, err = resolveLocale(locale, prompt.LanguageCode)
 	if err != nil {
+		return entity.ShadowingAttempt{}, err
+	}
+
+	if _, err = u.quota.Consume(ctx, userID, entity.FeatureShadowingAssessment); err != nil {
 		return entity.ShadowingAttempt{}, err
 	}
 	assessment, err := u.assessor.Assess(ctx, entity.PronunciationAssessmentInput{
