@@ -58,5 +58,5 @@ func NewRouter(app *fiber.App, cfg *config.Config, u usecase.User, languages use
 		apiV1Group.Use(otelfiber.Middleware())
 	}
 
-	v1.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, captions, vocabulary, learning, shadowing, iap, verifier, l)
+	v1.NewRoutes(apiV1Group, u, languages, levels, topics, channels, adminUsers, videos, captions, vocabulary, learning, shadowing, iap, cfg.IAP.AppleEnabled, verifier, l)
 }

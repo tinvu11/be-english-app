@@ -48,6 +48,9 @@ func (uc *UseCase) VerifyPurchase(ctx context.Context, userID string, input enti
 
 	switch input.Platform {
 	case entity.PlatformIOS:
+		if uc.apple == nil {
+			return entity.IAPStatus{}, entity.ErrIAPPlatformDisabled
+		}
 		result, err = uc.apple.VerifyTransaction(ctx, input.PurchaseToken)
 	case entity.PlatformAndroid:
 		if input.PackageName == "" || input.PackageName != uc.cfg.GooglePackageName {
@@ -104,6 +107,9 @@ func (uc *UseCase) GetStatus(ctx context.Context, userID string) (entity.IAPStat
 }
 
 func (uc *UseCase) HandleAppleWebhook(ctx context.Context, signedPayload string) error {
+	if uc.apple == nil {
+		return entity.ErrIAPPlatformDisabled
+	}
 	if signedPayload == "" {
 		return entity.ErrInvalidIAPPurchase
 	}

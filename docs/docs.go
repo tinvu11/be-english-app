@@ -44,31 +44,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login"
+                            "$ref": "#/definitions/response.Login"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 }
@@ -96,19 +96,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -136,7 +136,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel"
+                            "$ref": "#/definitions/request.SaveChannel"
                         }
                     }
                 ],
@@ -150,31 +150,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -211,7 +211,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel"
+                            "$ref": "#/definitions/request.SaveChannel"
                         }
                     }
                 ],
@@ -225,37 +225,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -287,37 +287,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -343,19 +343,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.dashboardResponse"
+                            "$ref": "#/definitions/admin.dashboardResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -390,19 +390,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -432,7 +432,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage"
+                            "$ref": "#/definitions/request.CreateLanguage"
                         }
                     }
                 ],
@@ -446,31 +446,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -509,7 +509,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage"
+                            "$ref": "#/definitions/request.UpdateLanguage"
                         }
                     }
                 ],
@@ -523,31 +523,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -590,25 +590,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -638,7 +638,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel"
+                            "$ref": "#/definitions/request.SaveLevel"
                         }
                     }
                 ],
@@ -652,31 +652,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -715,7 +715,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel"
+                            "$ref": "#/definitions/request.SaveLevel"
                         }
                     }
                 ],
@@ -729,37 +729,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -792,37 +792,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -854,25 +854,25 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -905,19 +905,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -945,7 +945,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic"
+                            "$ref": "#/definitions/request.SaveTopic"
                         }
                     }
                 ],
@@ -959,31 +959,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1020,7 +1020,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic"
+                            "$ref": "#/definitions/request.SaveTopic"
                         }
                     }
                 ],
@@ -1034,37 +1034,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1096,37 +1096,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1163,7 +1163,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus"
+                            "$ref": "#/definitions/request.TopicStatus"
                         }
                     }
                 ],
@@ -1177,31 +1177,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1270,25 +1270,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1325,7 +1325,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserRole"
+                            "$ref": "#/definitions/request.UserRole"
                         }
                     }
                 ],
@@ -1339,31 +1339,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1400,7 +1400,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserStatus"
+                            "$ref": "#/definitions/request.UserStatus"
                         }
                     }
                 ],
@@ -1414,31 +1414,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1520,25 +1520,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1566,7 +1566,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo"
+                            "$ref": "#/definitions/request.SaveVideo"
                         }
                     }
                 ],
@@ -1580,31 +1580,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1643,43 +1643,43 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview"
+                            "$ref": "#/definitions/entity.YouTubeVideoPreview"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "504": {
                         "description": "Gateway Timeout",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1718,31 +1718,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1777,7 +1777,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo"
+                            "$ref": "#/definitions/request.SaveVideo"
                         }
                     }
                 ],
@@ -1791,37 +1791,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1852,31 +1852,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -1914,7 +1914,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.VideoStatus"
+                            "$ref": "#/definitions/request.VideoStatus"
                         }
                     }
                 ],
@@ -1928,37 +1928,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2006,37 +2006,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionList"
+                            "$ref": "#/definitions/entity.CaptionList"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2071,7 +2071,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption"
+                            "$ref": "#/definitions/request.SaveCaption"
                         }
                     }
                 ],
@@ -2079,43 +2079,43 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption"
+                            "$ref": "#/definitions/entity.Caption"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2177,50 +2177,50 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption"
+                                "$ref": "#/definitions/entity.Caption"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "413": {
                         "description": "Request Entity Too Large",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2258,7 +2258,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions"
+                            "$ref": "#/definitions/request.ImportYouTubeCaptions"
                         }
                     }
                 ],
@@ -2266,61 +2266,61 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult"
+                            "$ref": "#/definitions/entity.YouTubeCaptionImportResult"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "504": {
                         "description": "Gateway Timeout",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2358,7 +2358,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions"
+                            "$ref": "#/definitions/request.TranslateCaptions"
                         }
                     }
                 ],
@@ -2366,73 +2366,73 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult"
+                            "$ref": "#/definitions/entity.CaptionTranslationResult"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "504": {
                         "description": "Gateway Timeout",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2476,7 +2476,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption"
+                            "$ref": "#/definitions/request.SaveCaption"
                         }
                     }
                 ],
@@ -2484,43 +2484,43 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption"
+                            "$ref": "#/definitions/entity.Caption"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2558,31 +2558,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1_admin.errorDoc"
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     }
                 },
@@ -2757,7 +2757,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus"
+                            "$ref": "#/definitions/entity.IAPStatus"
                         }
                     },
                     "401": {
@@ -2801,7 +2801,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput"
+                            "$ref": "#/definitions/entity.VerifyPurchaseInput"
                         }
                     }
                 ],
@@ -2809,7 +2809,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus"
+                            "$ref": "#/definitions/entity.IAPStatus"
                         }
                     },
                     "400": {
@@ -2838,6 +2838,12 @@ const docTemplate = `{
                     },
                     "502": {
                         "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
                             "$ref": "#/definitions/v1.Error"
                         }
@@ -2871,7 +2877,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook"
+                            "$ref": "#/definitions/request.AppleIAPWebhook"
                         }
                     }
                 ],
@@ -2918,7 +2924,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook"
+                            "$ref": "#/definitions/request.GoogleIAPWebhook"
                         }
                     }
                 ],
@@ -3661,7 +3667,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo"
+                            "$ref": "#/definitions/request.ImportYouTubeVideo"
                         }
                     }
                 ],
@@ -3669,7 +3675,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult"
+                            "$ref": "#/definitions/entity.UserYouTubeVideoResult"
                         }
                     },
                     "400": {
@@ -3830,7 +3836,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview"
+                            "$ref": "#/definitions/entity.YouTubeVideoPreview"
                         }
                     },
                     "400": {
@@ -3892,7 +3898,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions"
+                            "$ref": "#/definitions/response.OriginalVideoCaptions"
                         }
                     },
                     "400": {
@@ -3954,7 +3960,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions"
+                            "$ref": "#/definitions/entity.VideoCaptions"
                         }
                     },
                     "400": {
@@ -3996,7 +4002,7 @@ const docTemplate = `{
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1.quotaErrorDoc"
+                            "$ref": "#/definitions/v1.quotaErrorDoc"
                         }
                     },
                     "502": {
@@ -4180,7 +4186,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoLearningContent"
+                            "$ref": "#/definitions/entity.VideoLearningContent"
                         }
                     },
                     "400": {
@@ -4263,7 +4269,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList"
+                            "$ref": "#/definitions/entity.ShadowingAttemptList"
                         }
                     },
                     "400": {
@@ -4348,7 +4354,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt"
+                            "$ref": "#/definitions/entity.ShadowingAttempt"
                         }
                     },
                     "400": {
@@ -4399,7 +4405,7 @@ const docTemplate = `{
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller_restapi_v1.quotaErrorDoc"
+                            "$ref": "#/definitions/v1.quotaErrorDoc"
                         }
                     },
                     "500": {
@@ -4451,7 +4457,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyOverview"
+                            "$ref": "#/definitions/entity.VocabularyOverview"
                         }
                     },
                     "401": {
@@ -4523,7 +4529,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet"
+                            "$ref": "#/definitions/request.SaveVocabularySet"
                         }
                     }
                 ],
@@ -4531,7 +4537,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet"
+                            "$ref": "#/definitions/entity.VocabularySet"
                         }
                     }
                 },
@@ -4568,7 +4574,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet"
+                            "$ref": "#/definitions/request.SaveVocabularySet"
                         }
                     }
                 ],
@@ -4576,7 +4582,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet"
+                            "$ref": "#/definitions/entity.VocabularySet"
                         }
                     }
                 },
@@ -4633,7 +4639,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary"
+                            "$ref": "#/definitions/request.TranslateVocabulary"
                         }
                     }
                 ],
@@ -4641,7 +4647,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult"
+                            "$ref": "#/definitions/entity.VocabularyLookupResult"
                         }
                     },
                     "400": {
@@ -4746,7 +4752,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary"
+                            "$ref": "#/definitions/request.CreateUserVocabulary"
                         }
                     }
                 ],
@@ -4754,7 +4760,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary"
+                            "$ref": "#/definitions/entity.UserVocabulary"
                         }
                     }
                 },
@@ -4870,7 +4876,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary"
+                            "$ref": "#/definitions/request.UpdateUserVocabulary"
                         }
                     }
                 ],
@@ -4878,7 +4884,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary"
+                            "$ref": "#/definitions/entity.UserVocabulary"
                         }
                     }
                 },
@@ -4916,6 +4922,121 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "admin.dashboardResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Welcome to the admin dashboard!"
+                }
+            }
+        },
+        "admin.errorDoc": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "message"
+                }
+            }
+        },
+        "entity.Caption": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "Hello"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "endTimeMs": {
+                    "type": "integer",
+                    "example": 3500
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pinyinOrFurigana": {
+                    "type": "string"
+                },
+                "sentenceOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "startTimeMs": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "translations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.CaptionTranslation"
+                    }
+                },
+                "videoId": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "entity.CaptionList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Caption"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 500
+                }
+            }
+        },
+        "entity.CaptionTranslation": {
+            "type": "object",
+            "properties": {
+                "languageCode": {
+                    "type": "string",
+                    "example": "vi"
+                },
+                "languageId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "languageName": {
+                    "type": "string",
+                    "example": "Vietnamese"
+                },
+                "text": {
+                    "type": "string",
+                    "example": "Xin chào"
+                }
+            }
+        },
+        "entity.CaptionTranslationResult": {
+            "type": "object",
+            "properties": {
+                "skippedCount": {
+                    "type": "integer"
+                },
+                "sourceLanguageCode": {
+                    "type": "string"
+                },
+                "targetLanguageCode": {
+                    "type": "string"
+                },
+                "translatedCount": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
+                }
+            }
+        },
         "entity.Channel": {
             "type": "object",
             "properties": {
@@ -4993,6 +5114,86 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.DictionaryEntry": {
+            "type": "object",
+            "properties": {
+                "audioUrl": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "example1Sentence": {
+                    "type": "string"
+                },
+                "example1Translation": {
+                    "type": "string"
+                },
+                "example2Sentence": {
+                    "type": "string"
+                },
+                "example2Translation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "meaning": {
+                    "type": "string"
+                },
+                "partOfSpeech": {
+                    "type": "string"
+                },
+                "phoneticOrPinyin": {
+                    "type": "string"
+                },
+                "sourceLanguageId": {
+                    "type": "integer"
+                },
+                "targetLanguageId": {
+                    "type": "integer"
+                },
+                "word": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.FeatureKey": {
+            "type": "string",
+            "enum": [
+                "youtube_import",
+                "shadowing_assessment"
+            ],
+            "x-enum-varnames": [
+                "FeatureYouTubeImport",
+                "FeatureShadowingAssessment"
+            ]
+        },
+        "entity.IAPPlatform": {
+            "type": "string",
+            "enum": [
+                "ios",
+                "android"
+            ],
+            "x-enum-varnames": [
+                "PlatformIOS",
+                "PlatformAndroid"
+            ]
+        },
+        "entity.IAPStatus": {
+            "type": "object",
+            "properties": {
+                "isPremium": {
+                    "type": "boolean"
+                },
+                "premiumUntil": {
+                    "type": "string"
+                },
+                "subscription": {
+                    "$ref": "#/definitions/entity.UserSubscription"
+                }
+            }
+        },
         "entity.Language": {
             "type": "object",
             "properties": {
@@ -5023,6 +5224,43 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "English"
+                }
+            }
+        },
+        "entity.LearningQuiz": {
+            "type": "object",
+            "properties": {
+                "correctOption": {
+                    "type": "integer"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.LearningQuizOption"
+                    }
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "question": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.LearningQuizOption": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
                 }
             }
         },
@@ -5065,6 +5303,126 @@ const docTemplate = `{
                     "example": "Beginner"
                 }
             }
+        },
+        "entity.ShadowingAttempt": {
+            "type": "object",
+            "properties": {
+                "accuracy_score": {
+                    "type": "number",
+                    "example": 79
+                },
+                "caption_id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "completeness_score": {
+                    "type": "number",
+                    "example": 100
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "duration_ms": {
+                    "type": "integer",
+                    "example": 2300
+                },
+                "fluency_score": {
+                    "type": "number",
+                    "example": 86
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "locale": {
+                    "type": "string",
+                    "example": "en-US"
+                },
+                "passed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "pronunciation_score": {
+                    "type": "number",
+                    "example": 82
+                },
+                "prosody_score": {
+                    "type": "number",
+                    "example": 75
+                },
+                "provider": {
+                    "type": "string",
+                    "example": "azure"
+                },
+                "reference_text": {
+                    "type": "string",
+                    "example": "Good morning."
+                },
+                "video_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "words": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.ShadowingWordResult"
+                    }
+                }
+            }
+        },
+        "entity.ShadowingAttemptList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.ShadowingAttempt"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "entity.ShadowingWordResult": {
+            "type": "object",
+            "properties": {
+                "accuracy_score": {
+                    "type": "number",
+                    "example": 54
+                },
+                "error_type": {
+                    "type": "string",
+                    "example": "Mispronunciation"
+                },
+                "order": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "phonemes": {
+                    "type": "object"
+                },
+                "word": {
+                    "type": "string",
+                    "example": "comfortable"
+                }
+            }
+        },
+        "entity.SubscriptionStatus": {
+            "type": "string",
+            "enum": [
+                "active",
+                "expired",
+                "in_grace_period",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "SubscriptionActive",
+                "SubscriptionExpired",
+                "SubscriptionInGracePeriod",
+                "SubscriptionCancelled"
+            ]
         },
         "entity.Topic": {
             "type": "object",
@@ -5170,6 +5528,122 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.UserSubscription": {
+            "type": "object",
+            "properties": {
+                "autoRenew": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "expiresAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastEventAt": {
+                    "type": "string"
+                },
+                "originalTransactionId": {
+                    "type": "string"
+                },
+                "platform": {
+                    "$ref": "#/definitions/entity.IAPPlatform"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "startsAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/entity.SubscriptionStatus"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.UserVocabulary": {
+            "type": "object",
+            "properties": {
+                "captionId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "entry": {
+                    "$ref": "#/definitions/entity.DictionaryEntry"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isLearned": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "learnedAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vocabSetId": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "entity.UserYouTubeVideoResult": {
+            "type": "object",
+            "properties": {
+                "captionImported": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "captionSource": {
+                    "type": "string",
+                    "example": "groq_whisper"
+                },
+                "reused": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "video": {
+                    "$ref": "#/definitions/entity.Video"
+                }
+            }
+        },
+        "entity.VerifyPurchaseInput": {
+            "type": "object",
+            "required": [
+                "platform",
+                "product_id",
+                "purchase_token"
+            ],
+            "properties": {
+                "package_name": {
+                    "type": "string"
+                },
+                "platform": {
+                    "$ref": "#/definitions/entity.IAPPlatform"
+                },
+                "product_id": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "purchase_token": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Video": {
             "type": "object",
             "properties": {
@@ -5245,6 +5719,26 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.VideoCaptionItem": {
+            "type": "object",
+            "properties": {
+                "endTimeMs": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sentenceOrder": {
+                    "type": "integer"
+                },
+                "startTimeMs": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.VideoCaptionTranslationAvailability": {
             "type": "object",
             "properties": {
@@ -5267,6 +5761,29 @@ const docTemplate = `{
                 "translatedCaptionCount": {
                     "type": "integer",
                     "example": 120
+                }
+            }
+        },
+        "entity.VideoCaptions": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.VideoCaptionItem"
+                    }
+                },
+                "languageCode": {
+                    "type": "string"
+                },
+                "languageId": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
                 }
             }
         },
@@ -5310,6 +5827,35 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.VideoLearningContent": {
+            "type": "object",
+            "properties": {
+                "languageCode": {
+                    "type": "string"
+                },
+                "languageId": {
+                    "type": "integer"
+                },
+                "quizzes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.LearningQuiz"
+                    }
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "videoId": {
+                    "type": "integer"
+                },
+                "vocabulary": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.DictionaryEntry"
+                    }
+                }
+            }
+        },
         "entity.VideoLevel": {
             "type": "object",
             "properties": {
@@ -5342,6 +5888,23 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.VideoState": {
+            "type": "object",
+            "properties": {
+                "last_position_seconds": {
+                    "type": "integer",
+                    "example": 75
+                },
+                "saved": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "watched": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "entity.VideoTopic": {
             "type": "object",
             "properties": {
@@ -5362,7 +5925,202 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CaptionTranslation": {
+        "entity.VocabularyCategorySummary": {
+            "type": "object",
+            "properties": {
+                "colorHex": {
+                    "type": "string",
+                    "example": "#3B82F6"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "learnedWords": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Travel"
+                },
+                "totalWords": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "unlearnedWords": {
+                    "type": "integer",
+                    "example": 8
+                }
+            }
+        },
+        "entity.VocabularyLookupResult": {
+            "type": "object",
+            "properties": {
+                "entry": {
+                    "$ref": "#/definitions/entity.DictionaryEntry"
+                },
+                "reused": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "entity.VocabularyOverview": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.VocabularyCategorySummary"
+                    }
+                },
+                "learnedWords": {
+                    "type": "integer",
+                    "example": 30
+                },
+                "totalWords": {
+                    "type": "integer",
+                    "example": 50
+                },
+                "unlearnedWords": {
+                    "type": "integer",
+                    "example": 20
+                }
+            }
+        },
+        "entity.VocabularySet": {
+            "type": "object",
+            "properties": {
+                "colorHex": {
+                    "type": "string",
+                    "example": "#3B82F6"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sourceLanguageId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "targetLanguageId": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Travel"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "wordCount": {
+                    "type": "integer",
+                    "example": 20
+                }
+            }
+        },
+        "entity.YouTubeCaptionImportResult": {
+            "type": "object",
+            "properties": {
+                "importedCount": {
+                    "type": "integer",
+                    "example": 128
+                },
+                "languageCode": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "source": {
+                    "type": "string",
+                    "example": "groq_whisper"
+                },
+                "videoId": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "entity.YouTubeVideoPreview": {
+            "type": "object",
+            "properties": {
+                "channelName": {
+                    "type": "string"
+                },
+                "channelYoutubeId": {
+                    "type": "string"
+                },
+                "durationSeconds": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "thumbnailUrl": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Video title"
+                },
+                "youtubeId": {
+                    "type": "string",
+                    "example": "dQw4w9WgXcQ"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login": {
+            "type": "object",
+            "required": [
+                "idToken"
+            ],
+            "properties": {
+                "idToken": {
+                    "type": "string",
+                    "example": "firebase-id-token"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview": {
+            "type": "object",
+            "required": [
+                "youtubeUrl"
+            ],
+            "properties": {
+                "youtubeUrl": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                }
+            }
+        },
+        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview": {
+            "type": "object",
+            "required": [
+                "youtubeUrl"
+            ],
+            "properties": {
+                "youtubeUrl": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                }
+            }
+        },
+        "request.AppleIAPWebhook": {
+            "type": "object",
+            "required": [
+                "signedPayload"
+            ],
+            "properties": {
+                "signedPayload": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19..."
+                }
+            }
+        },
+        "request.CaptionTranslation": {
             "type": "object",
             "required": [
                 "languageId",
@@ -5379,7 +6137,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage": {
+        "request.CreateLanguage": {
             "type": "object",
             "required": [
                 "code",
@@ -5408,7 +6166,60 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions": {
+        "request.CreateUserVocabulary": {
+            "type": "object",
+            "required": [
+                "dictionaryId",
+                "vocabSetId"
+            ],
+            "properties": {
+                "captionId": {
+                    "type": "integer",
+                    "example": 35
+                },
+                "dictionaryId": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "vocabSetId": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "request.GoogleIAPWebhook": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "$ref": "#/definitions/request.GooglePubSubMessage"
+                },
+                "subscription": {
+                    "type": "string",
+                    "example": "projects/example/subscriptions/iap-rtdn"
+                }
+            }
+        },
+        "request.GooglePubSubMessage": {
+            "type": "object",
+            "required": [
+                "data",
+                "messageId"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "example": "eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ=="
+                },
+                "messageId": {
+                    "type": "string",
+                    "example": "1234567890"
+                }
+            }
+        },
+        "request.ImportYouTubeCaptions": {
             "type": "object",
             "required": [
                 "mode"
@@ -5429,7 +6240,25 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation": {
+        "request.ImportYouTubeVideo": {
+            "type": "object",
+            "required": [
+                "youtubeUrl"
+            ],
+            "properties": {
+                "audioLanguageCode": {
+                    "type": "string",
+                    "maxLength": 35,
+                    "example": "en"
+                },
+                "youtubeUrl": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                }
+            }
+        },
+        "request.LevelTranslation": {
             "type": "object",
             "required": [
                 "languageId",
@@ -5447,19 +6276,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login": {
-            "type": "object",
-            "required": [
-                "idToken"
-            ],
-            "properties": {
-                "idToken": {
-                    "type": "string",
-                    "example": "firebase-id-token"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption": {
+        "request.SaveCaption": {
             "type": "object",
             "required": [
                 "content"
@@ -5491,12 +6308,12 @@ const docTemplate = `{
                 "translations": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CaptionTranslation"
+                        "$ref": "#/definitions/request.CaptionTranslation"
                     }
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel": {
+        "request.SaveChannel": {
             "type": "object",
             "required": [
                 "channelName",
@@ -5524,7 +6341,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel": {
+        "request.SaveLevel": {
             "type": "object",
             "required": [
                 "code",
@@ -5545,12 +6362,12 @@ const docTemplate = `{
                     "type": "array",
                     "minItems": 1,
                     "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation"
+                        "$ref": "#/definitions/request.LevelTranslation"
                     }
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic": {
+        "request.SaveTopic": {
             "type": "object",
             "required": [
                 "isActive",
@@ -5575,12 +6392,12 @@ const docTemplate = `{
                     "type": "array",
                     "minItems": 1,
                     "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation"
+                        "$ref": "#/definitions/request.TopicTranslation"
                     }
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo": {
+        "request.SaveVideo": {
             "type": "object",
             "required": [
                 "channelId",
@@ -5643,7 +6460,25 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus": {
+        "request.SaveVocabularySet": {
+            "type": "object",
+            "required": [
+                "colorHex",
+                "title"
+            ],
+            "properties": {
+                "colorHex": {
+                    "type": "string",
+                    "example": "#3B82F6"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "Travel"
+                }
+            }
+        },
+        "request.TopicStatus": {
             "type": "object",
             "required": [
                 "isActive"
@@ -5655,7 +6490,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation": {
+        "request.TopicTranslation": {
             "type": "object",
             "required": [
                 "languageId",
@@ -5673,7 +6508,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions": {
+        "request.TranslateCaptions": {
             "type": "object",
             "required": [
                 "mode",
@@ -5694,7 +6529,20 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage": {
+        "request.TranslateVocabulary": {
+            "type": "object",
+            "required": [
+                "word"
+            ],
+            "properties": {
+                "word": {
+                    "type": "string",
+                    "maxLength": 150,
+                    "example": "remember"
+                }
+            }
+        },
+        "request.UpdateLanguage": {
             "type": "object",
             "required": [
                 "flagEmoji",
@@ -5722,1008 +6570,6 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserRole": {
-            "type": "object",
-            "required": [
-                "role"
-            ],
-            "properties": {
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "user",
-                        "admin"
-                    ],
-                    "example": "admin"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserStatus": {
-            "type": "object",
-            "required": [
-                "isActive"
-            ],
-            "properties": {
-                "isActive": {
-                    "type": "boolean",
-                    "example": false
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.VideoStatus": {
-            "type": "object",
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "enum": [
-                        "published",
-                        "archived"
-                    ],
-                    "example": "published"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview": {
-            "type": "object",
-            "required": [
-                "youtubeUrl"
-            ],
-            "properties": {
-                "youtubeUrl": {
-                    "type": "string",
-                    "maxLength": 2048,
-                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login": {
-            "type": "object",
-            "properties": {
-                "authenticated": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "user": {
-                    "$ref": "#/definitions/entity.User"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook": {
-            "type": "object",
-            "required": [
-                "signedPayload"
-            ],
-            "properties": {
-                "signedPayload": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19..."
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary": {
-            "type": "object",
-            "required": [
-                "dictionaryId",
-                "vocabSetId"
-            ],
-            "properties": {
-                "captionId": {
-                    "type": "integer",
-                    "example": 35
-                },
-                "dictionaryId": {
-                    "type": "integer",
-                    "example": 12
-                },
-                "vocabSetId": {
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook": {
-            "type": "object",
-            "required": [
-                "message"
-            ],
-            "properties": {
-                "message": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage"
-                },
-                "subscription": {
-                    "type": "string",
-                    "example": "projects/example/subscriptions/iap-rtdn"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage": {
-            "type": "object",
-            "required": [
-                "data",
-                "messageId"
-            ],
-            "properties": {
-                "data": {
-                    "type": "string",
-                    "example": "eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ=="
-                },
-                "messageId": {
-                    "type": "string",
-                    "example": "1234567890"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo": {
-            "type": "object",
-            "required": [
-                "youtubeUrl"
-            ],
-            "properties": {
-                "audioLanguageCode": {
-                    "type": "string",
-                    "maxLength": 35,
-                    "example": "en"
-                },
-                "youtubeUrl": {
-                    "type": "string",
-                    "maxLength": 2048,
-                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet": {
-            "type": "object",
-            "required": [
-                "colorHex",
-                "title"
-            ],
-            "properties": {
-                "colorHex": {
-                    "type": "string",
-                    "example": "#3B82F6"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "example": "Travel"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary": {
-            "type": "object",
-            "required": [
-                "word"
-            ],
-            "properties": {
-                "word": {
-                    "type": "string",
-                    "maxLength": 150,
-                    "example": "remember"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary": {
-            "type": "object",
-            "required": [
-                "vocabSetId"
-            ],
-            "properties": {
-                "captionId": {
-                    "type": "integer",
-                    "example": 35
-                },
-                "isLearned": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "vocabSetId": {
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview": {
-            "type": "object",
-            "required": [
-                "youtubeUrl"
-            ],
-            "properties": {
-                "youtubeUrl": {
-                    "type": "string",
-                    "maxLength": 2048,
-                    "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem"
-                    }
-                },
-                "languageCode": {
-                    "type": "string"
-                },
-                "languageId": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                },
-                "videoId": {
-                    "type": "integer"
-                },
-                "video_state": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoState"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem": {
-            "type": "object",
-            "properties": {
-                "dictation_completed": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "endTimeMs": {
-                    "type": "integer",
-                    "example": 3500
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "sentenceOrder": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "startTimeMs": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "text": {
-                    "type": "string",
-                    "example": "Hello"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.Caption": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "example": "Hello"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "endTimeMs": {
-                    "type": "integer",
-                    "example": 3500
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "pinyinOrFurigana": {
-                    "type": "string"
-                },
-                "sentenceOrder": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "startTimeMs": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "translations": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslation"
-                    }
-                },
-                "videoId": {
-                    "type": "integer",
-                    "example": 10
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.CaptionList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption"
-                    }
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 500
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.CaptionTranslation": {
-            "type": "object",
-            "properties": {
-                "languageCode": {
-                    "type": "string",
-                    "example": "vi"
-                },
-                "languageId": {
-                    "type": "integer",
-                    "example": 2
-                },
-                "languageName": {
-                    "type": "string",
-                    "example": "Vietnamese"
-                },
-                "text": {
-                    "type": "string",
-                    "example": "Xin chào"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult": {
-            "type": "object",
-            "properties": {
-                "skippedCount": {
-                    "type": "integer"
-                },
-                "sourceLanguageCode": {
-                    "type": "string"
-                },
-                "targetLanguageCode": {
-                    "type": "string"
-                },
-                "translatedCount": {
-                    "type": "integer"
-                },
-                "videoId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.DictionaryEntry": {
-            "type": "object",
-            "properties": {
-                "audioUrl": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "example1Sentence": {
-                    "type": "string"
-                },
-                "example1Translation": {
-                    "type": "string"
-                },
-                "example2Sentence": {
-                    "type": "string"
-                },
-                "example2Translation": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "meaning": {
-                    "type": "string"
-                },
-                "partOfSpeech": {
-                    "type": "string"
-                },
-                "phoneticOrPinyin": {
-                    "type": "string"
-                },
-                "sourceLanguageId": {
-                    "type": "integer"
-                },
-                "targetLanguageId": {
-                    "type": "integer"
-                },
-                "word": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.FeatureKey": {
-            "type": "string",
-            "enum": [
-                "youtube_import",
-                "shadowing_assessment"
-            ],
-            "x-enum-varnames": [
-                "FeatureYouTubeImport",
-                "FeatureShadowingAssessment"
-            ]
-        },
-        "github_com_evrone_go-clean-template_internal_entity.IAPPlatform": {
-            "type": "string",
-            "enum": [
-                "ios",
-                "android"
-            ],
-            "x-enum-varnames": [
-                "PlatformIOS",
-                "PlatformAndroid"
-            ]
-        },
-        "github_com_evrone_go-clean-template_internal_entity.IAPStatus": {
-            "type": "object",
-            "properties": {
-                "isPremium": {
-                    "type": "boolean"
-                },
-                "premiumUntil": {
-                    "type": "string"
-                },
-                "subscription": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.UserSubscription"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.LearningQuiz": {
-            "type": "object",
-            "properties": {
-                "correctOption": {
-                    "type": "integer"
-                },
-                "explanation": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuizOption"
-                    }
-                },
-                "order": {
-                    "type": "integer"
-                },
-                "question": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.LearningQuizOption": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "order": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt": {
-            "type": "object",
-            "properties": {
-                "accuracy_score": {
-                    "type": "number",
-                    "example": 79
-                },
-                "caption_id": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "completeness_score": {
-                    "type": "number",
-                    "example": 100
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "duration_ms": {
-                    "type": "integer",
-                    "example": 2300
-                },
-                "fluency_score": {
-                    "type": "number",
-                    "example": 86
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 123
-                },
-                "locale": {
-                    "type": "string",
-                    "example": "en-US"
-                },
-                "passed": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "pronunciation_score": {
-                    "type": "number",
-                    "example": 82
-                },
-                "prosody_score": {
-                    "type": "number",
-                    "example": 75
-                },
-                "provider": {
-                    "type": "string",
-                    "example": "azure"
-                },
-                "reference_text": {
-                    "type": "string",
-                    "example": "Good morning."
-                },
-                "video_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "words": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult"
-                    }
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt"
-                    }
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 3
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult": {
-            "type": "object",
-            "properties": {
-                "accuracy_score": {
-                    "type": "number",
-                    "example": 54
-                },
-                "error_type": {
-                    "type": "string",
-                    "example": "Mispronunciation"
-                },
-                "order": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "phonemes": {
-                    "type": "object"
-                },
-                "word": {
-                    "type": "string",
-                    "example": "comfortable"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus": {
-            "type": "string",
-            "enum": [
-                "active",
-                "expired",
-                "in_grace_period",
-                "cancelled"
-            ],
-            "x-enum-varnames": [
-                "SubscriptionActive",
-                "SubscriptionExpired",
-                "SubscriptionInGracePeriod",
-                "SubscriptionCancelled"
-            ]
-        },
-        "github_com_evrone_go-clean-template_internal_entity.UserSubscription": {
-            "type": "object",
-            "properties": {
-                "autoRenew": {
-                    "type": "boolean"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "expiresAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lastEventAt": {
-                    "type": "string"
-                },
-                "originalTransactionId": {
-                    "type": "string"
-                },
-                "platform": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform"
-                },
-                "productId": {
-                    "type": "string"
-                },
-                "startsAt": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.UserVocabulary": {
-            "type": "object",
-            "properties": {
-                "captionId": {
-                    "type": "integer"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "entry": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "isLearned": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "learnedAt": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "vocabSetId": {
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult": {
-            "type": "object",
-            "properties": {
-                "captionImported": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "captionSource": {
-                    "type": "string",
-                    "example": "groq_whisper"
-                },
-                "reused": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "video": {
-                    "$ref": "#/definitions/entity.Video"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput": {
-            "type": "object",
-            "required": [
-                "platform",
-                "product_id",
-                "purchase_token"
-            ],
-            "properties": {
-                "package_name": {
-                    "type": "string"
-                },
-                "platform": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform"
-                },
-                "product_id": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "purchase_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem": {
-            "type": "object",
-            "properties": {
-                "endTimeMs": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "sentenceOrder": {
-                    "type": "integer"
-                },
-                "startTimeMs": {
-                    "type": "integer"
-                },
-                "text": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VideoCaptions": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem"
-                    }
-                },
-                "languageCode": {
-                    "type": "string"
-                },
-                "languageId": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                },
-                "videoId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VideoLearningContent": {
-            "type": "object",
-            "properties": {
-                "languageCode": {
-                    "type": "string"
-                },
-                "languageId": {
-                    "type": "integer"
-                },
-                "quizzes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuiz"
-                    }
-                },
-                "summary": {
-                    "type": "string"
-                },
-                "videoId": {
-                    "type": "integer"
-                },
-                "vocabulary": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry"
-                    }
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VideoState": {
-            "type": "object",
-            "properties": {
-                "last_position_seconds": {
-                    "type": "integer",
-                    "example": 75
-                },
-                "saved": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "watched": {
-                    "type": "boolean",
-                    "example": true
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary": {
-            "type": "object",
-            "properties": {
-                "colorHex": {
-                    "type": "string",
-                    "example": "#3B82F6"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "learnedWords": {
-                    "type": "integer",
-                    "example": 12
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Travel"
-                },
-                "totalWords": {
-                    "type": "integer",
-                    "example": 20
-                },
-                "unlearnedWords": {
-                    "type": "integer",
-                    "example": 8
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult": {
-            "type": "object",
-            "properties": {
-                "entry": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry"
-                },
-                "reused": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VocabularyOverview": {
-            "type": "object",
-            "properties": {
-                "categories": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary"
-                    }
-                },
-                "learnedWords": {
-                    "type": "integer",
-                    "example": 30
-                },
-                "totalWords": {
-                    "type": "integer",
-                    "example": 50
-                },
-                "unlearnedWords": {
-                    "type": "integer",
-                    "example": 20
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.VocabularySet": {
-            "type": "object",
-            "properties": {
-                "colorHex": {
-                    "type": "string",
-                    "example": "#3B82F6"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "sourceLanguageId": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "targetLanguageId": {
-                    "type": "integer",
-                    "example": 2
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Travel"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "wordCount": {
-                    "type": "integer",
-                    "example": 20
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult": {
-            "type": "object",
-            "properties": {
-                "importedCount": {
-                    "type": "integer",
-                    "example": 128
-                },
-                "languageCode": {
-                    "type": "string",
-                    "example": "en"
-                },
-                "source": {
-                    "type": "string",
-                    "example": "groq_whisper"
-                },
-                "videoId": {
-                    "type": "integer",
-                    "example": 10
-                }
-            }
-        },
-        "github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview": {
-            "type": "object",
-            "properties": {
-                "channelName": {
-                    "type": "string"
-                },
-                "channelYoutubeId": {
-                    "type": "string"
-                },
-                "durationSeconds": {
-                    "type": "integer",
-                    "example": 300
-                },
-                "thumbnailUrl": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Video title"
-                },
-                "youtubeId": {
-                    "type": "string",
-                    "example": "dQw4w9WgXcQ"
-                }
-            }
-        },
-        "internal_controller_restapi_v1.quotaErrorDoc": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "error": {
-                    "type": "string"
-                },
-                "feature": {
-                    "$ref": "#/definitions/github_com_evrone_go-clean-template_internal_entity.FeatureKey"
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "remaining": {
-                    "type": "integer"
-                },
-                "resetAt": {
-                    "type": "string"
-                },
-                "upgradeRequired": {
-                    "type": "boolean"
-                },
-                "used": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_controller_restapi_v1_admin.dashboardResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Welcome to the admin dashboard!"
-                }
-            }
-        },
-        "internal_controller_restapi_v1_admin.errorDoc": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "message"
-                }
-            }
-        },
         "request.UpdateUserLanguages": {
             "type": "object",
             "required": [
@@ -6741,6 +6587,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateUserVocabulary": {
+            "type": "object",
+            "required": [
+                "vocabSetId"
+            ],
+            "properties": {
+                "captionId": {
+                    "type": "integer",
+                    "example": 35
+                },
+                "isLearned": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "vocabSetId": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
         "request.UpdateWatchHistory": {
             "type": "object",
             "properties": {
@@ -6748,6 +6614,50 @@ const docTemplate = `{
                     "type": "integer",
                     "minimum": 0,
                     "example": 75
+                }
+            }
+        },
+        "request.UserRole": {
+            "type": "object",
+            "required": [
+                "role"
+            ],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        "admin"
+                    ],
+                    "example": "admin"
+                }
+            }
+        },
+        "request.UserStatus": {
+            "type": "object",
+            "required": [
+                "isActive"
+            ],
+            "properties": {
+                "isActive": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "request.VideoStatus": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "published",
+                        "archived"
+                    ],
+                    "example": "published"
                 }
             }
         },
@@ -6886,6 +6796,18 @@ const docTemplate = `{
                 }
             }
         },
+        "response.Login": {
+            "type": "object",
+            "properties": {
+                "authenticated": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "user": {
+                    "$ref": "#/definitions/entity.User"
+                }
+            }
+        },
         "response.Onboarding": {
             "type": "object",
             "properties": {
@@ -6948,6 +6870,32 @@ const docTemplate = `{
                 "slug": {
                     "type": "string",
                     "example": "travel"
+                }
+            }
+        },
+        "response.OriginalVideoCaptions": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.VideoCaptionItem"
+                    }
+                },
+                "languageCode": {
+                    "type": "string"
+                },
+                "languageId": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
+                },
+                "video_state": {
+                    "$ref": "#/definitions/entity.VideoState"
                 }
             }
         },
@@ -7108,6 +7056,35 @@ const docTemplate = `{
                 }
             }
         },
+        "response.VideoCaptionItem": {
+            "type": "object",
+            "properties": {
+                "dictation_completed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "endTimeMs": {
+                    "type": "integer",
+                    "example": 3500
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sentenceOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "startTimeMs": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "text": {
+                    "type": "string",
+                    "example": "Hello"
+                }
+            }
+        },
         "response.WatchHistory": {
             "type": "object",
             "properties": {
@@ -7180,6 +7157,35 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "message"
+                }
+            }
+        },
+        "v1.quotaErrorDoc": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "feature": {
+                    "$ref": "#/definitions/entity.FeatureKey"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "remaining": {
+                    "type": "integer"
+                },
+                "resetAt": {
+                    "type": "string"
+                },
+                "upgradeRequired": {
+                    "type": "boolean"
+                },
+                "used": {
+                    "type": "integer"
                 }
             }
         }

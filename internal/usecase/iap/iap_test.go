@@ -177,6 +177,19 @@ func TestVerifyGooglePersistsBeforeAcknowledging(t *testing.T) {
 	require.NotNil(t, repo.premium["user-1"])
 }
 
+func TestAppleOperationsFailSafelyWhenGatewayIsDisabled(t *testing.T) {
+	t.Parallel()
+
+	repo := newMemoryRepo()
+	uc := New(nil, &googleStub{}, repo, repo, Config{GooglePackageName: "com.example.app"})
+
+	_, err := uc.VerifyPurchase(context.Background(), "user-1", entity.VerifyPurchaseInput{
+		Platform: entity.PlatformIOS, ProductID: "premium_monthly", PurchaseToken: "transaction-id",
+	})
+	require.ErrorIs(t, err, entity.ErrIAPPlatformDisabled)
+	require.ErrorIs(t, uc.HandleAppleWebhook(context.Background(), "signed"), entity.ErrIAPPlatformDisabled)
+}
+
 func TestVerifyBlocksActivePurchaseOwnedByAnotherUser(t *testing.T) {
 	t.Parallel()
 

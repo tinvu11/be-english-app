@@ -36,7 +36,7 @@ func TestIAPWebhookIsPublicWhileVerifyIsProtected(t *testing.T) {
 	app := fiber.New()
 	stub := &iapHTTPStub{}
 	NewRoutes(app.Group("/v1"), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-		stub, nil, logger.New("error"))
+		stub, true, nil, logger.New("error"))
 
 	webhookRequest := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/v1/iap/webhooks/apple",
 		bytes.NewBufferString(`{"signedPayload":"signed"}`))
@@ -56,4 +56,24 @@ func TestIAPWebhookIsPublicWhileVerifyIsProtected(t *testing.T) {
 
 	defer response.Body.Close()
 	require.Equal(t, http.StatusUnauthorized, response.StatusCode)
+}
+
+func TestAppleWebhookIsNotRegisteredWhenAppleIAPIsDisabled(t *testing.T) {
+	t.Parallel()
+
+	app := fiber.New()
+	stub := &iapHTTPStub{}
+	NewRoutes(app.Group("/v1"), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		stub, false, nil, logger.New("error"))
+
+	registered := false
+	for _, route := range app.GetRoutes(true) {
+		if route.Method == http.MethodPost && route.Path == "/v1/iap/webhooks/apple" {
+			registered = true
+			break
+		}
+	}
+
+	require.False(t, registered)
+	require.Zero(t, stub.appleCalls)
 }

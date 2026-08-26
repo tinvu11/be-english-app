@@ -37,7 +37,7 @@ compose-down: ### Down docker compose
 .PHONY: compose-down
 
 swag-v1: ### swag init
-	swag init --parseDependency -g internal/controller/restapi/router.go
+	swag init -d internal/controller/restapi,internal/entity --parseInternal -g router.go
 .PHONY: swag-v1
 
 

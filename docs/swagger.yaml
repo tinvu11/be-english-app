@@ -1,5 +1,84 @@
 basePath: /v1
 definitions:
+  admin.dashboardResponse:
+    properties:
+      message:
+        example: Welcome to the admin dashboard!
+        type: string
+    type: object
+  admin.errorDoc:
+    properties:
+      error:
+        example: message
+        type: string
+    type: object
+  entity.Caption:
+    properties:
+      content:
+        example: Hello
+        type: string
+      createdAt:
+        type: string
+      endTimeMs:
+        example: 3500
+        type: integer
+      id:
+        example: 1
+        type: integer
+      pinyinOrFurigana:
+        type: string
+      sentenceOrder:
+        example: 1
+        type: integer
+      startTimeMs:
+        example: 1000
+        type: integer
+      translations:
+        items:
+          $ref: '#/definitions/entity.CaptionTranslation'
+        type: array
+      videoId:
+        example: 10
+        type: integer
+    type: object
+  entity.CaptionList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.Caption'
+        type: array
+      total:
+        example: 500
+        type: integer
+    type: object
+  entity.CaptionTranslation:
+    properties:
+      languageCode:
+        example: vi
+        type: string
+      languageId:
+        example: 2
+        type: integer
+      languageName:
+        example: Vietnamese
+        type: string
+      text:
+        example: Xin chào
+        type: string
+    type: object
+  entity.CaptionTranslationResult:
+    properties:
+      skippedCount:
+        type: integer
+      sourceLanguageCode:
+        type: string
+      targetLanguageCode:
+        type: string
+      translatedCount:
+        type: integer
+      videoId:
+        type: integer
+    type: object
   entity.Channel:
     properties:
       avatarUrl:
@@ -55,6 +134,60 @@ definitions:
         example: 12
         type: integer
     type: object
+  entity.DictionaryEntry:
+    properties:
+      audioUrl:
+        type: string
+      createdAt:
+        type: string
+      example1Sentence:
+        type: string
+      example1Translation:
+        type: string
+      example2Sentence:
+        type: string
+      example2Translation:
+        type: string
+      id:
+        type: integer
+      meaning:
+        type: string
+      partOfSpeech:
+        type: string
+      phoneticOrPinyin:
+        type: string
+      sourceLanguageId:
+        type: integer
+      targetLanguageId:
+        type: integer
+      word:
+        type: string
+    type: object
+  entity.FeatureKey:
+    enum:
+    - youtube_import
+    - shadowing_assessment
+    type: string
+    x-enum-varnames:
+    - FeatureYouTubeImport
+    - FeatureShadowingAssessment
+  entity.IAPPlatform:
+    enum:
+    - ios
+    - android
+    type: string
+    x-enum-varnames:
+    - PlatformIOS
+    - PlatformAndroid
+  entity.IAPStatus:
+    properties:
+      isPremium:
+        type: boolean
+      premiumUntil:
+        type: string
+      subscription:
+        $ref: '#/definitions/entity.UserSubscription'
+    type: object
   entity.Language:
     properties:
       code:
@@ -78,6 +211,30 @@ definitions:
       name:
         example: English
         type: string
+    type: object
+  entity.LearningQuiz:
+    properties:
+      correctOption:
+        type: integer
+      explanation:
+        type: string
+      id:
+        type: integer
+      options:
+        items:
+          $ref: '#/definitions/entity.LearningQuizOption'
+        type: array
+      order:
+        type: integer
+      question:
+        type: string
+    type: object
+  entity.LearningQuizOption:
+    properties:
+      content:
+        type: string
+      order:
+        type: integer
     type: object
   entity.Level:
     properties:
@@ -107,6 +264,93 @@ definitions:
         example: Beginner
         type: string
     type: object
+  entity.ShadowingAttempt:
+    properties:
+      accuracy_score:
+        example: 79
+        type: number
+      caption_id:
+        example: 10
+        type: integer
+      completeness_score:
+        example: 100
+        type: number
+      created_at:
+        type: string
+      duration_ms:
+        example: 2300
+        type: integer
+      fluency_score:
+        example: 86
+        type: number
+      id:
+        example: 123
+        type: integer
+      locale:
+        example: en-US
+        type: string
+      passed:
+        example: true
+        type: boolean
+      pronunciation_score:
+        example: 82
+        type: number
+      prosody_score:
+        example: 75
+        type: number
+      provider:
+        example: azure
+        type: string
+      reference_text:
+        example: Good morning.
+        type: string
+      video_id:
+        example: 1
+        type: integer
+      words:
+        items:
+          $ref: '#/definitions/entity.ShadowingWordResult'
+        type: array
+    type: object
+  entity.ShadowingAttemptList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.ShadowingAttempt'
+        type: array
+      total:
+        example: 3
+        type: integer
+    type: object
+  entity.ShadowingWordResult:
+    properties:
+      accuracy_score:
+        example: 54
+        type: number
+      error_type:
+        example: Mispronunciation
+        type: string
+      order:
+        example: 0
+        type: integer
+      phonemes:
+        type: object
+      word:
+        example: comfortable
+        type: string
+    type: object
+  entity.SubscriptionStatus:
+    enum:
+    - active
+    - expired
+    - in_grace_period
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - SubscriptionActive
+    - SubscriptionExpired
+    - SubscriptionInGracePeriod
+    - SubscriptionCancelled
   entity.Topic:
     properties:
       createdAt:
@@ -180,6 +424,85 @@ definitions:
         example: 100
         type: integer
     type: object
+  entity.UserSubscription:
+    properties:
+      autoRenew:
+        type: boolean
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        type: integer
+      lastEventAt:
+        type: string
+      originalTransactionId:
+        type: string
+      platform:
+        $ref: '#/definitions/entity.IAPPlatform'
+      productId:
+        type: string
+      startsAt:
+        type: string
+      status:
+        $ref: '#/definitions/entity.SubscriptionStatus'
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  entity.UserVocabulary:
+    properties:
+      captionId:
+        type: integer
+      createdAt:
+        type: string
+      entry:
+        $ref: '#/definitions/entity.DictionaryEntry'
+      id:
+        example: 1
+        type: integer
+      isLearned:
+        example: false
+        type: boolean
+      learnedAt:
+        type: string
+      updatedAt:
+        type: string
+      vocabSetId:
+        example: 2
+        type: integer
+    type: object
+  entity.UserYouTubeVideoResult:
+    properties:
+      captionImported:
+        example: true
+        type: boolean
+      captionSource:
+        example: groq_whisper
+        type: string
+      reused:
+        example: false
+        type: boolean
+      video:
+        $ref: '#/definitions/entity.Video'
+    type: object
+  entity.VerifyPurchaseInput:
+    properties:
+      package_name:
+        type: string
+      platform:
+        $ref: '#/definitions/entity.IAPPlatform'
+      product_id:
+        maxLength: 100
+        type: string
+      purchase_token:
+        type: string
+    required:
+    - platform
+    - product_id
+    - purchase_token
+    type: object
   entity.Video:
     properties:
       captionAvailability:
@@ -232,6 +555,19 @@ definitions:
           $ref: '#/definitions/entity.VideoCaptionTranslationAvailability'
         type: array
     type: object
+  entity.VideoCaptionItem:
+    properties:
+      endTimeMs:
+        type: integer
+      id:
+        type: integer
+      sentenceOrder:
+        type: integer
+      startTimeMs:
+        type: integer
+      text:
+        type: string
+    type: object
   entity.VideoCaptionTranslationAvailability:
     properties:
       isComplete:
@@ -248,6 +584,21 @@ definitions:
         type: string
       translatedCaptionCount:
         example: 120
+        type: integer
+    type: object
+  entity.VideoCaptions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.VideoCaptionItem'
+        type: array
+      languageCode:
+        type: string
+      languageId:
+        type: integer
+      total:
+        type: integer
+      videoId:
         type: integer
     type: object
   entity.VideoChannel:
@@ -278,6 +629,25 @@ definitions:
         example: English
         type: string
     type: object
+  entity.VideoLearningContent:
+    properties:
+      languageCode:
+        type: string
+      languageId:
+        type: integer
+      quizzes:
+        items:
+          $ref: '#/definitions/entity.LearningQuiz'
+        type: array
+      summary:
+        type: string
+      videoId:
+        type: integer
+      vocabulary:
+        items:
+          $ref: '#/definitions/entity.DictionaryEntry'
+        type: array
+    type: object
   entity.VideoLevel:
     properties:
       code:
@@ -300,6 +670,18 @@ definitions:
         example: 100
         type: integer
     type: object
+  entity.VideoState:
+    properties:
+      last_position_seconds:
+        example: 75
+        type: integer
+      saved:
+        example: false
+        type: boolean
+      watched:
+        example: true
+        type: boolean
+    type: object
   entity.VideoTopic:
     properties:
       iconUrl:
@@ -314,7 +696,143 @@ definitions:
         example: music
         type: string
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CaptionTranslation:
+  entity.VocabularyCategorySummary:
+    properties:
+      colorHex:
+        example: '#3B82F6'
+        type: string
+      id:
+        example: 1
+        type: integer
+      learnedWords:
+        example: 12
+        type: integer
+      title:
+        example: Travel
+        type: string
+      totalWords:
+        example: 20
+        type: integer
+      unlearnedWords:
+        example: 8
+        type: integer
+    type: object
+  entity.VocabularyLookupResult:
+    properties:
+      entry:
+        $ref: '#/definitions/entity.DictionaryEntry'
+      reused:
+        type: boolean
+    type: object
+  entity.VocabularyOverview:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/entity.VocabularyCategorySummary'
+        type: array
+      learnedWords:
+        example: 30
+        type: integer
+      totalWords:
+        example: 50
+        type: integer
+      unlearnedWords:
+        example: 20
+        type: integer
+    type: object
+  entity.VocabularySet:
+    properties:
+      colorHex:
+        example: '#3B82F6'
+        type: string
+      createdAt:
+        type: string
+      id:
+        example: 1
+        type: integer
+      sourceLanguageId:
+        example: 1
+        type: integer
+      targetLanguageId:
+        example: 2
+        type: integer
+      title:
+        example: Travel
+        type: string
+      updatedAt:
+        type: string
+      wordCount:
+        example: 20
+        type: integer
+    type: object
+  entity.YouTubeCaptionImportResult:
+    properties:
+      importedCount:
+        example: 128
+        type: integer
+      languageCode:
+        example: en
+        type: string
+      source:
+        example: groq_whisper
+        type: string
+      videoId:
+        example: 10
+        type: integer
+    type: object
+  entity.YouTubeVideoPreview:
+    properties:
+      channelName:
+        type: string
+      channelYoutubeId:
+        type: string
+      durationSeconds:
+        example: 300
+        type: integer
+      thumbnailUrl:
+        type: string
+      title:
+        example: Video title
+        type: string
+      youtubeId:
+        example: dQw4w9WgXcQ
+        type: string
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login:
+    properties:
+      idToken:
+        example: firebase-id-token
+        type: string
+    required:
+    - idToken
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview:
+    properties:
+      youtubeUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        maxLength: 2048
+        type: string
+    required:
+    - youtubeUrl
+    type: object
+  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview:
+    properties:
+      youtubeUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        maxLength: 2048
+        type: string
+    required:
+    - youtubeUrl
+    type: object
+  request.AppleIAPWebhook:
+    properties:
+      signedPayload:
+        example: eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19...
+        type: string
+    required:
+    - signedPayload
+    type: object
+  request.CaptionTranslation:
     properties:
       languageId:
         example: 2
@@ -326,7 +844,7 @@ definitions:
     - languageId
     - text
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage:
+  request.CreateLanguage:
     properties:
       code:
         example: en
@@ -348,7 +866,44 @@ definitions:
     - flagEmoji
     - name
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions:
+  request.CreateUserVocabulary:
+    properties:
+      captionId:
+        example: 35
+        type: integer
+      dictionaryId:
+        example: 12
+        type: integer
+      vocabSetId:
+        example: 2
+        type: integer
+    required:
+    - dictionaryId
+    - vocabSetId
+    type: object
+  request.GoogleIAPWebhook:
+    properties:
+      message:
+        $ref: '#/definitions/request.GooglePubSubMessage'
+      subscription:
+        example: projects/example/subscriptions/iap-rtdn
+        type: string
+    required:
+    - message
+    type: object
+  request.GooglePubSubMessage:
+    properties:
+      data:
+        example: eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ==
+        type: string
+      messageId:
+        example: "1234567890"
+        type: string
+    required:
+    - data
+    - messageId
+    type: object
+  request.ImportYouTubeCaptions:
     properties:
       languageCode:
         example: en
@@ -363,7 +918,20 @@ definitions:
     required:
     - mode
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation:
+  request.ImportYouTubeVideo:
+    properties:
+      audioLanguageCode:
+        example: en
+        maxLength: 35
+        type: string
+      youtubeUrl:
+        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        maxLength: 2048
+        type: string
+    required:
+    - youtubeUrl
+    type: object
+  request.LevelTranslation:
     properties:
       languageId:
         example: 1
@@ -376,15 +944,7 @@ definitions:
     - languageId
     - name
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.Login:
-    properties:
-      idToken:
-        example: firebase-id-token
-        type: string
-    required:
-    - idToken
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption:
+  request.SaveCaption:
     properties:
       content:
         example: Hello
@@ -406,12 +966,12 @@ definitions:
         type: integer
       translations:
         items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CaptionTranslation'
+          $ref: '#/definitions/request.CaptionTranslation'
         type: array
     required:
     - content
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel:
+  request.SaveChannel:
     properties:
       avatarUrl:
         example: https://example.com/avatar.jpg
@@ -432,7 +992,7 @@ definitions:
     - channelYoutubeId
     - isActive
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel:
+  request.SaveLevel:
     properties:
       code:
         example: A1
@@ -443,7 +1003,7 @@ definitions:
         type: integer
       translations:
         items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.LevelTranslation'
+          $ref: '#/definitions/request.LevelTranslation'
         minItems: 1
         type: array
     required:
@@ -451,7 +1011,7 @@ definitions:
     - languageId
     - translations
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic:
+  request.SaveTopic:
     properties:
       iconUrl:
         example: https://example.com/travel.svg
@@ -465,7 +1025,7 @@ definitions:
         type: string
       translations:
         items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation'
+          $ref: '#/definitions/request.TopicTranslation'
         minItems: 1
         type: array
     required:
@@ -473,7 +1033,7 @@ definitions:
     - slug
     - translations
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo:
+  request.SaveVideo:
     properties:
       channelId:
         example: 3
@@ -521,7 +1081,20 @@ definitions:
     - title
     - youtubeId
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus:
+  request.SaveVocabularySet:
+    properties:
+      colorHex:
+        example: '#3B82F6'
+        type: string
+      title:
+        example: Travel
+        maxLength: 255
+        type: string
+    required:
+    - colorHex
+    - title
+    type: object
+  request.TopicStatus:
     properties:
       isActive:
         example: true
@@ -529,7 +1102,7 @@ definitions:
     required:
     - isActive
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicTranslation:
+  request.TopicTranslation:
     properties:
       languageId:
         example: 1
@@ -542,7 +1115,7 @@ definitions:
     - languageId
     - name
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions:
+  request.TranslateCaptions:
     properties:
       mode:
         enum:
@@ -557,7 +1130,16 @@ definitions:
     - mode
     - targetLanguageId
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage:
+  request.TranslateVocabulary:
+    properties:
+      word:
+        example: remember
+        maxLength: 150
+        type: string
+    required:
+    - word
+    type: object
+  request.UpdateLanguage:
     properties:
       flagEmoji:
         example: "\U0001F1EC\U0001F1E7"
@@ -578,697 +1160,6 @@ definitions:
     - isActive
     - name
     type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserRole:
-    properties:
-      role:
-        enum:
-        - user
-        - admin
-        example: admin
-        type: string
-    required:
-    - role
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserStatus:
-    properties:
-      isActive:
-        example: false
-        type: boolean
-    required:
-    - isActive
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.VideoStatus:
-    properties:
-      status:
-        enum:
-        - published
-        - archived
-        example: published
-        type: string
-    required:
-    - status
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.YouTubePreview:
-    properties:
-      youtubeUrl:
-        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-        maxLength: 2048
-        type: string
-    required:
-    - youtubeUrl
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login:
-    properties:
-      authenticated:
-        example: true
-        type: boolean
-      user:
-        $ref: '#/definitions/entity.User'
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook:
-    properties:
-      signedPayload:
-        example: eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19...
-        type: string
-    required:
-    - signedPayload
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary:
-    properties:
-      captionId:
-        example: 35
-        type: integer
-      dictionaryId:
-        example: 12
-        type: integer
-      vocabSetId:
-        example: 2
-        type: integer
-    required:
-    - dictionaryId
-    - vocabSetId
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook:
-    properties:
-      message:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage'
-      subscription:
-        example: projects/example/subscriptions/iap-rtdn
-        type: string
-    required:
-    - message
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GooglePubSubMessage:
-    properties:
-      data:
-        example: eyJ2ZXJzaW9uIjoiMS4wIiwicGFja2FnZU5hbWUiOiJjb20uZXhhbXBsZS5hcHAifQ==
-        type: string
-      messageId:
-        example: "1234567890"
-        type: string
-    required:
-    - data
-    - messageId
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo:
-    properties:
-      audioLanguageCode:
-        example: en
-        maxLength: 35
-        type: string
-      youtubeUrl:
-        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-        maxLength: 2048
-        type: string
-    required:
-    - youtubeUrl
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet:
-    properties:
-      colorHex:
-        example: '#3B82F6'
-        type: string
-      title:
-        example: Travel
-        maxLength: 255
-        type: string
-    required:
-    - colorHex
-    - title
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary:
-    properties:
-      word:
-        example: remember
-        maxLength: 150
-        type: string
-    required:
-    - word
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary:
-    properties:
-      captionId:
-        example: 35
-        type: integer
-      isLearned:
-        example: true
-        type: boolean
-      vocabSetId:
-        example: 2
-        type: integer
-    required:
-    - vocabSetId
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.YouTubePreview:
-    properties:
-      youtubeUrl:
-        example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-        maxLength: 2048
-        type: string
-    required:
-    - youtubeUrl
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem'
-        type: array
-      languageCode:
-        type: string
-      languageId:
-        type: integer
-      total:
-        type: integer
-      video_state:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoState'
-      videoId:
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.VideoCaptionItem:
-    properties:
-      dictation_completed:
-        example: true
-        type: boolean
-      endTimeMs:
-        example: 3500
-        type: integer
-      id:
-        example: 1
-        type: integer
-      sentenceOrder:
-        example: 1
-        type: integer
-      startTimeMs:
-        example: 1000
-        type: integer
-      text:
-        example: Hello
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.Caption:
-    properties:
-      content:
-        example: Hello
-        type: string
-      createdAt:
-        type: string
-      endTimeMs:
-        example: 3500
-        type: integer
-      id:
-        example: 1
-        type: integer
-      pinyinOrFurigana:
-        type: string
-      sentenceOrder:
-        example: 1
-        type: integer
-      startTimeMs:
-        example: 1000
-        type: integer
-      translations:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslation'
-        type: array
-      videoId:
-        example: 10
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.CaptionList:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
-        type: array
-      total:
-        example: 500
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.CaptionTranslation:
-    properties:
-      languageCode:
-        example: vi
-        type: string
-      languageId:
-        example: 2
-        type: integer
-      languageName:
-        example: Vietnamese
-        type: string
-      text:
-        example: Xin chào
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult:
-    properties:
-      skippedCount:
-        type: integer
-      sourceLanguageCode:
-        type: string
-      targetLanguageCode:
-        type: string
-      translatedCount:
-        type: integer
-      videoId:
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.DictionaryEntry:
-    properties:
-      audioUrl:
-        type: string
-      createdAt:
-        type: string
-      example1Sentence:
-        type: string
-      example1Translation:
-        type: string
-      example2Sentence:
-        type: string
-      example2Translation:
-        type: string
-      id:
-        type: integer
-      meaning:
-        type: string
-      partOfSpeech:
-        type: string
-      phoneticOrPinyin:
-        type: string
-      sourceLanguageId:
-        type: integer
-      targetLanguageId:
-        type: integer
-      word:
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.FeatureKey:
-    enum:
-    - youtube_import
-    - shadowing_assessment
-    type: string
-    x-enum-varnames:
-    - FeatureYouTubeImport
-    - FeatureShadowingAssessment
-  github_com_evrone_go-clean-template_internal_entity.IAPPlatform:
-    enum:
-    - ios
-    - android
-    type: string
-    x-enum-varnames:
-    - PlatformIOS
-    - PlatformAndroid
-  github_com_evrone_go-clean-template_internal_entity.IAPStatus:
-    properties:
-      isPremium:
-        type: boolean
-      premiumUntil:
-        type: string
-      subscription:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserSubscription'
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.LearningQuiz:
-    properties:
-      correctOption:
-        type: integer
-      explanation:
-        type: string
-      id:
-        type: integer
-      options:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuizOption'
-        type: array
-      order:
-        type: integer
-      question:
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.LearningQuizOption:
-    properties:
-      content:
-        type: string
-      order:
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt:
-    properties:
-      accuracy_score:
-        example: 79
-        type: number
-      caption_id:
-        example: 10
-        type: integer
-      completeness_score:
-        example: 100
-        type: number
-      created_at:
-        type: string
-      duration_ms:
-        example: 2300
-        type: integer
-      fluency_score:
-        example: 86
-        type: number
-      id:
-        example: 123
-        type: integer
-      locale:
-        example: en-US
-        type: string
-      passed:
-        example: true
-        type: boolean
-      pronunciation_score:
-        example: 82
-        type: number
-      prosody_score:
-        example: 75
-        type: number
-      provider:
-        example: azure
-        type: string
-      reference_text:
-        example: Good morning.
-        type: string
-      video_id:
-        example: 1
-        type: integer
-      words:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult'
-        type: array
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt'
-        type: array
-      total:
-        example: 3
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.ShadowingWordResult:
-    properties:
-      accuracy_score:
-        example: 54
-        type: number
-      error_type:
-        example: Mispronunciation
-        type: string
-      order:
-        example: 0
-        type: integer
-      phonemes:
-        type: object
-      word:
-        example: comfortable
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus:
-    enum:
-    - active
-    - expired
-    - in_grace_period
-    - cancelled
-    type: string
-    x-enum-varnames:
-    - SubscriptionActive
-    - SubscriptionExpired
-    - SubscriptionInGracePeriod
-    - SubscriptionCancelled
-  github_com_evrone_go-clean-template_internal_entity.UserSubscription:
-    properties:
-      autoRenew:
-        type: boolean
-      createdAt:
-        type: string
-      expiresAt:
-        type: string
-      id:
-        type: integer
-      lastEventAt:
-        type: string
-      originalTransactionId:
-        type: string
-      platform:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform'
-      productId:
-        type: string
-      startsAt:
-        type: string
-      status:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.SubscriptionStatus'
-      updatedAt:
-        type: string
-      userId:
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.UserVocabulary:
-    properties:
-      captionId:
-        type: integer
-      createdAt:
-        type: string
-      entry:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
-      id:
-        example: 1
-        type: integer
-      isLearned:
-        example: false
-        type: boolean
-      learnedAt:
-        type: string
-      updatedAt:
-        type: string
-      vocabSetId:
-        example: 2
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult:
-    properties:
-      captionImported:
-        example: true
-        type: boolean
-      captionSource:
-        example: groq_whisper
-        type: string
-      reused:
-        example: false
-        type: boolean
-      video:
-        $ref: '#/definitions/entity.Video'
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput:
-    properties:
-      package_name:
-        type: string
-      platform:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPPlatform'
-      product_id:
-        maxLength: 100
-        type: string
-      purchase_token:
-        type: string
-    required:
-    - platform
-    - product_id
-    - purchase_token
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem:
-    properties:
-      endTimeMs:
-        type: integer
-      id:
-        type: integer
-      sentenceOrder:
-        type: integer
-      startTimeMs:
-        type: integer
-      text:
-        type: string
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VideoCaptions:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptionItem'
-        type: array
-      languageCode:
-        type: string
-      languageId:
-        type: integer
-      total:
-        type: integer
-      videoId:
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VideoLearningContent:
-    properties:
-      languageCode:
-        type: string
-      languageId:
-        type: integer
-      quizzes:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.LearningQuiz'
-        type: array
-      summary:
-        type: string
-      videoId:
-        type: integer
-      vocabulary:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
-        type: array
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VideoState:
-    properties:
-      last_position_seconds:
-        example: 75
-        type: integer
-      saved:
-        example: false
-        type: boolean
-      watched:
-        example: true
-        type: boolean
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary:
-    properties:
-      colorHex:
-        example: '#3B82F6'
-        type: string
-      id:
-        example: 1
-        type: integer
-      learnedWords:
-        example: 12
-        type: integer
-      title:
-        example: Travel
-        type: string
-      totalWords:
-        example: 20
-        type: integer
-      unlearnedWords:
-        example: 8
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult:
-    properties:
-      entry:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.DictionaryEntry'
-      reused:
-        type: boolean
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VocabularyOverview:
-    properties:
-      categories:
-        items:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyCategorySummary'
-        type: array
-      learnedWords:
-        example: 30
-        type: integer
-      totalWords:
-        example: 50
-        type: integer
-      unlearnedWords:
-        example: 20
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.VocabularySet:
-    properties:
-      colorHex:
-        example: '#3B82F6'
-        type: string
-      createdAt:
-        type: string
-      id:
-        example: 1
-        type: integer
-      sourceLanguageId:
-        example: 1
-        type: integer
-      targetLanguageId:
-        example: 2
-        type: integer
-      title:
-        example: Travel
-        type: string
-      updatedAt:
-        type: string
-      wordCount:
-        example: 20
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult:
-    properties:
-      importedCount:
-        example: 128
-        type: integer
-      languageCode:
-        example: en
-        type: string
-      source:
-        example: groq_whisper
-        type: string
-      videoId:
-        example: 10
-        type: integer
-    type: object
-  github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview:
-    properties:
-      channelName:
-        type: string
-      channelYoutubeId:
-        type: string
-      durationSeconds:
-        example: 300
-        type: integer
-      thumbnailUrl:
-        type: string
-      title:
-        example: Video title
-        type: string
-      youtubeId:
-        example: dQw4w9WgXcQ
-        type: string
-    type: object
-  internal_controller_restapi_v1.quotaErrorDoc:
-    properties:
-      code:
-        type: string
-      error:
-        type: string
-      feature:
-        $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.FeatureKey'
-      limit:
-        type: integer
-      remaining:
-        type: integer
-      resetAt:
-        type: string
-      upgradeRequired:
-        type: boolean
-      used:
-        type: integer
-    type: object
-  internal_controller_restapi_v1_admin.dashboardResponse:
-    properties:
-      message:
-        example: Welcome to the admin dashboard!
-        type: string
-    type: object
-  internal_controller_restapi_v1_admin.errorDoc:
-    properties:
-      error:
-        example: message
-        type: string
-    type: object
   request.UpdateUserLanguages:
     properties:
       nativeLanguageId:
@@ -1281,12 +1172,56 @@ definitions:
     - nativeLanguageId
     - targetLanguageId
     type: object
+  request.UpdateUserVocabulary:
+    properties:
+      captionId:
+        example: 35
+        type: integer
+      isLearned:
+        example: true
+        type: boolean
+      vocabSetId:
+        example: 2
+        type: integer
+    required:
+    - vocabSetId
+    type: object
   request.UpdateWatchHistory:
     properties:
       lastPositionSeconds:
         example: 75
         minimum: 0
         type: integer
+    type: object
+  request.UserRole:
+    properties:
+      role:
+        enum:
+        - user
+        - admin
+        example: admin
+        type: string
+    required:
+    - role
+    type: object
+  request.UserStatus:
+    properties:
+      isActive:
+        example: false
+        type: boolean
+    required:
+    - isActive
+    type: object
+  request.VideoStatus:
+    properties:
+      status:
+        enum:
+        - published
+        - archived
+        example: published
+        type: string
+    required:
+    - status
     type: object
   response.ChannelVideos:
     properties:
@@ -1383,6 +1318,14 @@ definitions:
           $ref: '#/definitions/response.FeedSection'
         type: array
     type: object
+  response.Login:
+    properties:
+      authenticated:
+        example: true
+        type: boolean
+      user:
+        $ref: '#/definitions/entity.User'
+    type: object
   response.Onboarding:
     properties:
       learningLanguages:
@@ -1427,6 +1370,23 @@ definitions:
       slug:
         example: travel
         type: string
+    type: object
+  response.OriginalVideoCaptions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/response.VideoCaptionItem'
+        type: array
+      languageCode:
+        type: string
+      languageId:
+        type: integer
+      total:
+        type: integer
+      video_state:
+        $ref: '#/definitions/entity.VideoState'
+      videoId:
+        type: integer
     type: object
   response.SavedVideo:
     properties:
@@ -1540,6 +1500,27 @@ definitions:
         example: johndoe
         type: string
     type: object
+  response.VideoCaptionItem:
+    properties:
+      dictation_completed:
+        example: true
+        type: boolean
+      endTimeMs:
+        example: 3500
+        type: integer
+      id:
+        example: 1
+        type: integer
+      sentenceOrder:
+        example: 1
+        type: integer
+      startTimeMs:
+        example: 1000
+        type: integer
+      text:
+        example: Hello
+        type: string
+    type: object
   response.WatchHistory:
     properties:
       limit:
@@ -1592,6 +1573,25 @@ definitions:
         example: message
         type: string
     type: object
+  v1.quotaErrorDoc:
+    properties:
+      code:
+        type: string
+      error:
+        type: string
+      feature:
+        $ref: '#/definitions/entity.FeatureKey'
+      limit:
+        type: integer
+      remaining:
+        type: integer
+      resetAt:
+        type: string
+      upgradeRequired:
+        type: boolean
+      used:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -1619,23 +1619,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_response.Login'
+            $ref: '#/definitions/response.Login'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       summary: Admin login
       tags:
       - admin
@@ -1653,15 +1653,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List YouTube channels
@@ -1676,7 +1676,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel'
+          $ref: '#/definitions/request.SaveChannel'
       produces:
       - application/json
       responses:
@@ -1687,23 +1687,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create YouTube channel
@@ -1724,27 +1724,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete YouTube channel
@@ -1764,7 +1764,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveChannel'
+          $ref: '#/definitions/request.SaveChannel'
       produces:
       - application/json
       responses:
@@ -1775,27 +1775,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update YouTube channel
@@ -1811,15 +1811,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.dashboardResponse'
+            $ref: '#/definitions/admin.dashboardResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Admin dashboard
@@ -1841,15 +1841,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List languages
@@ -1866,7 +1866,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.CreateLanguage'
+          $ref: '#/definitions/request.CreateLanguage'
       produces:
       - application/json
       responses:
@@ -1877,23 +1877,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create language
@@ -1916,7 +1916,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UpdateLanguage'
+          $ref: '#/definitions/request.UpdateLanguage'
       produces:
       - application/json
       responses:
@@ -1927,23 +1927,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update language
@@ -1970,19 +1970,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List levels
@@ -1999,7 +1999,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel'
+          $ref: '#/definitions/request.SaveLevel'
       produces:
       - application/json
       responses:
@@ -2010,23 +2010,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create level
@@ -2048,27 +2048,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete level
@@ -2090,7 +2090,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveLevel'
+          $ref: '#/definitions/request.SaveLevel'
       produces:
       - application/json
       responses:
@@ -2101,27 +2101,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update level
@@ -2141,19 +2141,19 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Get current admin
@@ -2173,15 +2173,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List topics
@@ -2196,7 +2196,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic'
+          $ref: '#/definitions/request.SaveTopic'
       produces:
       - application/json
       responses:
@@ -2207,23 +2207,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create topic with translations
@@ -2245,27 +2245,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete topic
@@ -2285,7 +2285,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveTopic'
+          $ref: '#/definitions/request.SaveTopic'
       produces:
       - application/json
       responses:
@@ -2296,27 +2296,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update topic and translations
@@ -2337,7 +2337,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TopicStatus'
+          $ref: '#/definitions/request.TopicStatus'
       produces:
       - application/json
       responses:
@@ -2348,23 +2348,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Enable or disable topic visibility
@@ -2409,19 +2409,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List application users
@@ -2442,7 +2442,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserRole'
+          $ref: '#/definitions/request.UserRole'
       produces:
       - application/json
       responses:
@@ -2453,23 +2453,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Promote or demote user
@@ -2490,7 +2490,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.UserStatus'
+          $ref: '#/definitions/request.UserStatus'
       produces:
       - application/json
       responses:
@@ -2501,23 +2501,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Lock or unlock user
@@ -2571,19 +2571,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List videos
@@ -2598,7 +2598,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo'
+          $ref: '#/definitions/request.SaveVideo'
       produces:
       - application/json
       responses:
@@ -2609,23 +2609,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Create video
@@ -2645,23 +2645,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete video
@@ -2684,23 +2684,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Get video details
@@ -2720,7 +2720,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveVideo'
+          $ref: '#/definitions/request.SaveVideo'
       produces:
       - application/json
       responses:
@@ -2731,27 +2731,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update video
@@ -2774,7 +2774,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.VideoStatus'
+          $ref: '#/definitions/request.VideoStatus'
       produces:
       - application/json
       responses:
@@ -2785,27 +2785,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Transition video status
@@ -2836,27 +2836,27 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionList'
+            $ref: '#/definitions/entity.CaptionList'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: List all captions of a video
@@ -2876,38 +2876,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption'
+          $ref: '#/definitions/request.SaveCaption'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+            $ref: '#/definitions/entity.Caption'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Add one caption manually
@@ -2932,23 +2932,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Delete one caption
@@ -2973,38 +2973,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.SaveCaption'
+          $ref: '#/definitions/request.SaveCaption'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+            $ref: '#/definitions/entity.Caption'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Update a caption and all translations
@@ -3045,36 +3045,36 @@ paths:
           description: Created
           schema:
             items:
-              $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.Caption'
+              $ref: '#/definitions/entity.Caption'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "413":
           description: Request Entity Too Large
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Import original and translated SRT files
@@ -3098,50 +3098,50 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.ImportYouTubeCaptions'
+          $ref: '#/definitions/request.ImportYouTubeCaptions'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeCaptionImportResult'
+            $ref: '#/definitions/entity.YouTubeCaptionImportResult'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "504":
           description: Gateway Timeout
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Import YouTube captions
@@ -3163,58 +3163,58 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_admin_request.TranslateCaptions'
+          $ref: '#/definitions/request.TranslateCaptions'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.CaptionTranslationResult'
+            $ref: '#/definitions/entity.CaptionTranslationResult'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "429":
           description: Too Many Requests
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "504":
           description: Gateway Timeout
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Translate video captions with the configured AI provider
@@ -3239,31 +3239,31 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview'
+            $ref: '#/definitions/entity.YouTubeVideoPreview'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "502":
           description: Bad Gateway
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
         "504":
           description: Gateway Timeout
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1_admin.errorDoc'
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
       summary: Preview YouTube video metadata
@@ -3378,7 +3378,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus'
+            $ref: '#/definitions/entity.IAPStatus'
         "401":
           description: Unauthorized
           schema:
@@ -3405,14 +3405,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VerifyPurchaseInput'
+          $ref: '#/definitions/entity.VerifyPurchaseInput'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.IAPStatus'
+            $ref: '#/definitions/entity.IAPStatus'
         "400":
           description: Bad Request
           schema:
@@ -3433,6 +3433,10 @@ paths:
           description: Bad Gateway
           schema:
             $ref: '#/definitions/v1.Error'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/v1.Error'
       security:
       - BearerAuth: []
       summary: Verify an in-app purchase
@@ -3451,7 +3455,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.AppleIAPWebhook'
+          $ref: '#/definitions/request.AppleIAPWebhook'
       produces:
       - application/json
       responses:
@@ -3483,7 +3487,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.GoogleIAPWebhook'
+          $ref: '#/definitions/request.GoogleIAPWebhook'
       produces:
       - application/json
       responses:
@@ -3972,7 +3976,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_response.OriginalVideoCaptions'
+            $ref: '#/definitions/response.OriginalVideoCaptions'
         "400":
           description: Bad Request
           schema:
@@ -4013,7 +4017,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoCaptions'
+            $ref: '#/definitions/entity.VideoCaptions'
         "400":
           description: Bad Request
           schema:
@@ -4041,7 +4045,7 @@ paths:
         "429":
           description: Too Many Requests
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1.quotaErrorDoc'
+            $ref: '#/definitions/v1.quotaErrorDoc'
         "502":
           description: Bad Gateway
           schema:
@@ -4163,7 +4167,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VideoLearningContent'
+            $ref: '#/definitions/entity.VideoLearningContent'
         "400":
           description: Bad Request
           schema:
@@ -4218,7 +4222,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttemptList'
+            $ref: '#/definitions/entity.ShadowingAttemptList'
         "400":
           description: Bad Request
           schema:
@@ -4275,7 +4279,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.ShadowingAttempt'
+            $ref: '#/definitions/entity.ShadowingAttempt'
         "400":
           description: Bad Request
           schema:
@@ -4309,7 +4313,7 @@ paths:
         "429":
           description: Too Many Requests
           schema:
-            $ref: '#/definitions/internal_controller_restapi_v1.quotaErrorDoc'
+            $ref: '#/definitions/v1.quotaErrorDoc'
         "500":
           description: Internal Server Error
           schema:
@@ -4347,14 +4351,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.ImportYouTubeVideo'
+          $ref: '#/definitions/request.ImportYouTubeVideo'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserYouTubeVideoResult'
+            $ref: '#/definitions/entity.UserYouTubeVideoResult'
         "400":
           description: Bad Request
           schema:
@@ -4461,7 +4465,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.YouTubeVideoPreview'
+            $ref: '#/definitions/entity.YouTubeVideoPreview'
         "400":
           description: Bad Request
           schema:
@@ -4495,7 +4499,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyOverview'
+            $ref: '#/definitions/entity.VocabularyOverview'
         "401":
           description: Unauthorized
           schema:
@@ -4538,14 +4542,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet'
+          $ref: '#/definitions/request.SaveVocabularySet'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet'
+            $ref: '#/definitions/entity.VocabularySet'
       security:
       - BearerAuth: []
       summary: Create vocabulary set
@@ -4581,14 +4585,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.SaveVocabularySet'
+          $ref: '#/definitions/request.SaveVocabularySet'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularySet'
+            $ref: '#/definitions/entity.VocabularySet'
       security:
       - BearerAuth: []
       summary: Update vocabulary set
@@ -4607,14 +4611,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.TranslateVocabulary'
+          $ref: '#/definitions/request.TranslateVocabulary'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.VocabularyLookupResult'
+            $ref: '#/definitions/entity.VocabularyLookupResult'
         "400":
           description: Bad Request
           schema:
@@ -4679,14 +4683,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.CreateUserVocabulary'
+          $ref: '#/definitions/request.CreateUserVocabulary'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary'
+            $ref: '#/definitions/entity.UserVocabulary'
       security:
       - BearerAuth: []
       summary: Save vocabulary for current user
@@ -4723,14 +4727,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_evrone_go-clean-template_internal_controller_restapi_v1_request.UpdateUserVocabulary'
+          $ref: '#/definitions/request.UpdateUserVocabulary'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_evrone_go-clean-template_internal_entity.UserVocabulary'
+            $ref: '#/definitions/entity.UserVocabulary'
       security:
       - BearerAuth: []
       summary: Update saved vocabulary

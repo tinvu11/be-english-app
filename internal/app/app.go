@@ -35,6 +35,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/adminuser"
 	"github.com/evrone/go-clean-template/internal/usecase/caption"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
+	iapGateway "github.com/evrone/go-clean-template/internal/usecase/gateway"
 	iapUseCase "github.com/evrone/go-clean-template/internal/usecase/iap"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/learningcontent"
@@ -114,14 +115,18 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 	}
 	if cfg.IAP.Enabled {
 		httpClient := &http.Client{Timeout: time.Duration(cfg.IAP.TimeoutSeconds) * time.Second}
-		appleClient, err := appleGateway.New(&appleGateway.Config{
-			BaseURL:  cfg.IAP.AppleBaseURL,
-			IssuerID: cfg.IAP.AppleIssuerID, KeyID: cfg.IAP.AppleKeyID, BundleID: cfg.IAP.AppleBundleID,
-			AppAppleID: cfg.IAP.AppleAppID, Environment: cfg.IAP.AppleEnvironment,
-			PrivateKeyPath: cfg.IAP.ApplePrivateKeyPath, RootCAPath: cfg.IAP.AppleRootCAPath,
-		}, httpClient)
-		if err != nil {
-			return useCases{}, fmt.Errorf("initialize Apple IAP: %w", err)
+		var appleClient iapGateway.AppleGateway
+		if cfg.IAP.AppleEnabled {
+			client, err := appleGateway.New(&appleGateway.Config{
+				BaseURL:  cfg.IAP.AppleBaseURL,
+				IssuerID: cfg.IAP.AppleIssuerID, KeyID: cfg.IAP.AppleKeyID, BundleID: cfg.IAP.AppleBundleID,
+				AppAppleID: cfg.IAP.AppleAppID, Environment: cfg.IAP.AppleEnvironment,
+				PrivateKeyPath: cfg.IAP.ApplePrivateKeyPath, RootCAPath: cfg.IAP.AppleRootCAPath,
+			}, httpClient)
+			if err != nil {
+				return useCases{}, fmt.Errorf("initialize Apple IAP: %w", err)
+			}
+			appleClient = client
 		}
 		googleClient, err := googlePlayGateway.New(ctx, googlePlayGateway.Config{CredentialsFile: cfg.IAP.GoogleCredentialsFile})
 		if err != nil {

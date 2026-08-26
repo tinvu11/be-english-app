@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param request body entity.VerifyPurchaseInput true "Purchase details"
 // @Success 200 {object} entity.IAPStatus
-// @Failure 400,401,409,500,502 {object} response.Error
+// @Failure 400,401,409,500,502,503 {object} response.Error
 // @Security BearerAuth
 // @Router /iap/verify [post]
 func (r *V1) verifyIAPPurchase(ctx *fiber.Ctx) error {
@@ -108,6 +108,8 @@ func (r *V1) iapError(ctx *fiber.Ctx, err error) error {
 		return errorResponse(ctx, http.StatusConflict, err.Error())
 	case errors.Is(err, entity.ErrIAPVerificationFailed):
 		return errorResponse(ctx, http.StatusBadGateway, "store verification failed")
+	case errors.Is(err, entity.ErrIAPPlatformDisabled):
+		return errorResponse(ctx, http.StatusServiceUnavailable, err.Error())
 	default:
 		r.l.Error(err, "restapi - v1 - iap")
 		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")

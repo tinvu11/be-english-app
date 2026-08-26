@@ -68,6 +68,7 @@ var (
 	ErrIAPVerificationFailed        = errors.New("store verification failed")
 	ErrIAPProductMismatch           = errors.New("purchase product does not match request")
 	ErrIAPAlreadyOwned              = errors.New("purchase is active on another account")
+	ErrIAPPlatformDisabled          = errors.New("in-app purchase platform is disabled")
 	ErrSubscriptionNotFound         = errors.New("subscription not found")
 	ErrStaleIAPEvent                = errors.New("stale in-app purchase event")
 )
