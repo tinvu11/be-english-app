@@ -1,6 +1,6 @@
 module github.com/evrone/go-clean-template
 
-go 1.26
+go 1.26.0
 
 tool (
 	github.com/daixiang0/gci
@@ -37,7 +37,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.44.0
 	go.opentelemetry.io/otel/trace v1.44.0
 	go.uber.org/mock v0.6.0
-	golang.org/x/sync v0.22.0
+	golang.org/x/sync v0.23.0
 	google.golang.org/api v0.279.0
 )
 
