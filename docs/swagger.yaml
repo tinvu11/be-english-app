@@ -334,7 +334,9 @@ definitions:
         example: 0
         type: integer
       phonemes:
-        type: object
+        items:
+          type: object
+        type: array
       word:
         example: comfortable
         type: string

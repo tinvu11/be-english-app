@@ -25,7 +25,7 @@ type Provider struct {
 	maxBytes   int64
 }
 
-// NewLocal returns the executable-backed provider used by the dedicated yt-dlp service.
+// NewLocal returns an executable-backed provider.
 func NewLocal(binaryPath string, timeout time.Duration, maxBytes int64) gateway.YouTubeProvider {
 	if timeout <= 0 {
 		timeout = 45 * time.Second

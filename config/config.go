@@ -82,8 +82,9 @@ type (
 	}
 
 	ytdlp struct {
-		BaseURL        string `env:"YTDLP_BASE_URL" envDefault:"http://localhost:8081"`
+		BinaryPath     string `env:"YTDLP_BINARY_PATH" envDefault:"yt-dlp"`
 		TimeoutSeconds int    `env:"YTDLP_TIMEOUT_SECONDS" envDefault:"45"`
+		MaxFileMB      int64  `env:"YTDLP_MAX_FILE_MB" envDefault:"10"`
 	}
 
 	deepseek struct {

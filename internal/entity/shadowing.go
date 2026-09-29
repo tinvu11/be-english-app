@@ -38,7 +38,7 @@ type ShadowingWordResult struct {
 	Word          string          `json:"word" example:"comfortable"`
 	AccuracyScore float64         `json:"accuracy_score" example:"54"`
 	ErrorType     string          `json:"error_type,omitempty" example:"Mispronunciation"`
-	Phonemes      json.RawMessage `json:"phonemes,omitempty" swaggertype:"object"`
+	Phonemes      json.RawMessage `json:"phonemes,omitempty" swaggertype:"array,object"`
 }
 
 type ShadowingAttempt struct {

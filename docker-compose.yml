@@ -33,9 +33,10 @@ x-backend-app-environment: &x-backend-app-environment
   # Firebase Authentication
   FIREBASE_PROJECT_ID: "${FIREBASE_PROJECT_ID}"
   GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/firebase-service-account.json"
-  # yt-dlp service
-  YTDLP_BASE_URL: "http://ytdlp:8081"
+  # Local yt-dlp process
+  YTDLP_BINARY_PATH: "yt-dlp"
   YTDLP_TIMEOUT_SECONDS: "300"
+  YTDLP_MAX_FILE_MB: "100"
   QUOTA_YOUTUBE_IMPORT_DAILY: "3"
   QUOTA_SHADOWING_ASSESSMENT_DAILY: "5"
   GROQ_BASE_URL: "https://api.groq.com"
@@ -73,28 +74,6 @@ services:
         aliases:
           - jaeger.lvh.me
 
-  ytdlp:
-    container_name: ytdlp
-    platform: linux/amd64
-    build:
-      context: .
-      target: ytdlp-service
-    ports:
-      - "8081:8081"
-    environment:
-      YTDLP_SERVICE_PORT: "8081"
-      YTDLP_TIMEOUT_SECONDS: "300"
-      YTDLP_MAX_FILE_MB: "100"
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/health"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-    networks:
-      app_network:
-        aliases:
-          - ytdlp.lvh.me
-
   app:
     container_name: app
     platform: linux/amd64
@@ -113,8 +92,6 @@ services:
         condition: service_started
       jaeger:
         condition: service_started
-      ytdlp:
-        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -134,7 +111,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "80:80"
+      - "8088:80"
     depends_on:
       - app
     networks:

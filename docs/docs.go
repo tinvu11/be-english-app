@@ -5401,7 +5401,10 @@ const docTemplate = `{
                     "example": 0
                 },
                 "phonemes": {
-                    "type": "object"
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
                 },
                 "word": {
                     "type": "string",
