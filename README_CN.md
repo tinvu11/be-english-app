@@ -151,13 +151,10 @@ Check services:
 - NATS monitoring:
   - http://nats.lvh.me | http://127.0.0.1:8222/
   - Credentials: `guest` / `guest`
-- Jaeger (链路追踪 UI):
-  - http://jaeger.lvh.me | http://127.0.0.1:16686
 
 ## 可观测性
 
-分布式链路追踪由 [OpenTelemetry](https://opentelemetry.io/) 提供。Span 通过 OTLP/gRPC 导出到收集器 —— docker 栈中为
-[Jaeger](https://www.jaegertracing.io/)。
+分布式链路追踪由 [OpenTelemetry](https://opentelemetry.io/) 提供，默认关闭。启用时需配置外部 OTLP/gRPC 收集器；Docker 栈不包含收集器。
 
 - **上下文传播** —— W3C `traceparent` + `baggage`，因此单条链路可贯穿全部四种传输协议。REST 使用
   [otelfiber](https://github.com/gofiber/contrib/tree/main/otelfiber) 中间件，gRPC 使用

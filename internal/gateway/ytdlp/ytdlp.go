@@ -20,20 +20,22 @@ import (
 const maxDiagnosticBytes = 4096
 
 type Provider struct {
-	binaryPath string
-	timeout    time.Duration
-	maxBytes   int64
+	binaryPath   string
+	timeout      time.Duration
+	maxBytes     int64
+	potServerURL string
 }
 
 // NewLocal returns an executable-backed provider.
-func NewLocal(binaryPath string, timeout time.Duration, maxBytes int64) gateway.YouTubeProvider {
+func NewLocal(binaryPath string, timeout time.Duration, maxBytes int64, potServerURL string) gateway.YouTubeProvider {
 	if timeout <= 0 {
 		timeout = 45 * time.Second
 	}
 	if maxBytes <= 0 {
 		maxBytes = 10 << 20
 	}
-	return &Provider{binaryPath: binaryPath, timeout: timeout, maxBytes: maxBytes}
+	return &Provider{binaryPath: binaryPath, timeout: timeout, maxBytes: maxBytes,
+		potServerURL: strings.TrimRight(potServerURL, "/")}
 }
 
 type metadata struct {
@@ -77,9 +79,16 @@ func (p *Provider) DownloadAudio(ctx context.Context, youtubeID string) ([]byte,
 		return nil, fmt.Errorf("%w: create temporary directory", entity.ErrAudioDownloadFailed)
 	}
 	defer os.RemoveAll(tempDir)
-	_, err = p.run(ctx, "--no-config", "--no-playlist", "--no-warnings", "--extract-audio",
-		"--audio-format", "flac", "--postprocessor-args", "ffmpeg:-ar 16000 -ac 1 -sample_fmt s16",
+	args := []string{"--no-config", "--no-playlist", "--no-warnings"}
+	if p.potServerURL != "" {
+		args = append(args, "--js-runtimes", "node", "--remote-components", "ejs:github",
+			"--extractor-args", "youtube:player_client=mweb",
+			"--extractor-args", "youtubepot-bgutilhttp:base_url="+p.potServerURL)
+	}
+	args = append(args, "--extract-audio", "--audio-format", "flac",
+		"--postprocessor-args", "ffmpeg:-ar 16000 -ac 1 -sample_fmt s16",
 		"--paths", tempDir, "--output", "audio.%(ext)s", youtubeURL(youtubeID))
+	_, err = p.run(ctx, args...)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", entity.ErrAudioDownloadFailed, err)
 	}

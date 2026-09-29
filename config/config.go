@@ -85,6 +85,7 @@ type (
 		BinaryPath     string `env:"YTDLP_BINARY_PATH" envDefault:"yt-dlp"`
 		TimeoutSeconds int    `env:"YTDLP_TIMEOUT_SECONDS" envDefault:"45"`
 		MaxFileMB      int64  `env:"YTDLP_MAX_FILE_MB" envDefault:"10"`
+		POTServerURL   string `env:"YTDLP_POT_SERVER_URL"`
 	}
 
 	deepseek struct {

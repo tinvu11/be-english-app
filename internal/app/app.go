@@ -90,7 +90,8 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 		ShadowingAssessmentDailyLimit: cfg.Quota.ShadowingAssessmentDailyLimit,
 	})
 	youtubeProvider := ytdlp.NewLocal(cfg.YTDLP.BinaryPath,
-		time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20)
+		time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20,
+		cfg.YTDLP.POTServerURL)
 	translator := deepseek.New(deepseek.Config{
 		BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries,

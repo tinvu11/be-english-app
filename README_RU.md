@@ -151,13 +151,10 @@ make compose-up-all
 - NATS monitoring:
   - http://nats.lvh.me | http://127.0.0.1:8222/
   - Credentials: `guest` / `guest`
-- Jaeger (UI трейсов):
-  - http://jaeger.lvh.me | http://127.0.0.1:16686
 
 ## Наблюдаемость
 
-Распределённая трассировка реализована через [OpenTelemetry](https://opentelemetry.io/). Спаны экспортируются по
-OTLP/gRPC в коллектор — [Jaeger](https://www.jaegertracing.io/) в docker-стеке.
+Распределённая трассировка реализована через [OpenTelemetry](https://opentelemetry.io/) и по умолчанию отключена. Для её включения настройте внешний коллектор OTLP/gRPC; в Docker-стеке коллектора нет.
 
 - **Проброс контекста** — W3C `traceparent` + `baggage`, поэтому один трейс охватывает все четыре транспорта. REST
   использует middleware [otelfiber](https://github.com/gofiber/contrib/tree/main/otelfiber), gRPC — stats handler

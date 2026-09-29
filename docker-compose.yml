@@ -25,11 +25,6 @@ x-backend-app-environment: &x-backend-app-environment
   METRICS_ENABLED: "true"
   # Swagger
   SWAGGER_ENABLED: "true"
-  # Tracing
-  TRACING_ENABLED: "false"
-  TRACING_OTLP_ENDPOINT: "jaeger:4317"
-  TRACING_OTLP_INSECURE: "true"
-  TRACING_SAMPLE_RATE: "1.0"  # DON'T set to 1.0 in production, use a lower value like 0.1 or 0.01
   # Firebase Authentication
   FIREBASE_PROJECT_ID: "${FIREBASE_PROJECT_ID}"
   GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/firebase-service-account.json"
@@ -37,6 +32,7 @@ x-backend-app-environment: &x-backend-app-environment
   YTDLP_BINARY_PATH: "yt-dlp"
   YTDLP_TIMEOUT_SECONDS: "300"
   YTDLP_MAX_FILE_MB: "100"
+  YTDLP_POT_SERVER_URL: "http://pot-provider:4416"
   QUOTA_YOUTUBE_IMPORT_DAILY: "3"
   QUOTA_SHADOWING_ASSESSMENT_DAILY: "5"
   GROQ_BASE_URL: "https://api.groq.com"
@@ -46,6 +42,13 @@ x-backend-app-environment: &x-backend-app-environment
 
 
 services:
+  pot-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider:2.0.0-node
+    ports:
+      - "127.0.0.1:4416:4416"
+    networks:
+      - app_network
+
   db:
     container_name: db
     image: postgres:18.4-alpine
@@ -60,19 +63,6 @@ services:
         aliases:
           - db.lvh.me
 
-
-  jaeger:
-    container_name: jaeger
-    image: jaegertracing/all-in-one:1.76.0
-    ports:
-      - "16686:16686"   # Jaeger UI
-      - "4317:4317"     # OTLP gRPC
-      - "4318:4318"     # OTLP HTTP
-      - "6831:6831/udp" # Jaeger agent UDP
-    networks:
-      app_network:
-        aliases:
-          - jaeger.lvh.me
 
   app:
     container_name: app
@@ -90,7 +80,7 @@ services:
     depends_on:
       db:
         condition: service_started
-      jaeger:
+      pot-provider:
         condition: service_started
     deploy:
       resources:

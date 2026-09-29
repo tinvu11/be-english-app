@@ -122,13 +122,11 @@ Check services:
 - NATS monitoring:
   - http://nats.lvh.me | http://127.0.0.1:8222/
   - Credentials: `guest` / `guest`
-- Jaeger (traces UI):
-  - http://jaeger.lvh.me | http://127.0.0.1:16686
 
 ## Observability
 
-Distributed tracing is provided by [OpenTelemetry](https://opentelemetry.io/). Spans are exported over OTLP/gRPC to a
-collector — [Jaeger](https://www.jaegertracing.io/) in the docker stack.
+Distributed tracing is provided by [OpenTelemetry](https://opentelemetry.io/). It is disabled by default. To use it,
+configure an external OTLP/gRPC collector; the Docker stack does not include one.
 
 - **Context propagation** — W3C `traceparent` + `baggage`, so a single trace spans all four transports. REST uses
   the [otelfiber](https://github.com/gofiber/contrib/tree/main/otelfiber) middleware, gRPC uses the

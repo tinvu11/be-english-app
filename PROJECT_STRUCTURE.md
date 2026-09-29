@@ -451,7 +451,7 @@ GET /metrics
 
 `pkg/tracing/` cấu hình OpenTelemetry và OTLP exporter. Khi tracing được bật, request, use case và repository có thể nằm trong cùng một trace.
 
-Docker Compose sử dụng Jaeger làm backend quan sát trace.
+Tracing mặc định tắt. Có thể cấu hình một OTLP collector bên ngoài khi cần quan sát trace.
 
 ## 13. Tests
 
@@ -490,7 +490,6 @@ Các service chính:
 |---|---|
 | `db` | PostgreSQL |
 | `app` | Go application |
-| `jaeger` | OpenTelemetry trace UI |
 | `nginx` | Reverse proxy |
 
 Database sử dụng named volume `db_data`. Dữ liệu vẫn tồn tại sau khi container bị xóa.
