@@ -16,7 +16,7 @@ type OnboardingTopic struct {
 	Name string `json:"name" example:"Travel"`
 } // @name response.OnboardingTopic
 
-// UserLevel is a proficiency level localized in the user's native language.
+// UserLevel is a proficiency level localized when a translation exists, otherwise named by its code.
 type UserLevel struct {
 	ID   int    `json:"id" example:"1"`
 	Code string `json:"code" example:"A1"`

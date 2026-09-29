@@ -10,7 +10,7 @@ import (
 )
 
 // @Summary Get user levels
-// @Description Return levels for the current user's target language, localized in their native language
+// @Description Return levels for the current user's target language, using the code when no native-language translation exists
 // @ID user-list-levels
 // @Tags user
 // @Produce json
@@ -45,12 +45,14 @@ func (r *V1) listUserLevels(ctx *fiber.Ctx) error {
 func userLevelsResponse(levels []entity.Level, nativeLanguageID int) []response.UserLevel {
 	result := make([]response.UserLevel, 0, len(levels))
 	for _, level := range levels {
+		name := level.Code
 		for _, translation := range level.Translations {
 			if translation.LanguageID == nativeLanguageID {
-				result = append(result, response.UserLevel{ID: level.ID, Code: level.Code, Name: translation.Name})
+				name = translation.Name
 				break
 			}
 		}
+		result = append(result, response.UserLevel{ID: level.ID, Code: level.Code, Name: name})
 	}
 	return result
 }

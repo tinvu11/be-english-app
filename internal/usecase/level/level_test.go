@@ -75,6 +75,19 @@ func TestCreateLevelRejectsDuplicateTranslationLanguage(t *testing.T) {
 	require.ErrorIs(t, err, entity.ErrInvalidLevel)
 }
 
+func TestCreateLevelWithoutTranslations(t *testing.T) {
+	t.Parallel()
+
+	repository := &repoStub{}
+	uc := &UseCase{repo: repository}
+	result, err := uc.CreateLevel(t.Context(), entity.Level{Code: " a2 ", LanguageID: 1})
+
+	require.NoError(t, err)
+	assert.Equal(t, "A2", result.Code)
+	assert.Empty(t, result.Translations)
+	assert.Empty(t, repository.created.Translations)
+}
+
 func TestDeleteLevel(t *testing.T) {
 	t.Parallel()
 

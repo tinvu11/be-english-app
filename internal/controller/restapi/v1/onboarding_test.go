@@ -53,14 +53,17 @@ func TestUserLevelsResponse(t *testing.T) {
 	levels := []entity.Level{
 		{ID: 1, Code: "A1", Translations: []entity.LevelTranslation{{LanguageID: 1, Name: "Beginner"}, {LanguageID: 2, Name: "Sơ cấp"}}},
 		{ID: 2, Code: "A2", Translations: []entity.LevelTranslation{{LanguageID: 1, Name: "Elementary"}}},
+		{ID: 3, Code: "B1"},
 	}
 
 	got := userLevelsResponse(levels, 2)
 
-	require.Len(t, got, 1)
+	require.Len(t, got, 3)
 	assert.Equal(t, 1, got[0].ID)
 	assert.Equal(t, "A1", got[0].Code)
 	assert.Equal(t, "Sơ cấp", got[0].Name)
+	assert.Equal(t, "A2", got[1].Name)
+	assert.Equal(t, "B1", got[2].Name)
 }
 
 func TestBuildHomeFeedGroupsVideosByChannel(t *testing.T) {

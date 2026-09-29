@@ -57,7 +57,7 @@ func (uc *UseCase) DeleteLevel(ctx context.Context, id int) error {
 
 func normalizeAndValidate(level *entity.Level) error {
 	level.Code = strings.ToUpper(strings.TrimSpace(level.Code))
-	if level.ID < 0 || level.Code == "" || len(level.Code) > 20 || level.LanguageID <= 0 || len(level.Translations) == 0 {
+	if level.ID < 0 || level.Code == "" || len(level.Code) > 20 || level.LanguageID <= 0 {
 		return entity.ErrInvalidLevel
 	}
 

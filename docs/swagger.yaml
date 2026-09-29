@@ -1006,12 +1006,10 @@ definitions:
       translations:
         items:
           $ref: '#/definitions/request.LevelTranslation'
-        minItems: 1
         type: array
     required:
     - code
     - languageId
-    - translations
     type: object
   request.SaveTopic:
     properties:
@@ -1993,7 +1991,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a level with its multilingual translations
+      description: Create a level; multilingual translations are optional
       operationId: admin-create-level
       parameters:
       - description: Level and translations
@@ -2079,7 +2077,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Replace a level and its multilingual translations
+      description: Replace a level and its optional multilingual translations
       operationId: admin-update-level
       parameters:
       - description: Level ID
@@ -3552,8 +3550,8 @@ paths:
       - user
   /user/levels:
     get:
-      description: Return levels for the current user's target language, localized
-        in their native language
+      description: Return levels for the current user's target language, using the
+        code when no native-language translation exists
       operationId: user-list-levels
       produces:
       - application/json

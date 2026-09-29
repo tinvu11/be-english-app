@@ -43,7 +43,7 @@ func (ctrl *controller) listLevels(ctx *fiber.Ctx) error {
 }
 
 // @Summary     Create level
-// @Description Create a level with its multilingual translations
+// @Description Create a level; multilingual translations are optional
 // @ID          admin-create-level
 // @Tags        admin-levels
 // @Accept      json
@@ -72,7 +72,7 @@ func (ctrl *controller) createLevel(ctx *fiber.Ctx) error {
 }
 
 // @Summary     Update level
-// @Description Replace a level and its multilingual translations
+// @Description Replace a level and its optional multilingual translations
 // @ID          admin-update-level
 // @Tags        admin-levels
 // @Accept      json

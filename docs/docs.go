@@ -619,7 +619,7 @@ const docTemplate = `{
                 ]
             },
             "post": {
-                "description": "Create a level with its multilingual translations",
+                "description": "Create a level; multilingual translations are optional",
                 "consumes": [
                     "application/json"
                 ],
@@ -689,7 +689,7 @@ const docTemplate = `{
         },
         "/admin/levels/{id}": {
             "put": {
-                "description": "Replace a level and its multilingual translations",
+                "description": "Replace a level and its optional multilingual translations",
                 "consumes": [
                     "application/json"
                 ],
@@ -3016,7 +3016,7 @@ const docTemplate = `{
         },
         "/user/levels": {
             "get": {
-                "description": "Return levels for the current user's target language, localized in their native language",
+                "description": "Return levels for the current user's target language, using the code when no native-language translation exists",
                 "produces": [
                     "application/json"
                 ],
@@ -6348,8 +6348,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "code",
-                "languageId",
-                "translations"
+                "languageId"
             ],
             "properties": {
                 "code": {
@@ -6363,7 +6362,6 @@ const docTemplate = `{
                 },
                 "translations": {
                     "type": "array",
-                    "minItems": 1,
                     "items": {
                         "$ref": "#/definitions/request.LevelTranslation"
                     }

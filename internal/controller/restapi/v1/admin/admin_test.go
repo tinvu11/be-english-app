@@ -347,7 +347,9 @@ func TestAdminLevels(t *testing.T) {
 		{name: "list", method: http.MethodGet, path: "/v1/admin/levels?language_id=1", status: http.StatusOK},
 		{name: "invalid filter", method: http.MethodGet, path: "/v1/admin/levels?language_id=x", status: http.StatusBadRequest},
 		{name: "create", method: http.MethodPost, path: "/v1/admin/levels", body: validBody, status: http.StatusCreated},
+		{name: "create without translations", method: http.MethodPost, path: "/v1/admin/levels", body: `{"code":"A2","languageId":1}`, status: http.StatusCreated},
 		{name: "update", method: http.MethodPut, path: "/v1/admin/levels/1", body: validBody, status: http.StatusOK},
+		{name: "update with empty translations", method: http.MethodPut, path: "/v1/admin/levels/1", body: `{"code":"A2","languageId":1,"translations":[]}`, status: http.StatusOK},
 		{name: "delete", method: http.MethodDelete, path: "/v1/admin/levels/1", status: http.StatusNoContent},
 	}
 
