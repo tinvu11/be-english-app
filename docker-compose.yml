@@ -43,7 +43,7 @@ x-backend-app-environment: &x-backend-app-environment
 
 services:
   pot-provider:
-    image: brainicism/bgutil-ytdlp-pot-provider:2.0.0-node
+    image: brainicism/bgutil-ytdlp-pot-provider:2.0.1-node
     ports:
       - "127.0.0.1:4416:4416"
     networks:
