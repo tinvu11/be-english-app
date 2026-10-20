@@ -141,6 +141,18 @@ func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentit
 		return entity.User{}, fmt.Errorf("UserUseCase - Authenticate - uc.repo.GetByFirebaseUID: %w", err)
 	}
 
+	nativeLanguage, err := uc.languages.GetLanguageByCode(ctx, "vi")
+	if err != nil {
+		return entity.User{}, fmt.Errorf("UserUseCase - Authenticate - uc.languages.GetLanguageByCode(vi): %w", err)
+	}
+	targetLanguage, err := uc.languages.GetLanguageByCode(ctx, "en")
+	if err != nil {
+		return entity.User{}, fmt.Errorf("UserUseCase - Authenticate - uc.languages.GetLanguageByCode(en): %w", err)
+	}
+	if !nativeLanguage.IsActive || !targetLanguage.IsActive || !targetLanguage.IsLearnable {
+		return entity.User{}, entity.ErrInvalidLanguage
+	}
+
 	now := time.Now().UTC()
 	email := identity.Email
 	if email == "" {
@@ -148,15 +160,17 @@ func (uc *UseCase) Authenticate(ctx context.Context, identity entity.AuthIdentit
 	}
 
 	user := entity.User{
-		ID:          uuid.New().String(),
-		FirebaseUID: identity.UID,
-		Username:    firebaseUsername(identity),
-		Email:       email,
-		Role:        entity.RoleUser,
-		AvatarURL:   identity.Picture,
-		IsActive:    true,
-		CreatedAt:   now,
-		UpdatedAt:   now,
+		ID:               uuid.New().String(),
+		FirebaseUID:      identity.UID,
+		Username:         firebaseUsername(identity),
+		Email:            email,
+		Role:             entity.RoleUser,
+		AvatarURL:        identity.Picture,
+		NativeLanguageID: &nativeLanguage.ID,
+		TargetLanguageID: &targetLanguage.ID,
+		IsActive:         true,
+		CreatedAt:        now,
+		UpdatedAt:        now,
 	}
 
 	if err = uc.repo.Store(ctx, &user); err != nil {

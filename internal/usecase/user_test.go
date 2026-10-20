@@ -44,10 +44,12 @@ func TestAuthenticateExistingFirebaseUser(t *testing.T) {
 func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 	t.Parallel()
 
-	uc, repo, _ := newUserUseCase(t)
+	uc, repo, languages := newUserUseCase(t)
 	identity := entity.AuthIdentity{UID: "firebase-123456789", Email: "john@example.com", Name: "John Doe", Picture: "https://example.com/john.jpg"}
 
 	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(entity.User{}, entity.ErrUserNotFound)
+	languages.EXPECT().GetLanguageByCode(gomock.Any(), "vi").Return(entity.Language{ID: 2, Code: "vi", IsActive: true}, nil)
+	languages.EXPECT().GetLanguageByCode(gomock.Any(), "en").Return(entity.Language{ID: 1, Code: "en", IsActive: true, IsLearnable: true}, nil)
 	repo.EXPECT().Store(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, stored *entity.User) error {
 		assert.NotEmpty(t, stored.ID)
 		assert.Equal(t, identity.UID, stored.FirebaseUID)
@@ -55,6 +57,8 @@ func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 		assert.Equal(t, "John Doe", stored.Username)
 		assert.Equal(t, identity.Picture, stored.AvatarURL)
 		assert.Equal(t, entity.RoleUser, stored.Role)
+		assert.Equal(t, 2, *stored.NativeLanguageID)
+		assert.Equal(t, 1, *stored.TargetLanguageID)
 		return nil
 	})
 
@@ -63,6 +67,33 @@ func TestAuthenticateProvisionsFirebaseUser(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, identity.UID, result.FirebaseUID)
 	assert.Equal(t, entity.RoleUser, result.Role)
+	assert.Equal(t, 2, *result.NativeLanguageID)
+	assert.Equal(t, 1, *result.TargetLanguageID)
+}
+
+func TestAuthenticateRejectsMissingDefaultLanguage(t *testing.T) {
+	t.Parallel()
+
+	uc, repo, languages := newUserUseCase(t)
+	identity := entity.AuthIdentity{UID: "firebase-new"}
+	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(entity.User{}, entity.ErrUserNotFound)
+	languages.EXPECT().GetLanguageByCode(gomock.Any(), "vi").Return(entity.Language{}, entity.ErrLanguageNotFound)
+
+	_, err := uc.Authenticate(context.Background(), identity)
+	require.ErrorIs(t, err, entity.ErrLanguageNotFound)
+}
+
+func TestAuthenticateRejectsInactiveDefaultLanguage(t *testing.T) {
+	t.Parallel()
+
+	uc, repo, languages := newUserUseCase(t)
+	identity := entity.AuthIdentity{UID: "firebase-new"}
+	repo.EXPECT().GetByFirebaseUID(gomock.Any(), identity.UID).Return(entity.User{}, entity.ErrUserNotFound)
+	languages.EXPECT().GetLanguageByCode(gomock.Any(), "vi").Return(entity.Language{ID: 2, IsActive: true}, nil)
+	languages.EXPECT().GetLanguageByCode(gomock.Any(), "en").Return(entity.Language{ID: 1, IsActive: false, IsLearnable: true}, nil)
+
+	_, err := uc.Authenticate(context.Background(), identity)
+	require.ErrorIs(t, err, entity.ErrInvalidLanguage)
 }
 
 func TestAuthenticateRejectsEmptyUID(t *testing.T) {

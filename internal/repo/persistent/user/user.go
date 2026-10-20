@@ -29,8 +29,8 @@ func New(pg *postgres.Postgres) repo.UserRepo {
 func (r *Repo) Store(ctx context.Context, user *entity.User) error {
 	sql, args, err := r.Builder.
 		Insert("users").
-		Columns("id, firebase_uid, username, email, role, avatar_url, created_at, updated_at").
-		Values(user.ID, user.FirebaseUID, user.Username, user.Email, user.Role, user.AvatarURL, user.CreatedAt, user.UpdatedAt).
+		Columns("id, firebase_uid, username, email, role, avatar_url, native_language_id, target_language_id, created_at, updated_at").
+		Values(user.ID, user.FirebaseUID, user.Username, user.Email, user.Role, user.AvatarURL, user.NativeLanguageID, user.TargetLanguageID, user.CreatedAt, user.UpdatedAt).
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("UserRepo - Store - r.Builder: %w", err)
