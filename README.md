@@ -97,6 +97,33 @@ make compose-up-integration-test
 make compose-up-all 
 ```
 
+### YouTube cookies for yt-dlp
+
+When YouTube requires a signed-in session, put a Netscape cookie file or a JSON
+cookie export at `config/cookie_yt.txt`. Set
+`YTDLP_COOKIES_FILE=config/cookie_yt.txt` when running the Go app from the
+project root. The same setting is used for video preview and audio download.
+JSON exports are converted to Netscape format for yt-dlp. Without this setting,
+yt-dlp runs without cookies.
+
+Docker Compose mounts `config/cookie_yt.txt` read-only at
+`/run/secrets/youtube-cookies.txt` by default. On an AWS host, keep the cookie
+file outside the Git checkout and set `YTDLP_COOKIES_HOST_PATH` to its absolute
+host path in the host's `.env` file, for example
+`YTDLP_COOKIES_HOST_PATH=/home/ubuntu/yt-secrets/cookie_yt.txt`. Create the
+directory and transfer the file separately, then restrict it with `chmod 600`.
+The host file must exist before `docker compose up -d --build app`; Compose will
+not create an empty directory in its place. For other AWS container deployments,
+mount the file read-only into the container and set `YTDLP_COOKIES_FILE` to its
+absolute path inside the container.
+
+The cookie file is ignored by Git and the Docker build context. It is not in
+the image, so `git pull` and a build from the repository alone will not supply
+the cookies. Once copied to the AWS host, `git pull` does not remove the file;
+deployment scripts that delete ignored files or replace the checkout can do so.
+Refresh the mounted file when the YouTube session expires. Keep this file out
+of logs and deployment artifacts.
+
 Check services:
 
 - AMQP RPC:

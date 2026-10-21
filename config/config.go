@@ -87,6 +87,7 @@ type (
 		TimeoutSeconds int    `env:"YTDLP_TIMEOUT_SECONDS" envDefault:"45"`
 		MaxFileMB      int64  `env:"YTDLP_MAX_FILE_MB" envDefault:"10"`
 		POTServerURL   string `env:"YTDLP_POT_SERVER_URL"`
+		CookiesFile    string `env:"YTDLP_COOKIES_FILE"`
 	}
 
 	youtube struct {

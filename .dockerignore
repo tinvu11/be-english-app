@@ -13,6 +13,7 @@ coverage.txt
 .gocache
 .tmp
 *firebase-service-account.json
+config/cookie_yt.txt
 firebase-*.json
 
 docker-compose.yml

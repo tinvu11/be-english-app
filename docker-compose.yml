@@ -33,6 +33,7 @@ x-backend-app-environment: &x-backend-app-environment
   YTDLP_TIMEOUT_SECONDS: "300"
   YTDLP_MAX_FILE_MB: "100"
   YTDLP_POT_SERVER_URL: "http://pot-provider:4416"
+  YTDLP_COOKIES_FILE: "/run/secrets/youtube-cookies.txt"
   YOUTUBE_API_KEY: "${YOUTUBE_API_KEY}"
   QUOTA_YOUTUBE_IMPORT_DAILY: "3"
   QUOTA_SHADOWING_ASSESSMENT_DAILY: "5"
@@ -76,6 +77,12 @@ services:
       <<: *x-backend-app-environment
     volumes:
       - ./firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
+      - type: bind
+        source: ${YTDLP_COOKIES_HOST_PATH:-./config/cookie_yt.txt}
+        target: /run/secrets/youtube-cookies.txt
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
       - "8080:8080"
     depends_on:

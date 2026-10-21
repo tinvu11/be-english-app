@@ -19,7 +19,8 @@ func main() {
 	port := env("YTDLP_SERVICE_PORT", "8081")
 	timeoutSeconds, _ := strconv.Atoi(env("YTDLP_TIMEOUT_SECONDS", "45"))
 	maxFileMB, _ := strconv.ParseInt(env("YTDLP_MAX_FILE_MB", "10"), 10, 64)
-	provider := ytdlp.NewLocal(env("YTDLP_BINARY_PATH", "yt-dlp"), time.Duration(timeoutSeconds)*time.Second, maxFileMB<<20)
+	provider := ytdlp.NewLocal(env("YTDLP_BINARY_PATH", "yt-dlp"), time.Duration(timeoutSeconds)*time.Second,
+		maxFileMB<<20, env("YTDLP_POT_SERVER_URL", ""), env("YTDLP_COOKIES_FILE", ""))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusOK) })

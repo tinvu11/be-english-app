@@ -92,7 +92,7 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 	})
 	youtubeProvider := ytdlp.NewLocal(cfg.YTDLP.BinaryPath,
 		time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20,
-		cfg.YTDLP.POTServerURL)
+		cfg.YTDLP.POTServerURL, cfg.YTDLP.CookiesFile)
 	if cfg.YouTube.APIKey != "" {
 		youtubeProvider = youtubeapi.New(youtubeProvider, cfg.YouTube.APIKey, &http.Client{Timeout: 20 * time.Second})
 	}
