@@ -107,22 +107,18 @@ JSON exports are converted to Netscape format for yt-dlp. Without this setting,
 yt-dlp runs without cookies.
 
 Docker Compose mounts `config/cookie_yt.txt` read-only at
-`/run/secrets/youtube-cookies.txt` by default. On an AWS host, keep the cookie
-file outside the Git checkout and set `YTDLP_COOKIES_HOST_PATH` to its absolute
-host path in the host's `.env` file, for example
-`YTDLP_COOKIES_HOST_PATH=/home/ubuntu/yt-secrets/cookie_yt.txt`. Create the
-directory and transfer the file separately, then restrict it with `chmod 600`.
-The host file must exist before `docker compose up -d --build app`; Compose will
-not create an empty directory in its place. For other AWS container deployments,
-mount the file read-only into the container and set `YTDLP_COOKIES_FILE` to its
-absolute path inside the container.
+`/run/secrets/youtube-cookies.txt` by default. If `config/cookie_yt.txt` is
+tracked in Git, it will be present after `git pull` on a Lightsail instance.
+Run `docker compose up -d --build app` from the project directory. The host
+file must exist before the container starts.
 
-The cookie file is ignored by Git and the Docker build context. It is not in
-the image, so `git pull` and a build from the repository alone will not supply
-the cookies. Once copied to the AWS host, `git pull` does not remove the file;
-deployment scripts that delete ignored files or replace the checkout can do so.
-Refresh the mounted file when the YouTube session expires. Keep this file out
-of logs and deployment artifacts.
+The cookie file is excluded from the Docker image by `.dockerignore`; Compose
+supplies it through the read-only mount. `YTDLP_COOKIES_HOST_PATH` can override
+the host path when storing cookies outside the project. For other container
+deployments, mount the file and set `YTDLP_COOKIES_FILE` to its container path.
+Refresh the file when the YouTube session expires. Anyone with repository
+read access can use a committed session cookie, and removing the file in a
+later commit does not remove it from Git history.
 
 Check services:
 
