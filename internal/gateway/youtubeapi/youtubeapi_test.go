@@ -2,8 +2,10 @@ package youtubeapi
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/evrone/go-clean-template/internal/entity"
@@ -54,4 +56,23 @@ func TestPreviewVideoNotFound(t *testing.T) {
 	provider.baseURL = server.URL
 	_, err := provider.PreviewVideo(t.Context(), "TjPFZaMe2yw")
 	require.ErrorIs(t, err, entity.ErrVideoNotFound)
+}
+
+func TestPreviewVideoReportsSafeAPIReason(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writer.WriteHeader(http.StatusForbidden)
+		_, _ = writer.Write([]byte(`{"error":{"status":"PERMISSION_DENIED","errors":[{"reason":"quotaExceeded"}],"message":"secret detail"}}`))
+	}))
+	defer server.Close()
+
+	provider := New(audioStub{}, "test-key", server.Client()).(*Provider)
+	provider.baseURL = server.URL
+	_, err := provider.PreviewVideo(t.Context(), "TjPFZaMe2yw")
+	require.ErrorIs(t, err, entity.ErrYouTubeProviderFailed)
+	var statusErr *entity.YouTubeProviderStatusError
+	require.True(t, errors.As(err, &statusErr))
+	require.Equal(t, http.StatusForbidden, statusErr.StatusCode)
+	require.Equal(t, "quotaExceeded", statusErr.Reason)
+	require.False(t, strings.Contains(err.Error(), "secret detail"))
+	require.False(t, strings.Contains(err.Error(), "test-key"))
 }

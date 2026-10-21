@@ -1,6 +1,24 @@
 package entity
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
+
+// YouTubeProviderStatusError carries a safe upstream status for admin diagnostics.
+type YouTubeProviderStatusError struct {
+	StatusCode int
+	Reason     string
+}
+
+func (e *YouTubeProviderStatusError) Error() string {
+	if e.Reason != "" {
+		return fmt.Sprintf("YouTube Data API status %d (%s)", e.StatusCode, e.Reason)
+	}
+	return fmt.Sprintf("YouTube Data API status %d", e.StatusCode)
+}
+
+func (e *YouTubeProviderStatusError) Unwrap() error { return ErrYouTubeProviderFailed }
 
 var (
 	ErrUserNotFound                 = errors.New("user not found")

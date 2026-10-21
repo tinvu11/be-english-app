@@ -246,6 +246,10 @@ func (ctrl *controller) videoError(ctx *fiber.Ctx, err error) error {
 		if errors.Is(err, context.DeadlineExceeded) {
 			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube metadata request timed out")
 		}
+		var statusErr *entity.YouTubeProviderStatusError
+		if errors.As(err, &statusErr) {
+			return errorResponse(ctx, http.StatusBadGateway, statusErr.Error())
+		}
 		return errorResponse(ctx, http.StatusBadGateway, "YouTube metadata provider failed")
 	default:
 		ctrl.log.Error(err, "restapi - v1 - admin - video")

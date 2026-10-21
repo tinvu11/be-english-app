@@ -19,6 +19,7 @@ import (
 const videosURL = "https://www.googleapis.com/youtube/v3/videos"
 
 var durationPattern = regexp.MustCompile(`^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$`)
+var errorReasonPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]{0,63}$`)
 
 type Provider struct {
 	audio   gateway.YouTubeProvider
@@ -60,7 +61,23 @@ func (p *Provider) PreviewVideo(ctx context.Context, youtubeID string) (entity.Y
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return entity.YouTubeVideoPreview{}, fmt.Errorf("%w: YouTube Data API status %d", entity.ErrYouTubeProviderFailed, resp.StatusCode)
+		var apiError struct {
+			Error struct {
+				Status string `json:"status"`
+				Errors []struct {
+					Reason string `json:"reason"`
+				} `json:"errors"`
+			} `json:"error"`
+		}
+		_ = json.NewDecoder(io.LimitReader(resp.Body, 64<<10)).Decode(&apiError)
+		reason := apiError.Error.Status
+		if len(apiError.Error.Errors) > 0 && apiError.Error.Errors[0].Reason != "" {
+			reason = apiError.Error.Errors[0].Reason
+		}
+		if !errorReasonPattern.MatchString(reason) {
+			reason = ""
+		}
+		return entity.YouTubeVideoPreview{}, &entity.YouTubeProviderStatusError{StatusCode: resp.StatusCode, Reason: reason}
 	}
 
 	var result struct {

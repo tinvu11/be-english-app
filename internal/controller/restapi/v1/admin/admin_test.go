@@ -238,6 +238,23 @@ func adminTestApp(role string) *fiber.App {
 	return app
 }
 
+func TestVideoErrorReportsSafeYouTubeAPIReason(t *testing.T) {
+	app := fiber.New()
+	ctrl := &controller{log: loggerStub{}}
+	app.Get("/preview", func(ctx *fiber.Ctx) error {
+		return ctrl.videoError(ctx, &entity.YouTubeProviderStatusError{
+			StatusCode: http.StatusForbidden, Reason: "quotaExceeded",
+		})
+	})
+
+	response := performAdminRequest(t, app, http.MethodGet, "/preview", "", nil)
+	defer response.Body.Close()
+	require.Equal(t, http.StatusBadGateway, response.StatusCode)
+	body, err := io.ReadAll(response.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(body), "YouTube Data API status 403 (quotaExceeded)")
+}
+
 func performAdminRequest(t *testing.T, app *fiber.App, method, path, token string, body []byte) *http.Response {
 	t.Helper()
 
