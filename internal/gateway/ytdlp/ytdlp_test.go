@@ -1,11 +1,27 @@
 package ytdlp
 
 import (
+	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"slices"
 	"testing"
+
+	"github.com/evrone/go-clean-template/internal/entity"
 )
+
+func TestDownloadAudioPreservesProviderFailureAndCancellation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	provider := &Provider{binaryPath: "yt-dlp", maxBytes: 1}
+	_, err := provider.DownloadAudio(ctx, "dQw4w9WgXcQ")
+	for _, target := range []error{entity.ErrAudioDownloadFailed, entity.ErrYouTubeProviderFailed, context.Canceled} {
+		if !errors.Is(err, target) {
+			t.Errorf("expected wrapped error %v, got %v", target, err)
+		}
+	}
+}
 
 func TestCookieFileUsedForPreviewAndAudio(t *testing.T) {
 	const cookiePath = "/run/secrets/youtube-cookies.txt"

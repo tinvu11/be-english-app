@@ -93,7 +93,7 @@ func (p *Provider) DownloadAudio(ctx context.Context, youtubeID string) ([]byte,
 	defer os.RemoveAll(tempDir)
 	_, err = p.run(ctx, p.audioArgs(youtubeID, tempDir)...)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", entity.ErrAudioDownloadFailed, err)
+		return nil, fmt.Errorf("%w: %w", entity.ErrAudioDownloadFailed, err)
 	}
 	path := filepath.Join(tempDir, "audio.flac")
 	file, err := os.Open(path)
@@ -158,6 +158,9 @@ func (p *Provider) run(parent context.Context, args ...string) ([]byte, error) {
 			return nil, fmt.Errorf("%w: %w", entity.ErrYouTubeProviderFailed, ctx.Err())
 		}
 		diagnostic := strings.TrimSpace(stderr.String())
+		if diagnostic == "" {
+			return nil, fmt.Errorf("%w: %w", entity.ErrYouTubeProviderFailed, err)
+		}
 		if len(diagnostic) > maxDiagnosticBytes {
 			diagnostic = diagnostic[:maxDiagnosticBytes]
 		}
