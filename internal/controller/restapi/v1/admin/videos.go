@@ -242,6 +242,7 @@ func (ctrl *controller) videoError(ctx *fiber.Ctx, err error) error {
 	case errors.Is(err, entity.ErrConcurrentVideoUpdate):
 		return errorResponse(ctx, http.StatusConflict, "video status changed concurrently")
 	case errors.Is(err, entity.ErrYouTubeProviderFailed):
+		ctrl.log.Error(err, "restapi - v1 - admin - YouTube metadata")
 		if errors.Is(err, context.DeadlineExceeded) {
 			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube metadata request timed out")
 		}

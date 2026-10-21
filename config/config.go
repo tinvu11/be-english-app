@@ -27,6 +27,7 @@ type (
 		Swagger     swagger
 		Tracing     tracing
 		YTDLP       ytdlp
+		YouTube     youtube
 		DeepSeek    deepseek
 		Groq        groq
 		AzureSpeech azureSpeech
@@ -86,6 +87,10 @@ type (
 		TimeoutSeconds int    `env:"YTDLP_TIMEOUT_SECONDS" envDefault:"45"`
 		MaxFileMB      int64  `env:"YTDLP_MAX_FILE_MB" envDefault:"10"`
 		POTServerURL   string `env:"YTDLP_POT_SERVER_URL"`
+	}
+
+	youtube struct {
+		APIKey string `env:"YOUTUBE_API_KEY"`
 	}
 
 	deepseek struct {

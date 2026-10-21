@@ -17,6 +17,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/gateway/deepseek"
 	googlePlayGateway "github.com/evrone/go-clean-template/internal/gateway/googleplay"
 	"github.com/evrone/go-clean-template/internal/gateway/groq"
+	"github.com/evrone/go-clean-template/internal/gateway/youtubeapi"
 	"github.com/evrone/go-clean-template/internal/gateway/ytdlp"
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
@@ -92,6 +93,9 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 	youtubeProvider := ytdlp.NewLocal(cfg.YTDLP.BinaryPath,
 		time.Duration(cfg.YTDLP.TimeoutSeconds)*time.Second, cfg.YTDLP.MaxFileMB<<20,
 		cfg.YTDLP.POTServerURL)
+	if cfg.YouTube.APIKey != "" {
+		youtubeProvider = youtubeapi.New(youtubeProvider, cfg.YouTube.APIKey, &http.Client{Timeout: 20 * time.Second})
+	}
 	translator := deepseek.New(deepseek.Config{
 		BaseURL: cfg.DeepSeek.BaseURL, APIKey: cfg.DeepSeek.APIKey,
 		Model: cfg.DeepSeek.Model, MaxRetries: cfg.DeepSeek.MaxRetries,

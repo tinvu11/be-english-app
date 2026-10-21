@@ -52,8 +52,10 @@ func (p *Provider) PreviewVideo(ctx context.Context, youtubeID string) (entity.Y
 	if !validYouTubeID(youtubeID) {
 		return entity.YouTubeVideoPreview{}, entity.ErrInvalidVideo
 	}
-	output, err := p.run(ctx, "--no-config", "--dump-single-json", "--skip-download", "--no-playlist",
-		"--no-warnings", youtubeURL(youtubeID))
+	args := []string{"--no-config", "--dump-single-json", "--skip-download", "--no-playlist", "--no-warnings"}
+	args = append(args, p.potArgs()...)
+	args = append(args, youtubeURL(youtubeID))
+	output, err := p.run(ctx, args...)
 	if err != nil {
 		return entity.YouTubeVideoPreview{}, err
 	}
@@ -80,11 +82,7 @@ func (p *Provider) DownloadAudio(ctx context.Context, youtubeID string) ([]byte,
 	}
 	defer os.RemoveAll(tempDir)
 	args := []string{"--no-config", "--no-playlist", "--no-warnings"}
-	if p.potServerURL != "" {
-		args = append(args, "--js-runtimes", "node", "--remote-components", "ejs:github",
-			"--extractor-args", "youtube:player_client=mweb",
-			"--extractor-args", "youtubepot-bgutilhttp:base_url="+p.potServerURL)
-	}
+	args = append(args, p.potArgs()...)
 	args = append(args, "--extract-audio", "--audio-format", "flac",
 		"--postprocessor-args", "ffmpeg:-ar 16000 -ac 1 -sample_fmt s16",
 		"--paths", tempDir, "--output", "audio.%(ext)s", youtubeURL(youtubeID))
@@ -103,6 +101,15 @@ func (p *Provider) DownloadAudio(ctx context.Context, youtubeID string) ([]byte,
 		return nil, fmt.Errorf("%w: normalized audio exceeds limit", entity.ErrAudioDownloadFailed)
 	}
 	return data, nil
+}
+
+func (p *Provider) potArgs() []string {
+	if p.potServerURL == "" {
+		return nil
+	}
+	return []string{"--js-runtimes", "node", "--remote-components", "ejs:github",
+		"--extractor-args", "youtube:player_client=mweb",
+		"--extractor-args", "youtubepot-bgutilhttp:base_url=" + p.potServerURL}
 }
 
 func (p *Provider) run(parent context.Context, args ...string) ([]byte, error) {
