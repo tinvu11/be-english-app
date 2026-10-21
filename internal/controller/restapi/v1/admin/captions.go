@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -329,15 +330,16 @@ func (ctrl *controller) captionError(ctx *fiber.Ctx, err error) error {
 	case errors.Is(err, entity.ErrCaptionExists):
 		return errorResponse(ctx, http.StatusConflict, "caption sentence order already exists")
 	case errors.Is(err, entity.ErrYouTubeProviderFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
-		ctrl.log.Error("YouTube audio download failed: %v", err)
+		ctrl.log.Error(fmt.Sprintf("YouTube audio download failed: %v", err))
 		if errors.Is(err, context.DeadlineExceeded) {
 			return errorResponse(ctx, http.StatusGatewayTimeout, "YouTube request timed out")
 		}
-		return errorResponse(ctx, http.StatusBadGateway, "YouTube provider failed")
+		return errorResponse(ctx, http.StatusBadGateway, err.Error())
 	case errors.Is(err, entity.ErrTranscriptionFailed), errors.Is(err, entity.ErrInvalidTranscription):
-		return errorResponse(ctx, http.StatusBadGateway, "audio transcription failed")
+		ctrl.log.Error(fmt.Sprintf("audio transcription failed: %v", err))
+		return errorResponse(ctx, http.StatusBadGateway, err.Error())
 	default:
-		ctrl.log.Error(err, "restapi - v1 - admin - caption")
-		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")
+		ctrl.log.Error(fmt.Sprintf("restapi - v1 - admin - caption: %v", err))
+		return errorResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 }

@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -185,11 +186,13 @@ func (r *V1) youtubeVideoError(ctx *fiber.Ctx, err error, operation string) erro
 	case errors.Is(err, entity.ErrTargetLanguageRequired):
 		return errorResponse(ctx, http.StatusConflict, "target language must be selected first")
 	case errors.Is(err, entity.ErrYouTubeProviderFailed), errors.Is(err, entity.ErrAudioDownloadFailed):
-		return errorResponse(ctx, http.StatusBadGateway, "YouTube request failed")
+		r.l.Error(fmt.Sprintf("restapi - v1 - YouTube video - %s: %v", operation, err))
+		return errorResponse(ctx, http.StatusBadGateway, err.Error())
 	case errors.Is(err, entity.ErrTranscriptionFailed), errors.Is(err, entity.ErrInvalidTranscription):
-		return errorResponse(ctx, http.StatusBadGateway, "audio transcription failed")
+		r.l.Error(fmt.Sprintf("restapi - v1 - YouTube video transcription - %s: %v", operation, err))
+		return errorResponse(ctx, http.StatusBadGateway, err.Error())
 	default:
-		r.l.Error(err, "restapi - v1 - YouTube video - "+operation)
-		return errorResponse(ctx, http.StatusInternalServerError, "internal server error")
+		r.l.Error(fmt.Sprintf("restapi - v1 - YouTube video - %s: %v", operation, err))
+		return errorResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 }
