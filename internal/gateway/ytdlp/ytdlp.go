@@ -126,10 +126,10 @@ func (p *Provider) audioArgs(youtubeID, tempDir string) []string {
 
 func (p *Provider) potArgs() []string {
 	if p.potServerURL == "" {
-		return nil
+		return []string{"--extractor-args", "youtube:player_client=android,web"}
 	}
 	return []string{"--js-runtimes", "node", "--remote-components", "ejs:github",
-		"--extractor-args", "youtube:player_client=mweb",
+		"--extractor-args", "youtube:player_client=android,web",
 		"--extractor-args", "youtubepot-bgutilhttp:base_url=" + p.potServerURL}
 }
 
