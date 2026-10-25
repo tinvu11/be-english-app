@@ -122,7 +122,7 @@ type (
 	}
 
 	iap struct {
-		Enabled               bool   `env:"IAP_ENABLED" envDefault:"true"`
+		Enabled               bool   `env:"IAP_ENABLED" envDefault:"false"`
 		AppleEnabled          bool   `env:"APPLE_IAP_ENABLED" envDefault:"true"`
 		RestorePolicy         string `env:"IAP_RESTORE_POLICY" envDefault:"block"`
 		TimeoutSeconds        int    `env:"IAP_TIMEOUT_SECONDS" envDefault:"15"`
