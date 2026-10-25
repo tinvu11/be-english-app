@@ -86,8 +86,8 @@ services:
     environment:
       <<: *x-backend-app-environment
     volumes:
-      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
-      - ./google-play-service-account.json:/app/google-play-service-account.json:ro
+      - ./firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
+      - ./google-play-service-account.json:/run/secrets/google-play-service-account.json:ro
       - type: bind
         source: ${YTDLP_COOKIES_HOST_PATH:-./config/cookie_yt.txt}
         target: /run/secrets/youtube-cookies.txt
