@@ -48,6 +48,9 @@ x-backend-app-environment: &x-backend-app-environment
   DEEPSEEK_TIMEOUT_SECONDS: "${DEEPSEEK_TIMEOUT_SECONDS:-60}"
   DEEPSEEK_MAX_BATCH_ITEMS: "${DEEPSEEK_MAX_BATCH_ITEMS:-50}"
   DEEPSEEK_MAX_RETRIES: "${DEEPSEEK_MAX_RETRIES:-2}"
+  # In-App Purchase
+  GOOGLE_PLAY_PACKAGE_NAME: ${GOOGLE_PLAY_PACKAGE_NAME}
+  GOOGLE_PLAY_CREDENTIALS_FILE: ${GOOGLE_PLAY_CREDENTIALS_FILE}
 
 
 services:
@@ -84,6 +87,7 @@ services:
       <<: *x-backend-app-environment
     volumes:
       - ./firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
+      - ./google-play-service-account.json:/run/secrets/google-play-service-account.json:ro
       - type: bind
         source: ${YTDLP_COOKIES_HOST_PATH:-./config/cookie_yt.txt}
         target: /run/secrets/youtube-cookies.txt
