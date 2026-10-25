@@ -15,7 +15,7 @@ type YouTubeProvider interface {
 
 // AudioTranscriber converts normalized audio into timestamped captions.
 type AudioTranscriber interface {
-	Transcribe(ctx context.Context, audio []byte, languageHint string) (entity.AudioTranscription, error)
+	Transcribe(ctx context.Context, audio []byte, filename, languageHint string) (entity.AudioTranscription, error)
 }
 
 // CaptionTranslator translates caption text without exposing a provider-specific API.

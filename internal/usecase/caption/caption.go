@@ -199,7 +199,20 @@ func (uc *UseCase) ImportFromYouTube(ctx context.Context, videoID int64, languag
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}
-	transcription, err := uc.transcriber.Transcribe(ctx, audio, languageCode)
+	return uc.ImportFromAudio(ctx, videoID, audio, "audio.flac", languageCode, mode)
+}
+
+// ImportFromAudio transcribes an uploaded audio file for an existing video.
+func (uc *UseCase) ImportFromAudio(ctx context.Context, videoID int64, audio []byte, filename, languageCode, mode string) (entity.YouTubeCaptionImportResult, error) {
+	if videoID <= 0 || len(audio) == 0 || len(languageCode) > 35 ||
+		(mode != entity.CaptionImportFailIfExists && mode != entity.CaptionImportReplaceAll) {
+		return entity.YouTubeCaptionImportResult{}, entity.ErrInvalidCaption
+	}
+	video, err := uc.videos.GetVideo(ctx, videoID)
+	if err != nil {
+		return entity.YouTubeCaptionImportResult{}, err
+	}
+	transcription, err := uc.transcriber.Transcribe(ctx, audio, filename, languageCode)
 	if err != nil {
 		return entity.YouTubeCaptionImportResult{}, err
 	}

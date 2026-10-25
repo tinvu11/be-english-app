@@ -2591,14 +2591,20 @@ paths:
       - admin-videos
     post:
       consumes:
-      - application/json
+      - multipart/form-data
+      description: Upload audio with the video metadata; the audio is transcribed
+        and its captions are saved before the video is returned.
       parameters:
-      - description: Video
-        in: body
-        name: request
+      - description: Video metadata as JSON
+        in: formData
+        name: video
         required: true
-        schema:
-          $ref: '#/definitions/request.SaveVideo'
+        type: string
+      - description: Audio file (mp3, m4a, wav, flac, ogg, webm)
+        in: formData
+        name: audio
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -2622,8 +2628,20 @@ paths:
           description: Conflict
           schema:
             $ref: '#/definitions/admin.errorDoc'
+        "413":
+          description: Request Entity Too Large
+          schema:
+            $ref: '#/definitions/admin.errorDoc'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/admin.errorDoc'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/admin.errorDoc'
+        "502":
+          description: Bad Gateway
           schema:
             $ref: '#/definitions/admin.errorDoc'
       security:

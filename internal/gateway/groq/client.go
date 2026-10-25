@@ -42,13 +42,13 @@ type transcriptionResponse struct {
 	} `json:"segments"`
 }
 
-func (c *Client) Transcribe(ctx context.Context, audio []byte, languageHint string) (entity.AudioTranscription, error) {
+func (c *Client) Transcribe(ctx context.Context, audio []byte, filename, languageHint string) (entity.AudioTranscription, error) {
 	if strings.TrimSpace(c.config.APIKey) == "" || len(audio) == 0 {
 		return entity.AudioTranscription{}, entity.ErrTranscriptionFailed
 	}
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
-	file, err := writer.CreateFormFile("file", "audio.flac")
+	file, err := writer.CreateFormFile("file", filename)
 	if err != nil {
 		return entity.AudioTranscription{}, fmt.Errorf("%w: create multipart file", entity.ErrTranscriptionFailed)
 	}

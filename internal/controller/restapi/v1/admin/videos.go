@@ -2,9 +2,14 @@ package admin
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	adminrequest "github.com/evrone/go-clean-template/internal/controller/restapi/v1/admin/request"
 	_ "github.com/evrone/go-clean-template/internal/controller/restapi/v1/response"
@@ -101,21 +106,79 @@ func (ctrl *controller) getVideo(ctx *fiber.Ctx) error {
 }
 
 // @Summary Create video
+// @Description Upload audio with the video metadata; the audio is transcribed and its captions are saved before the video is returned.
 // @Tags admin-videos
-// @Accept json
+// @Accept multipart/form-data
 // @Produce json
-// @Param request body adminrequest.SaveVideo true "Video"
+// @Param video formData string true "Video metadata as JSON"
+// @Param audio formData file true "Audio file (mp3, m4a, wav, flac, ogg, webm)"
 // @Success 201 {object} entity.Video
-// @Failure 400,401,403,409,500 {object} errorDoc
+// @Failure 400,401,403,409,413,422,502,500 {object} errorDoc
 // @Security BearerAuth
 // @Router /admin/videos [post]
 func (ctrl *controller) createVideo(ctx *fiber.Ctx) error {
-	body, err := ctrl.parseVideo(ctx)
-	if err != nil {
-		return err
+	if !strings.HasPrefix(ctx.Get(fiber.HeaderContentType), "multipart/form-data") {
+		return errorResponse(ctx, http.StatusBadRequest, "multipart video and audio are required")
 	}
-	item, err := ctrl.videos.CreateVideo(ctx.UserContext(), videoFromRequest(body))
+	var body adminrequest.SaveVideo
+	if err := json.Unmarshal([]byte(ctx.FormValue("video")), &body); err != nil || ctrl.validate.Struct(body) != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid video")
+	}
+	header, err := ctx.FormFile("audio")
+	if err != nil || header == nil || header.Size == 0 {
+		return errorResponse(ctx, http.StatusBadRequest, "audio file is required")
+	}
+	const maxAudioSize = 20 << 20
+	if header.Size > maxAudioSize {
+		return errorResponse(ctx, http.StatusRequestEntityTooLarge, "audio file is too large")
+	}
+	filename := filepath.Base(header.Filename)
+	switch strings.ToLower(filepath.Ext(filename)) {
+	case ".mp3", ".m4a", ".wav", ".flac", ".ogg", ".webm":
+	default:
+		return errorResponse(ctx, http.StatusBadRequest, "unsupported audio format")
+	}
+	file, err := header.Open()
 	if err != nil {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid audio file")
+	}
+	defer file.Close()
+	audio, err := io.ReadAll(io.LimitReader(file, maxAudioSize+1))
+	if err != nil || len(audio) == 0 {
+		return errorResponse(ctx, http.StatusBadRequest, "invalid audio file")
+	}
+	if len(audio) > maxAudioSize {
+		return errorResponse(ctx, http.StatusRequestEntityTooLarge, "audio file is too large")
+	}
+	input := videoFromRequest(body)
+	input.Status = entity.VideoStatusDraft
+	item, err := ctrl.videos.CreateVideo(ctx.UserContext(), input)
+	if err != nil {
+		return ctrl.videoError(ctx, err)
+	}
+	if _, err = ctrl.captions.ImportFromAudio(ctx.UserContext(), item.ID, audio, filename, "en", entity.CaptionImportFailIfExists); err != nil {
+		if cleanupErr := ctrl.videos.DeleteVideo(ctx.UserContext(), item.ID); cleanupErr != nil {
+			ctrl.log.Error(fmt.Sprintf("remove video %d after audio transcription failed: %v", item.ID, cleanupErr))
+		}
+		return ctrl.captionError(ctx, err)
+	}
+	if body.Status != entity.VideoStatusDraft {
+		item, err = ctrl.videos.TransitionVideoStatus(ctx.UserContext(), item.ID, entity.VideoStatusPublished)
+		if err == nil && body.Status == entity.VideoStatusArchived {
+			item, err = ctrl.videos.TransitionVideoStatus(ctx.UserContext(), item.ID, entity.VideoStatusArchived)
+		}
+		if err != nil {
+			if cleanupErr := ctrl.videos.DeleteVideo(ctx.UserContext(), item.ID); cleanupErr != nil {
+				ctrl.log.Error(fmt.Sprintf("remove video %d after status transition failed: %v", item.ID, cleanupErr))
+			}
+			return ctrl.videoError(ctx, err)
+		}
+	}
+	item, err = ctrl.videos.GetVideo(ctx.UserContext(), item.ID)
+	if err != nil {
+		if cleanupErr := ctrl.videos.DeleteVideo(ctx.UserContext(), item.ID); cleanupErr != nil {
+			ctrl.log.Error(fmt.Sprintf("remove video %d after loading failed: %v", item.ID, cleanupErr))
+		}
 		return ctrl.videoError(ctx, err)
 	}
 	return ctx.Status(http.StatusCreated).JSON(item)

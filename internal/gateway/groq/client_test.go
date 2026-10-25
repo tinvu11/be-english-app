@@ -30,7 +30,7 @@ func TestTranscribeSendsFLACAndMapsLanguage(t *testing.T) {
 	defer server.Close()
 
 	client := New(Config{BaseURL: server.URL, APIKey: "secret", Model: "whisper-large-v3-turbo"}, server.Client())
-	result, err := client.Transcribe(t.Context(), []byte("flac-data"), "en")
+	result, err := client.Transcribe(t.Context(), []byte("flac-data"), "audio.flac", "en")
 	require.NoError(t, err)
 	assert.Equal(t, "en", result.LanguageCode)
 	require.Len(t, result.Segments, 1)

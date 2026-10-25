@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -217,6 +218,9 @@ func (captionsStub) ImportSRT(context.Context, int64, []byte, []entity.SRTTransl
 func (captionsStub) ImportFromYouTube(context.Context, int64, string, string) (entity.YouTubeCaptionImportResult, error) {
 	return entity.YouTubeCaptionImportResult{}, nil
 }
+func (captionsStub) ImportFromAudio(context.Context, int64, []byte, string, string, string) (entity.YouTubeCaptionImportResult, error) {
+	return entity.YouTubeCaptionImportResult{}, nil
+}
 func (captionsStub) GetOriginalCaptions(context.Context, int64) (entity.VideoCaptions, error) {
 	return entity.VideoCaptions{}, nil
 }
@@ -268,6 +272,35 @@ func performAdminRequest(t *testing.T, app *fiber.App, method, path, token strin
 	require.NoError(t, err)
 
 	return resp
+}
+
+func TestCreateVideoRequiresUploadedAudio(t *testing.T) {
+	app := adminTestApp(entity.RoleAdmin)
+	metadata := `{"title":"Example","youtubeId":"dQw4w9WgXcQ","durationSeconds":30,"status":"draft","languageId":1,"levelId":1,"channelId":1}`
+
+	for _, withAudio := range []bool{false, true} {
+		var body bytes.Buffer
+		writer := multipart.NewWriter(&body)
+		require.NoError(t, writer.WriteField("video", metadata))
+		if withAudio {
+			file, err := writer.CreateFormFile("audio", "example.mp3")
+			require.NoError(t, err)
+			_, err = file.Write([]byte("audio data"))
+			require.NoError(t, err)
+		}
+		require.NoError(t, writer.Close())
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/v1/admin/videos", &body)
+		request.Header.Set("Authorization", "Bearer valid-admin-token")
+		request.Header.Set("Content-Type", writer.FormDataContentType())
+		response, err := app.Test(request)
+		require.NoError(t, err)
+		response.Body.Close()
+		if withAudio {
+			assert.Equal(t, http.StatusCreated, response.StatusCode)
+		} else {
+			assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+		}
+	}
 }
 
 func TestAdminLogin(t *testing.T) {

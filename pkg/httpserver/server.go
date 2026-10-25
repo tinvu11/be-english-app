@@ -59,6 +59,7 @@ func New(l logger.Interface, opts ...Option) *Server {
 	}
 
 	app := fiber.New(fiber.Config{
+		BodyLimit:    26 << 20,
 		Prefork:      s.prefork,
 		ReadTimeout:  s.readTimeout,
 		WriteTimeout: s.writeTimeout,

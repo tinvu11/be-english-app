@@ -1549,8 +1549,9 @@ const docTemplate = `{
                 ]
             },
             "post": {
+                "description": "Upload audio with the video metadata; the audio is transcribed and its captions are saved before the video is returned.",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -1561,13 +1562,18 @@ const docTemplate = `{
                 "summary": "Create video",
                 "parameters": [
                     {
-                        "description": "Video",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.SaveVideo"
-                        }
+                        "type": "string",
+                        "description": "Video metadata as JSON",
+                        "name": "video",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Audio file (mp3, m4a, wav, flac, ogg, webm)",
+                        "name": "audio",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1601,8 +1607,26 @@ const docTemplate = `{
                             "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
+                    "413": {
+                        "description": "Request Entity Too Large",
+                        "schema": {
+                            "$ref": "#/definitions/admin.errorDoc"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/admin.errorDoc"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/admin.errorDoc"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
                         "schema": {
                             "$ref": "#/definitions/admin.errorDoc"
                         }

@@ -15,7 +15,7 @@ type translatorStub struct{}
 
 type transcriberStub struct{}
 
-func (transcriberStub) Transcribe(context.Context, []byte, string) (entity.AudioTranscription, error) {
+func (transcriberStub) Transcribe(context.Context, []byte, string, string) (entity.AudioTranscription, error) {
 	return entity.AudioTranscription{}, nil
 }
 

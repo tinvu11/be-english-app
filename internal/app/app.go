@@ -147,7 +147,8 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 
 func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifier, l logger.Interface) servers {
 	// HTTP Server
-	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
+	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode),
+		httpserver.ReadTimeout(2*time.Minute), httpserver.WriteTimeout(time.Duration(cfg.Groq.TimeoutSeconds+30)*time.Second))
 	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, uc.shadowing, uc.iap, verifier, l)
 
 	return servers{
