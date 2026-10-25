@@ -3,24 +3,30 @@ package v1
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/evrone/go-clean-template/internal/entity"
+	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
 )
 
-type iapHTTPStub struct{ appleCalls int }
+type iapHTTPStub struct {
+	appleCalls int
+	status     entity.IAPStatus
+}
 
 func (s *iapHTTPStub) VerifyPurchase(context.Context, string, entity.VerifyPurchaseInput) (entity.IAPStatus, error) {
 	return entity.IAPStatus{}, nil
 }
 
 func (s *iapHTTPStub) GetStatus(context.Context, string) (entity.IAPStatus, error) {
-	return entity.IAPStatus{}, nil
+	return s.status, nil
 }
 
 func (s *iapHTTPStub) HandleAppleWebhook(context.Context, string) error {
@@ -29,6 +35,88 @@ func (s *iapHTTPStub) HandleAppleWebhook(context.Context, string) error {
 }
 
 func (s *iapHTTPStub) HandleGoogleWebhook(context.Context, []byte) error { return nil }
+
+type iapUserStub struct {
+	usecase.User
+	user entity.User
+}
+
+func (s iapUserStub) Authenticate(context.Context, entity.AuthIdentity) (entity.User, error) {
+	return s.user, nil
+}
+
+type iapVerifierStub struct{}
+
+func (iapVerifierStub) Verify(context.Context, string) (entity.AuthIdentity, error) {
+	return entity.AuthIdentity{UID: "firebase-user"}, nil
+}
+
+func TestIAPStatusRemainsAvailableWithoutStoreVerification(t *testing.T) {
+	t.Parallel()
+	future := time.Now().Add(time.Hour)
+	past := time.Now().Add(-time.Hour)
+	for _, test := range []struct {
+		name    string
+		until   *time.Time
+		premium bool
+	}{
+		{name: "free account"},
+		{name: "expired account", until: &past},
+		{name: "premium account", until: &future, premium: true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			app := fiber.New()
+			users := iapUserStub{user: entity.User{ID: "user-1", IsActive: true, PremiumUntil: test.until}}
+			NewRoutes(app.Group("/v1"), users, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+				nil, false, iapVerifierStub{}, logger.New("error"))
+			request := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/v1/iap/status", nil)
+			request.Header.Set(fiber.HeaderAuthorization, "Bearer test-token")
+			response, err := app.Test(request)
+			require.NoError(t, err)
+			defer response.Body.Close()
+			require.Equal(t, http.StatusOK, response.StatusCode)
+			var status entity.IAPStatus
+			require.NoError(t, json.NewDecoder(response.Body).Decode(&status))
+			require.Equal(t, test.premium, status.IsPremium)
+			require.Nil(t, status.Subscription)
+			if test.premium {
+				require.True(t, status.PremiumUntil.Equal(*test.until))
+			} else {
+				require.Nil(t, status.PremiumUntil)
+			}
+		})
+	}
+}
+
+func TestIAPStatusUsesSubscriptionWhenStoreVerificationIsEnabled(t *testing.T) {
+	t.Parallel()
+	app := fiber.New()
+	users := iapUserStub{user: entity.User{ID: "user-1", IsActive: true}}
+	stub := &iapHTTPStub{status: entity.IAPStatus{IsPremium: true}}
+	NewRoutes(app.Group("/v1"), users, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		stub, false, iapVerifierStub{}, logger.New("error"))
+	request := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/v1/iap/status", nil)
+	request.Header.Set(fiber.HeaderAuthorization, "Bearer test-token")
+	response, err := app.Test(request)
+	require.NoError(t, err)
+	defer response.Body.Close()
+	require.Equal(t, http.StatusOK, response.StatusCode)
+	var status entity.IAPStatus
+	require.NoError(t, json.NewDecoder(response.Body).Decode(&status))
+	require.True(t, status.IsPremium)
+}
+
+func TestIAPStatusRequiresAuthenticationWithoutStoreVerification(t *testing.T) {
+	t.Parallel()
+	app := fiber.New()
+	NewRoutes(app.Group("/v1"), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		nil, false, nil, logger.New("error"))
+	request := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/v1/iap/status", nil)
+	response, err := app.Test(request)
+	require.NoError(t, err)
+	defer response.Body.Close()
+	require.Equal(t, http.StatusUnauthorized, response.StatusCode)
+}
 
 func TestIAPWebhookIsPublicWhileVerifyIsProtected(t *testing.T) {
 	t.Parallel()

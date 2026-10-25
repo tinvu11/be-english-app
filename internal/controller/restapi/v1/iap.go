@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/request"
 	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/response"
@@ -51,6 +52,20 @@ func (r *V1) getIAPStatus(ctx *fiber.Ctx) error {
 	userID, ok := ctx.Locals("userID").(string)
 	if !ok {
 		return errorResponse(ctx, http.StatusUnauthorized, "unauthorized")
+	}
+	if r.iap == nil {
+		// Auth loaded this user from the database. Match the premium_until
+		// policy used by feature quotas without requiring store credentials.
+		user, authenticated := ctx.Locals("user").(entity.User)
+		if !authenticated || user.ID != userID {
+			return errorResponse(ctx, http.StatusUnauthorized, "unauthorized")
+		}
+		status := entity.IAPStatus{}
+		if user.PremiumUntil != nil && user.PremiumUntil.After(time.Now()) {
+			status.IsPremium = true
+			status.PremiumUntil = user.PremiumUntil
+		}
+		return ctx.Status(http.StatusOK).JSON(status)
 	}
 	status, err := r.iap.GetStatus(ctx.UserContext(), userID)
 	if err != nil {

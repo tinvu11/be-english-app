@@ -1,12 +1,12 @@
 # In-App Purchase configuration
 
-The IAP module is disabled by default. Apply migration `20260816000001_create_iap`, provision both store integrations, then set `IAP_ENABLED=true`.
+Store purchase verification is disabled by default. Apply migration `20260816000001_create_iap`, provision the enabled store integrations, then set `IAP_ENABLED=true`. The authenticated `GET /v1/iap/status` endpoint remains available when verification is disabled, so mobile can determine ad eligibility.
 
 ## Environment variables
 
 | Variable | Required when enabled | Description |
 |---|---:|---|
-| `IAP_ENABLED` | yes | Registers the IAP gateways and HTTP routes. |
+| `IAP_ENABLED` | yes | Registers the IAP gateways, purchase verification and store callback routes. Account status remains available when false. |
 | `IAP_RESTORE_POLICY` | yes | `block` rejects an active purchase owned by another app user; `transfer` closes the old entitlement and transfers it atomically. Default: `block`. |
 | `IAP_TIMEOUT_SECONDS` | no | HTTP timeout for App Store calls. Default: `15`. |
 | `APPLE_IAP_BASE_URL` | yes | Production: `https://api.storekit.apple.com`; sandbox: `https://api.storekit-sandbox.apple.com`. |
@@ -48,7 +48,7 @@ Pub/Sub must forward the standard envelope containing `message.data` and `messag
 
   For iOS, `purchase_token` is the StoreKit 2 transaction ID and `package_name` may be omitted.
 
-- `GET /v1/iap/status` requires the same bearer token and returns the latest subscription plus `isPremium` and `premiumUntil`.
+- `GET /v1/iap/status` requires the same bearer token and returns the latest subscription plus `isPremium` and `premiumUntil`. When `IAP_ENABLED=false`, it returns account entitlement from the authenticated user's `premium_until`, matching feature quotas; `subscription` is omitted. An absent or expired entitlement returns `isPremium: false`.
 
 ## Operational notes
 

@@ -36,10 +36,12 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 	// Protected routes. Public routes must be registered before this prefix
 	// middleware because Fiber evaluates middleware in registration order.
 	protected := apiV1Group.Group("", middleware.Auth(verifier, u))
+	// Ad eligibility still needs an authoritative account status when store
+	// purchase verification is disabled.
+	protected.Get("/iap/status", r.getIAPStatus)
 	if iap != nil {
 		iapGroup := protected.Group("/iap")
 		iapGroup.Post("/verify", r.verifyIAPPurchase)
-		iapGroup.Get("/status", r.getIAPStatus)
 	}
 	vocabularyGroup := protected.Group("/vocabulary")
 	{
