@@ -10,6 +10,10 @@ import (
 //go:generate mockgen -source=contracts.go -destination=./mocks_usecase_test.go -package=usecase_test
 
 type (
+	Dashboard interface {
+		GetDashboard(ctx context.Context, days int) (entity.Dashboard, error)
+	}
+
 	// User -.
 	User interface {
 		Authenticate(ctx context.Context, identity entity.AuthIdentity) (entity.User, error)

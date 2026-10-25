@@ -22,6 +22,7 @@ import (
 	persistAdminUserRepo "github.com/evrone/go-clean-template/internal/repo/persistent/adminuser"
 	persistCaptionRepo "github.com/evrone/go-clean-template/internal/repo/persistent/caption"
 	persistChannelRepo "github.com/evrone/go-clean-template/internal/repo/persistent/channel"
+	persistDashboardRepo "github.com/evrone/go-clean-template/internal/repo/persistent/dashboard"
 	persistDictionaryRepo "github.com/evrone/go-clean-template/internal/repo/persistent/dictionary"
 	persistIAPRepo "github.com/evrone/go-clean-template/internal/repo/persistent/iap"
 	persistLanguageRepo "github.com/evrone/go-clean-template/internal/repo/persistent/language"
@@ -36,6 +37,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/adminuser"
 	"github.com/evrone/go-clean-template/internal/usecase/caption"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
+	"github.com/evrone/go-clean-template/internal/usecase/dashboard"
 	iapGateway "github.com/evrone/go-clean-template/internal/usecase/gateway"
 	iapUseCase "github.com/evrone/go-clean-template/internal/usecase/iap"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
@@ -55,6 +57,7 @@ import (
 )
 
 type useCases struct {
+	dashboard  usecase.Dashboard
 	user       usecase.User
 	language   usecase.Language
 	level      usecase.Level
@@ -107,6 +110,7 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 		&http.Client{Timeout: time.Duration(cfg.AzureSpeech.TimeoutSeconds) * time.Second})
 
 	result := useCases{
+		dashboard:  dashboard.New(persistDashboardRepo.New(pg)),
 		user:       user.New(userRepo, languageRepo),
 		language:   language.New(languageRepo),
 		level:      level.New(levelRepo),
@@ -149,7 +153,7 @@ func initServers(cfg *config.Config, uc useCases, verifier *firebaseauth.Verifie
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode),
 		httpserver.ReadTimeout(2*time.Minute), httpserver.WriteTimeout(time.Duration(cfg.Groq.TimeoutSeconds+30)*time.Second))
-	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, uc.shadowing, uc.iap, verifier, l)
+	restapi.NewRouter(httpServer.App, cfg, uc.user, uc.language, uc.level, uc.topic, uc.channel, uc.adminUser, uc.video, uc.caption, uc.vocabulary, uc.learning, uc.shadowing, uc.iap, verifier, l, uc.dashboard)
 
 	return servers{
 		http: httpServer,

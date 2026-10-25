@@ -9,31 +9,33 @@ import (
 )
 
 type controller struct {
-	users      usecase.User
-	languages  usecase.Language
-	levels     usecase.Level
-	topics     usecase.Topic
-	channels   usecase.Channel
-	adminUsers usecase.AdminUser
-	videos     usecase.Video
-	captions   usecase.Caption
-	verifier   middleware.TokenVerifier
-	log        logger.Interface
-	validate   *validator.Validate
+	dashboardUseCase usecase.Dashboard
+	users            usecase.User
+	languages        usecase.Language
+	levels           usecase.Level
+	topics           usecase.Topic
+	channels         usecase.Channel
+	adminUsers       usecase.AdminUser
+	videos           usecase.Video
+	captions         usecase.Caption
+	verifier         middleware.TokenVerifier
+	log              logger.Interface
+	validate         *validator.Validate
 }
 
-func newController(users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, verifier middleware.TokenVerifier, log logger.Interface) *controller {
+func newController(users usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, verifier middleware.TokenVerifier, log logger.Interface, dashboard usecase.Dashboard) *controller {
 	return &controller{
-		users:      users,
-		languages:  languages,
-		levels:     levels,
-		topics:     topics,
-		channels:   channels,
-		adminUsers: adminUsers,
-		videos:     videos,
-		captions:   captions,
-		verifier:   verifier,
-		log:        log,
-		validate:   validator.New(validator.WithRequiredStructEnabled()),
+		dashboardUseCase: dashboard,
+		users:            users,
+		languages:        languages,
+		levels:           levels,
+		topics:           topics,
+		channels:         channels,
+		adminUsers:       adminUsers,
+		videos:           videos,
+		captions:         captions,
+		verifier:         verifier,
+		log:              log,
+		validate:         validator.New(validator.WithRequiredStructEnabled()),
 	}
 }

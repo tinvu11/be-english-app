@@ -11,6 +11,10 @@ import (
 //go:generate mockgen -source=contracts.go -destination=../usecase/mocks_repo_test.go -package=usecase_test
 
 type (
+	DashboardRepo interface {
+		GetDashboard(ctx context.Context, days int) (entity.Dashboard, error)
+	}
+
 	// UserRepo -.
 	UserRepo interface {
 		Store(ctx context.Context, user *entity.User) error

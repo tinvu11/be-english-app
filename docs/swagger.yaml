@@ -1,11 +1,5 @@
 basePath: /v1
 definitions:
-  admin.dashboardResponse:
-    properties:
-      message:
-        example: Welcome to the admin dashboard!
-        type: string
-    type: object
   admin.errorDoc:
     properties:
       error:
@@ -99,6 +93,98 @@ definitions:
       isActive:
         example: true
         type: boolean
+    type: object
+  entity.Dashboard:
+    properties:
+      daily:
+        items:
+          $ref: '#/definitions/entity.DashboardDay'
+        type: array
+      days:
+        type: integer
+      generatedAt:
+        type: string
+      period:
+        $ref: '#/definitions/entity.DashboardPeriod'
+      recentVideos:
+        items:
+          $ref: '#/definitions/entity.DashboardVideo'
+        type: array
+      totals:
+        $ref: '#/definitions/entity.DashboardTotals'
+      videoStatus:
+        $ref: '#/definitions/entity.DashboardVideoStatus'
+    type: object
+  entity.DashboardDay:
+    properties:
+      date:
+        type: string
+      newUsers:
+        type: integer
+      newVideos:
+        type: integer
+    type: object
+  entity.DashboardPeriod:
+    properties:
+      activeLearners:
+        type: integer
+      newUsers:
+        type: integer
+      newVideos:
+        type: integer
+    type: object
+  entity.DashboardTotals:
+    properties:
+      activeChannels:
+        type: integer
+      activeUsers:
+        type: integer
+      captions:
+        type: integer
+      channels:
+        type: integer
+      languages:
+        type: integer
+      levels:
+        type: integer
+      topics:
+        type: integer
+      userImportedVideos:
+        type: integer
+      users:
+        type: integer
+      videos:
+        type: integer
+      videosWithoutCaptions:
+        type: integer
+    type: object
+  entity.DashboardVideo:
+    properties:
+      captionCount:
+        type: integer
+      channelName:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      languageCode:
+        type: string
+      status:
+        type: string
+      thumbnailUrl:
+        type: string
+      title:
+        type: string
+    type: object
+  entity.DashboardVideoStatus:
+    properties:
+      archived:
+        type: integer
+      draft:
+        type: integer
+      published:
+        type: integer
     type: object
   entity.DictationProgress:
     properties:
@@ -1803,15 +1889,30 @@ paths:
       - admin-channels
   /admin/dashboard:
     get:
-      description: Get the administrator dashboard message
+      description: Live catalogue totals, daily registrations/uploads (Vietnam calendar
+        days), and the five newest system videos. Totals are all-time; period metrics
+        include today.
       operationId: admin-dashboard
+      parameters:
+      - default: 7
+        description: Calendar days including today
+        enum:
+        - 7
+        - 30
+        in: query
+        name: days
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/admin.dashboardResponse'
+            $ref: '#/definitions/entity.Dashboard'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/admin.errorDoc'
         "401":
           description: Unauthorized
           schema:
@@ -1820,9 +1921,17 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/admin.errorDoc'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/admin.errorDoc'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/admin.errorDoc'
       security:
       - BearerAuth: []
-      summary: Admin dashboard
+      summary: Administrator dashboard statistics
       tags:
       - admin
   /admin/languages:

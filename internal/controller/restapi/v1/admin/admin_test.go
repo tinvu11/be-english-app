@@ -237,7 +237,7 @@ func (captionsStub) DeleteCaption(context.Context, int64, int64) error { return 
 
 func adminTestApp(role string) *fiber.App {
 	app := fiber.New()
-	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, videosStub{}, captionsStub{}, verifierStub{}, loggerStub{})
+	NewRoutes(app.Group("/v1"), usersStub{role: role}, languagesStub{}, levelsStub{}, topicsStub{}, channelsStub{}, adminUsersStub{}, videosStub{}, captionsStub{}, verifierStub{}, loggerStub{}, dashboardStub{})
 
 	return app
 }

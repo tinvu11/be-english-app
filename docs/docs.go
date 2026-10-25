@@ -330,20 +330,39 @@ const docTemplate = `{
         },
         "/admin/dashboard": {
             "get": {
-                "description": "Get the administrator dashboard message",
+                "description": "Live catalogue totals, daily registrations/uploads (Vietnam calendar days), and the five newest system videos. Totals are all-time; period metrics include today.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "admin"
                 ],
-                "summary": "Admin dashboard",
+                "summary": "Administrator dashboard statistics",
                 "operationId": "admin-dashboard",
+                "parameters": [
+                    {
+                        "enum": [
+                            7,
+                            30
+                        ],
+                        "type": "integer",
+                        "default": 7,
+                        "description": "Calendar days including today",
+                        "name": "days",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.dashboardResponse"
+                            "$ref": "#/definitions/entity.Dashboard"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/admin.errorDoc"
                         }
                     },
                     "401": {
@@ -354,6 +373,18 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/admin.errorDoc"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/admin.errorDoc"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
                             "$ref": "#/definitions/admin.errorDoc"
                         }
@@ -4946,15 +4977,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "admin.dashboardResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Welcome to the admin dashboard!"
-                }
-            }
-        },
         "admin.errorDoc": {
             "type": "object",
             "properties": {
@@ -5087,6 +5109,147 @@ const docTemplate = `{
                 "isActive": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "entity.Dashboard": {
+            "type": "object",
+            "properties": {
+                "daily": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.DashboardDay"
+                    }
+                },
+                "days": {
+                    "type": "integer"
+                },
+                "generatedAt": {
+                    "type": "string"
+                },
+                "period": {
+                    "$ref": "#/definitions/entity.DashboardPeriod"
+                },
+                "recentVideos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.DashboardVideo"
+                    }
+                },
+                "totals": {
+                    "$ref": "#/definitions/entity.DashboardTotals"
+                },
+                "videoStatus": {
+                    "$ref": "#/definitions/entity.DashboardVideoStatus"
+                }
+            }
+        },
+        "entity.DashboardDay": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "newUsers": {
+                    "type": "integer"
+                },
+                "newVideos": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.DashboardPeriod": {
+            "type": "object",
+            "properties": {
+                "activeLearners": {
+                    "type": "integer"
+                },
+                "newUsers": {
+                    "type": "integer"
+                },
+                "newVideos": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.DashboardTotals": {
+            "type": "object",
+            "properties": {
+                "activeChannels": {
+                    "type": "integer"
+                },
+                "activeUsers": {
+                    "type": "integer"
+                },
+                "captions": {
+                    "type": "integer"
+                },
+                "channels": {
+                    "type": "integer"
+                },
+                "languages": {
+                    "type": "integer"
+                },
+                "levels": {
+                    "type": "integer"
+                },
+                "topics": {
+                    "type": "integer"
+                },
+                "userImportedVideos": {
+                    "type": "integer"
+                },
+                "users": {
+                    "type": "integer"
+                },
+                "videos": {
+                    "type": "integer"
+                },
+                "videosWithoutCaptions": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.DashboardVideo": {
+            "type": "object",
+            "properties": {
+                "captionCount": {
+                    "type": "integer"
+                },
+                "channelName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "languageCode": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "thumbnailUrl": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.DashboardVideoStatus": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "integer"
+                },
+                "draft": {
+                    "type": "integer"
+                },
+                "published": {
+                    "type": "integer"
                 }
             }
         },
