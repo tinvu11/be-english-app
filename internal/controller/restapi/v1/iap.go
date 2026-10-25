@@ -11,7 +11,7 @@ import (
 )
 
 // @Summary Verify an in-app purchase
-// @Description Verify an App Store or Google Play purchase and update the current user's subscription
+// @Description Verify a Google Play purchase and update the current user's subscription
 // @ID iap-verify-purchase
 // @Tags iap
 // @Accept json
@@ -59,27 +59,6 @@ func (r *V1) getIAPStatus(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(status)
 }
 
-// @Summary Receive an Apple IAP notification
-// @Description Process an App Store Server Notifications V2 signed payload. This public endpoint authenticates the notification by verifying its JWS signature.
-// @ID iap-apple-webhook
-// @Tags iap-webhooks
-// @Accept json
-// @Produce json
-// @Param request body request.AppleIAPWebhook true "App Store notification"
-// @Success 200 {string} string "OK"
-// @Failure 400,500 {object} response.Error
-// @Router /iap/webhooks/apple [post]
-func (r *V1) appleIAPWebhook(ctx *fiber.Ctx) error {
-	var body request.AppleIAPWebhook
-	if err := ctx.BodyParser(&body); err != nil || body.SignedPayload == "" {
-		return errorResponse(ctx, http.StatusBadRequest, "invalid Apple notification")
-	}
-	if err := r.iap.HandleAppleWebhook(ctx.UserContext(), body.SignedPayload); err != nil {
-		return r.webhookError(ctx, err)
-	}
-	return ctx.SendStatus(http.StatusOK)
-}
-
 // @Summary Receive a Google Play RTDN notification
 // @Description Process a Google Cloud Pub/Sub push envelope containing a Base64-encoded Real-time Developer Notification. This is a public store callback.
 // @ID iap-google-webhook
@@ -97,8 +76,9 @@ func (r *V1) googleIAPWebhook(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusOK)
 }
 
-// Keep the Swagger response package discoverable when annotations are parsed.
+// Keep the Swagger packages discoverable when annotations are parsed.
 var _ response.Error
+var _ request.GoogleIAPWebhook
 
 func (r *V1) iapError(ctx *fiber.Ctx, err error) error {
 	switch {

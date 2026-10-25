@@ -21,7 +21,6 @@ type Config struct {
 }
 
 type UseCase struct {
-	apple  iapgateway.AppleGateway
 	google iapgateway.GoogleGateway
 	uow    iaprepo.UnitOfWork
 	repo   iaprepo.SubscriptionRepo
@@ -29,10 +28,10 @@ type UseCase struct {
 	now    func() time.Time
 }
 
-func New(apple iapgateway.AppleGateway, google iapgateway.GoogleGateway, uow iaprepo.UnitOfWork,
+func New(google iapgateway.GoogleGateway, uow iaprepo.UnitOfWork,
 	repo iaprepo.SubscriptionRepo, cfg Config,
 ) *UseCase {
-	return &UseCase{apple: apple, google: google, uow: uow, repo: repo, cfg: cfg, now: time.Now}
+	return &UseCase{google: google, uow: uow, repo: repo, cfg: cfg, now: time.Now}
 }
 
 //nolint:gocyclo,cyclop // Store-specific verification and acknowledgement branches are intentionally explicit.
@@ -41,25 +40,15 @@ func (uc *UseCase) VerifyPurchase(ctx context.Context, userID string, input enti
 		return entity.IAPStatus{}, entity.ErrInvalidIAPPurchase
 	}
 
-	var (
-		result entity.StoreVerificationResult
-		err    error
-	)
-
-	switch input.Platform {
-	case entity.PlatformIOS:
-		if uc.apple == nil {
-			return entity.IAPStatus{}, entity.ErrIAPPlatformDisabled
-		}
-		result, err = uc.apple.VerifyTransaction(ctx, input.PurchaseToken)
-	case entity.PlatformAndroid:
-		if input.PackageName == "" || input.PackageName != uc.cfg.GooglePackageName {
-			return entity.IAPStatus{}, entity.ErrInvalidIAPPurchase
-		}
-
-		result, err = uc.google.VerifySubscription(ctx, input.PackageName, input.PurchaseToken)
+	if input.Platform != entity.PlatformAndroid {
+		return entity.IAPStatus{}, entity.ErrIAPPlatformDisabled
 	}
 
+	if input.PackageName == "" || input.PackageName != uc.cfg.GooglePackageName {
+		return entity.IAPStatus{}, entity.ErrInvalidIAPPurchase
+	}
+
+	result, err := uc.google.VerifySubscription(ctx, input.PackageName, input.PurchaseToken)
 	if err != nil {
 		return entity.IAPStatus{}, err
 	}
@@ -72,7 +61,7 @@ func (uc *UseCase) VerifyPurchase(ctx context.Context, userID string, input enti
 		return entity.IAPStatus{}, persistErr
 	}
 
-	if input.Platform == entity.PlatformAndroid && !result.Acknowledged {
+	if !result.Acknowledged {
 		if acknowledgeErr := uc.google.Acknowledge(ctx, input.PackageName, result.ProductID, input.PurchaseToken); acknowledgeErr != nil {
 			return entity.IAPStatus{}, acknowledgeErr
 		}
@@ -104,22 +93,6 @@ func (uc *UseCase) GetStatus(ctx context.Context, userID string) (entity.IAPStat
 	}
 
 	return status, nil
-}
-
-func (uc *UseCase) HandleAppleWebhook(ctx context.Context, signedPayload string) error {
-	if uc.apple == nil {
-		return entity.ErrIAPPlatformDisabled
-	}
-	if signedPayload == "" {
-		return entity.ErrInvalidIAPPurchase
-	}
-
-	event, err := uc.apple.ParseNotification(ctx, signedPayload)
-	if err != nil {
-		return err
-	}
-
-	return uc.persistWebhook(ctx, &event)
 }
 
 type pubSubEnvelope struct {

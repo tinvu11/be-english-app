@@ -13,7 +13,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type iapHTTPStub struct{ appleCalls int }
+type iapHTTPStub struct {
+	googleCalls int
+}
 
 func (s *iapHTTPStub) VerifyPurchase(context.Context, string, entity.VerifyPurchaseInput) (entity.IAPStatus, error) {
 	return entity.IAPStatus{}, nil
@@ -23,12 +25,10 @@ func (s *iapHTTPStub) GetStatus(context.Context, string) (entity.IAPStatus, erro
 	return entity.IAPStatus{}, nil
 }
 
-func (s *iapHTTPStub) HandleAppleWebhook(context.Context, string) error {
-	s.appleCalls++
+func (s *iapHTTPStub) HandleGoogleWebhook(context.Context, []byte) error {
+	s.googleCalls++
 	return nil
 }
-
-func (s *iapHTTPStub) HandleGoogleWebhook(context.Context, []byte) error { return nil }
 
 func TestIAPWebhookIsPublicWhileVerifyIsProtected(t *testing.T) {
 	t.Parallel()
@@ -36,44 +36,24 @@ func TestIAPWebhookIsPublicWhileVerifyIsProtected(t *testing.T) {
 	app := fiber.New()
 	stub := &iapHTTPStub{}
 	NewRoutes(app.Group("/v1"), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-		stub, true, nil, logger.New("error"), nil)
+		stub, nil, logger.New("error"), nil)
 
-	webhookRequest := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/v1/iap/webhooks/apple",
-		bytes.NewBufferString(`{"signedPayload":"signed"}`))
+	webhookRequest := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/v1/iap/webhooks/google",
+		bytes.NewBufferString(`{}`))
 	webhookRequest.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
 	response, err := app.Test(webhookRequest)
 	require.NoError(t, err)
 
 	defer response.Body.Close()
 	require.Equal(t, http.StatusOK, response.StatusCode)
-	require.Equal(t, 1, stub.appleCalls)
+	require.Equal(t, 1, stub.googleCalls)
 
 	verifyRequest := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/v1/iap/verify",
-		bytes.NewBufferString(`{"platform":"ios","product_id":"premium","purchase_token":"1"}`))
+		bytes.NewBufferString(`{"platform":"android","product_id":"premium","purchase_token":"1","package_name":"com.example.app"}`))
 	verifyRequest.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
 	response, err = app.Test(verifyRequest)
 	require.NoError(t, err)
 
 	defer response.Body.Close()
 	require.Equal(t, http.StatusUnauthorized, response.StatusCode)
-}
-
-func TestAppleWebhookIsNotRegisteredWhenAppleIAPIsDisabled(t *testing.T) {
-	t.Parallel()
-
-	app := fiber.New()
-	stub := &iapHTTPStub{}
-	NewRoutes(app.Group("/v1"), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-		stub, false, nil, logger.New("error"), nil)
-
-	registered := false
-	for _, route := range app.GetRoutes(true) {
-		if route.Method == http.MethodPost && route.Path == "/v1/iap/webhooks/apple" {
-			registered = true
-			break
-		}
-	}
-
-	require.False(t, registered)
-	require.Zero(t, stub.appleCalls)
 }

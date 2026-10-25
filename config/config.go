@@ -123,17 +123,8 @@ type (
 
 	iap struct {
 		Enabled               bool   `env:"IAP_ENABLED" envDefault:"true"`
-		AppleEnabled          bool   `env:"APPLE_IAP_ENABLED" envDefault:"true"`
 		RestorePolicy         string `env:"IAP_RESTORE_POLICY" envDefault:"block"`
 		TimeoutSeconds        int    `env:"IAP_TIMEOUT_SECONDS" envDefault:"15"`
-		AppleBaseURL          string `env:"APPLE_IAP_BASE_URL" envDefault:"https://api.storekit.apple.com"`
-		AppleIssuerID         string `env:"APPLE_IAP_ISSUER_ID"`
-		AppleKeyID            string `env:"APPLE_IAP_KEY_ID"`
-		AppleBundleID         string `env:"APPLE_IAP_BUNDLE_ID"`
-		AppleAppID            int64  `env:"APPLE_IAP_APP_ID"`
-		AppleEnvironment      string `env:"APPLE_IAP_ENVIRONMENT" envDefault:"Production"`
-		ApplePrivateKeyPath   string `env:"APPLE_IAP_PRIVATE_KEY_PATH"`
-		AppleRootCAPath       string `env:"APPLE_IAP_ROOT_CA_PATH"`
 		GooglePackageName     string `env:"GOOGLE_PLAY_PACKAGE_NAME"`
 		GoogleCredentialsFile string `env:"GOOGLE_PLAY_CREDENTIALS_FILE"`
 	}
@@ -157,7 +148,6 @@ func NewConfig() (*Config, error) {
 	return cfg, nil
 }
 
-//nolint:gocyclo,cyclop // Startup validation reports each credential invariant precisely.
 func validateIAP(cfg *Config) error {
 	if !cfg.IAP.Enabled {
 		return nil
@@ -166,14 +156,8 @@ func validateIAP(cfg *Config) error {
 	missing := make([]string, 0)
 
 	values := map[string]string{
-		"GOOGLE_PLAY_PACKAGE_NAME": cfg.IAP.GooglePackageName, "GOOGLE_PLAY_CREDENTIALS_FILE": cfg.IAP.GoogleCredentialsFile,
-	}
-	if cfg.IAP.AppleEnabled {
-		values["APPLE_IAP_ISSUER_ID"] = cfg.IAP.AppleIssuerID
-		values["APPLE_IAP_KEY_ID"] = cfg.IAP.AppleKeyID
-		values["APPLE_IAP_BUNDLE_ID"] = cfg.IAP.AppleBundleID
-		values["APPLE_IAP_PRIVATE_KEY_PATH"] = cfg.IAP.ApplePrivateKeyPath
-		values["APPLE_IAP_ROOT_CA_PATH"] = cfg.IAP.AppleRootCAPath
+		"GOOGLE_PLAY_PACKAGE_NAME":     cfg.IAP.GooglePackageName,
+		"GOOGLE_PLAY_CREDENTIALS_FILE": cfg.IAP.GoogleCredentialsFile,
 	}
 	for name, value := range values {
 		if strings.TrimSpace(value) == "" {
@@ -189,14 +173,6 @@ func validateIAP(cfg *Config) error {
 
 	if cfg.IAP.RestorePolicy != "block" && cfg.IAP.RestorePolicy != "transfer" {
 		return fmt.Errorf("config error: %w", errRestorePolicy)
-	}
-
-	if cfg.IAP.AppleEnabled && cfg.IAP.AppleEnvironment != "Production" && cfg.IAP.AppleEnvironment != "Sandbox" {
-		return fmt.Errorf("config error: %w: APPLE_IAP_ENVIRONMENT", errMissingIAPConfig)
-	}
-
-	if cfg.IAP.AppleEnabled && cfg.IAP.AppleEnvironment == "Production" && cfg.IAP.AppleAppID <= 0 {
-		return fmt.Errorf("config error: %w: APPLE_IAP_APP_ID", errMissingIAPConfig)
 	}
 
 	return nil

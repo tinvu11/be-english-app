@@ -130,7 +130,6 @@ type (
 	IAP interface {
 		VerifyPurchase(ctx context.Context, userID string, input entity.VerifyPurchaseInput) (entity.IAPStatus, error)
 		GetStatus(ctx context.Context, userID string) (entity.IAPStatus, error)
-		HandleAppleWebhook(ctx context.Context, signedPayload string) error
 		HandleGoogleWebhook(ctx context.Context, body []byte) error
 	}
 )

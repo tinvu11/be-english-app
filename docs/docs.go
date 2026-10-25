@@ -2837,7 +2837,7 @@ const docTemplate = `{
         },
         "/iap/verify": {
             "post": {
-                "description": "Verify an App Store or Google Play purchase and update the current user's subscription",
+                "description": "Verify a Google Play purchase and update the current user's subscription",
                 "consumes": [
                     "application/json"
                 ],
@@ -2909,53 +2909,6 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ]
-            }
-        },
-        "/iap/webhooks/apple": {
-            "post": {
-                "description": "Process an App Store Server Notifications V2 signed payload. This public endpoint authenticates the notification by verifying its JWS signature.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "iap-webhooks"
-                ],
-                "summary": "Receive an Apple IAP notification",
-                "operationId": "iap-apple-webhook",
-                "parameters": [
-                    {
-                        "description": "App Store notification",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AppleIAPWebhook"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Error"
-                        }
-                    }
-                }
             }
         },
         "/iap/webhooks/google": {
@@ -6295,18 +6248,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 2048,
                     "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                }
-            }
-        },
-        "request.AppleIAPWebhook": {
-            "type": "object",
-            "required": [
-                "signedPayload"
-            ],
-            "properties": {
-                "signedPayload": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19..."
                 }
             }
         },

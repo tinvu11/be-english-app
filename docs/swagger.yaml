@@ -912,14 +912,6 @@ definitions:
     required:
     - youtubeUrl
     type: object
-  request.AppleIAPWebhook:
-    properties:
-      signedPayload:
-        example: eyJhbGciOiJFUzI1NiIsIng1YyI6Wy4uLl19...
-        type: string
-    required:
-    - signedPayload
-    type: object
   request.CaptionTranslation:
     properties:
       languageId:
@@ -3523,8 +3515,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Verify an App Store or Google Play purchase and update the current
-        user's subscription
+      description: Verify a Google Play purchase and update the current user's subscription
       operationId: iap-verify-purchase
       parameters:
       - description: Purchase details
@@ -3569,38 +3560,6 @@ paths:
       summary: Verify an in-app purchase
       tags:
       - iap
-  /iap/webhooks/apple:
-    post:
-      consumes:
-      - application/json
-      description: Process an App Store Server Notifications V2 signed payload. This
-        public endpoint authenticates the notification by verifying its JWS signature.
-      operationId: iap-apple-webhook
-      parameters:
-      - description: App Store notification
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/request.AppleIAPWebhook'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.Error'
-      summary: Receive an Apple IAP notification
-      tags:
-      - iap-webhooks
   /iap/webhooks/google:
     post:
       consumes:

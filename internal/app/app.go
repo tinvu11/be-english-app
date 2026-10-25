@@ -12,7 +12,6 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
-	appleGateway "github.com/evrone/go-clean-template/internal/gateway/apple"
 	"github.com/evrone/go-clean-template/internal/gateway/azure"
 	"github.com/evrone/go-clean-template/internal/gateway/deepseek"
 	googlePlayGateway "github.com/evrone/go-clean-template/internal/gateway/googleplay"
@@ -38,7 +37,6 @@ import (
 	"github.com/evrone/go-clean-template/internal/usecase/caption"
 	"github.com/evrone/go-clean-template/internal/usecase/channel"
 	"github.com/evrone/go-clean-template/internal/usecase/dashboard"
-	iapGateway "github.com/evrone/go-clean-template/internal/usecase/gateway"
 	iapUseCase "github.com/evrone/go-clean-template/internal/usecase/iap"
 	"github.com/evrone/go-clean-template/internal/usecase/language"
 	"github.com/evrone/go-clean-template/internal/usecase/learningcontent"
@@ -124,26 +122,12 @@ func initUseCases(ctx context.Context, cfg *config.Config, pg *postgres.Postgres
 		shadowing:  shadowing.New(shadowingRepo, pronunciationAssessor, quota),
 	}
 	if cfg.IAP.Enabled {
-		httpClient := &http.Client{Timeout: time.Duration(cfg.IAP.TimeoutSeconds) * time.Second}
-		var appleClient iapGateway.AppleGateway
-		if cfg.IAP.AppleEnabled {
-			client, err := appleGateway.New(&appleGateway.Config{
-				BaseURL:  cfg.IAP.AppleBaseURL,
-				IssuerID: cfg.IAP.AppleIssuerID, KeyID: cfg.IAP.AppleKeyID, BundleID: cfg.IAP.AppleBundleID,
-				AppAppleID: cfg.IAP.AppleAppID, Environment: cfg.IAP.AppleEnvironment,
-				PrivateKeyPath: cfg.IAP.ApplePrivateKeyPath, RootCAPath: cfg.IAP.AppleRootCAPath,
-			}, httpClient)
-			if err != nil {
-				return useCases{}, fmt.Errorf("initialize Apple IAP: %w", err)
-			}
-			appleClient = client
-		}
 		googleClient, err := googlePlayGateway.New(ctx, googlePlayGateway.Config{CredentialsFile: cfg.IAP.GoogleCredentialsFile})
 		if err != nil {
 			return useCases{}, fmt.Errorf("initialize Google Play IAP: %w", err)
 		}
 		iapRepo := persistIAPRepo.New(pg)
-		result.iap = iapUseCase.New(appleClient, googleClient, iapRepo, iapRepo,
+		result.iap = iapUseCase.New(googleClient, iapRepo, iapRepo,
 			iapUseCase.Config{GooglePackageName: cfg.IAP.GooglePackageName, RestorePolicy: cfg.IAP.RestorePolicy})
 	}
 	return result, nil

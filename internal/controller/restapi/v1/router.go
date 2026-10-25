@@ -12,7 +12,7 @@ import (
 // NewRoutes -.
 //
 //nolint:funlen // Keeping the declarative route table together makes auth boundaries auditable.
-func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, shadowing usecase.Shadowing, iap usecase.IAP, appleIAPEnabled bool, verifier middleware.TokenVerifier, l logger.Interface, dashboard usecase.Dashboard) {
+func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Language, levels usecase.Level, topics usecase.Topic, channels usecase.Channel, adminUsers usecase.AdminUser, videos usecase.Video, captions usecase.Caption, vocabulary usecase.Vocabulary, learning usecase.LearningContent, shadowing usecase.Shadowing, iap usecase.IAP, verifier middleware.TokenVerifier, l logger.Interface, dashboard usecase.Dashboard) {
 	r := &V1{
 		u:          u,
 		languages:  languages,
@@ -27,9 +27,8 @@ func NewRoutes(apiV1Group fiber.Router, u usecase.User, languages usecase.Langua
 		l:          l,
 		v:          validator.New(validator.WithRequiredStructEnabled()),
 	}
-	if iap != nil && appleIAPEnabled {
+	if iap != nil {
 		webhooks := apiV1Group.Group("/iap/webhooks")
-		webhooks.Post("/apple", r.appleIAPWebhook)
 		webhooks.Post("/google", r.googleIAPWebhook)
 	}
 

@@ -1369,20 +1369,6 @@ func (mr *MockIAPMockRecorder) GetStatus(ctx, userID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatus", reflect.TypeOf((*MockIAP)(nil).GetStatus), ctx, userID)
 }
 
-// HandleAppleWebhook mocks base method.
-func (m *MockIAP) HandleAppleWebhook(ctx context.Context, signedPayload string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "HandleAppleWebhook", ctx, signedPayload)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// HandleAppleWebhook indicates an expected call of HandleAppleWebhook.
-func (mr *MockIAPMockRecorder) HandleAppleWebhook(ctx, signedPayload any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HandleAppleWebhook", reflect.TypeOf((*MockIAP)(nil).HandleAppleWebhook), ctx, signedPayload)
-}
-
 // HandleGoogleWebhook mocks base method.
 func (m *MockIAP) HandleGoogleWebhook(ctx context.Context, body []byte) error {
 	m.ctrl.T.Helper()

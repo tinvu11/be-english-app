@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"strconv"
 	"testing"
 	"time"
@@ -13,20 +12,6 @@ import (
 	iaprepo "github.com/evrone/go-clean-template/internal/usecase/repo"
 	"github.com/stretchr/testify/require"
 )
-
-type appleStub struct {
-	result entity.StoreVerificationResult
-}
-
-var errNotImplemented = errors.New("not implemented")
-
-func (s *appleStub) VerifyTransaction(context.Context, string) (entity.StoreVerificationResult, error) {
-	return s.result, nil
-}
-
-func (s *appleStub) ParseNotification(context.Context, string) (entity.WebhookEvent, error) {
-	return entity.WebhookEvent{}, errNotImplemented
-}
 
 type googleStub struct {
 	result       entity.StoreVerificationResult
@@ -164,7 +149,7 @@ func TestVerifyGooglePersistsBeforeAcknowledging(t *testing.T) {
 	now := time.Date(2026, 8, 16, 10, 0, 0, 0, time.UTC)
 	repo := newMemoryRepo()
 	google := &googleStub{result: verifiedPurchase(now)}
-	uc := New(&appleStub{}, google, repo, repo, Config{GooglePackageName: "com.example.app", RestorePolicy: "block"})
+	uc := New(google, repo, repo, Config{GooglePackageName: "com.example.app", RestorePolicy: "block"})
 	uc.now = func() time.Time { return now }
 
 	status, err := uc.VerifyPurchase(context.Background(), "user-1", entity.VerifyPurchaseInput{
@@ -177,17 +162,16 @@ func TestVerifyGooglePersistsBeforeAcknowledging(t *testing.T) {
 	require.NotNil(t, repo.premium["user-1"])
 }
 
-func TestAppleOperationsFailSafelyWhenGatewayIsDisabled(t *testing.T) {
+func TestNonAndroidPlatformRejected(t *testing.T) {
 	t.Parallel()
 
 	repo := newMemoryRepo()
-	uc := New(nil, &googleStub{}, repo, repo, Config{GooglePackageName: "com.example.app"})
+	uc := New(&googleStub{}, repo, repo, Config{GooglePackageName: "com.example.app"})
 
 	_, err := uc.VerifyPurchase(context.Background(), "user-1", entity.VerifyPurchaseInput{
 		Platform: entity.PlatformIOS, ProductID: "premium_monthly", PurchaseToken: "transaction-id",
 	})
 	require.ErrorIs(t, err, entity.ErrIAPPlatformDisabled)
-	require.ErrorIs(t, uc.HandleAppleWebhook(context.Background(), "signed"), entity.ErrIAPPlatformDisabled)
 }
 
 func TestVerifyBlocksActivePurchaseOwnedByAnotherUser(t *testing.T) {
@@ -200,7 +184,7 @@ func TestVerifyBlocksActivePurchaseOwnedByAnotherUser(t *testing.T) {
 		Status: entity.SubscriptionActive, ExpiresAt: now.Add(time.Hour), LastEventAt: now.Add(-time.Minute),
 	}
 	google := &googleStub{result: verifiedPurchase(now)}
-	uc := New(&appleStub{}, google, repo, repo, Config{GooglePackageName: "com.example.app", RestorePolicy: "block"})
+	uc := New(google, repo, repo, Config{GooglePackageName: "com.example.app", RestorePolicy: "block"})
 	uc.now = func() time.Time { return now }
 
 	_, err := uc.VerifyPurchase(context.Background(), "second-user", entity.VerifyPurchaseInput{
@@ -220,7 +204,7 @@ func TestGoogleWebhookIsIdempotentAndRejectsOlderState(t *testing.T) {
 		Status: entity.SubscriptionActive, ExpiresAt: now.Add(time.Hour), LastEventAt: now.Add(-time.Hour),
 	}
 	google := &googleStub{result: verifiedPurchase(now)}
-	uc := New(&appleStub{}, google, repo, repo, Config{GooglePackageName: "com.example.app"})
+	uc := New(google, repo, repo, Config{GooglePackageName: "com.example.app"})
 	uc.now = func() time.Time { return now }
 
 	body := googleEnvelope(t, "message-1", now, "token")
